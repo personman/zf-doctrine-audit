@@ -1,15 +1,14 @@
 <?php
 
-namespace SoliantEntityAudit;
+namespace ZF\Doctrine\Audit;
 
 use Zend\Mvc\MvcEvent
-    , SoliantEntityAudit\Options\ModuleOptions
-    , SoliantEntityAudit\Service\AuditService
-    , SoliantEntityAudit\Loader\AuditAutoloader
-    , SoliantEntityAudit\EventListener\LogRevision
-    , SoliantEntityAudit\View\Helper\DateTimeFormatter
-    , SoliantEntityAudit\View\Helper\EntityValues
-    ;
+use ZF\Doctrine\Audit\Options\ModuleOptions;
+use ZF\Doctrine\Audit\Service\AuditService;
+use ZF\Doctrine\Audit\Loader\AuditAutoloader;
+use ZF\Doctrine\Audit\EventListener\LogRevision;
+use ZF\Doctrine\Audit\View\Helper\DateTimeFormatter;
+use ZF\Doctrine\Audit\View\Helper\EntityValues;
 
 class Module
 {
@@ -26,7 +25,7 @@ class Module
 
             'SoliantEntityAudit\Loader\AuditAutoloader' => array(
                 'namespaces' => array(
-                    'SoliantEntityAudit\Entity' => __DIR__,
+                    'ZF\Doctrine\Audit\Entity' => __DIR__,
                 )
             ),
         );
