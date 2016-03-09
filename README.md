@@ -1,4 +1,4 @@
-zf-doctrine-audit
+ORM Audit for Doctrine
 ==============
 
 [![Build Status](https://travis-ci.org/API-Skeletons/zf-doctrine-audit.png)](https://travis-ci.org/API-Skeletons/zf-doctrine-audit)
