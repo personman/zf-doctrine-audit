@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\View\Helper;
+namespace ZF\Doctrine\Audit\View\Helper;
 use Zend\View\Helper\AbstractHelper;
 use Doctrine\ORM\EntityManager;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;

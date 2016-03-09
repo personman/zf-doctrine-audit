@@ -1,5 +1,5 @@
 <?php
-namespace SoliantEntityAudit\View\Helper ;
+namespace ZF\Doctrine\Audit\View\Helper ;
 
 
 use Zend\Http\Request;

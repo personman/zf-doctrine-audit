@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAuditTest;
+namespace ZFTest\Doctrine\Audit;
 
 return array(
     'audit' => array(
@@ -16,9 +16,9 @@ return array(
         'revisionEntityTableName' => 'RevisionEntity',
 
         'entities' => array(
-            'SoliantEntityAuditTest\Models\Bootstrap\Album' => array(),
-            'SoliantEntityAuditTest\Models\Bootstrap\Performer' => array(),
-            'SoliantEntityAuditTest\Models\Bootstrap\Song' => array(),
+            'ZFTest\Doctrine\Audit\Models\Bootstrap\Album' => array(),
+            'ZFTest\Doctrine\Audit\Models\Bootstrap\Performer' => array(),
+            'ZFTest\Doctrine\Audit\Models\Bootstrap\Song' => array(),
         ),
     ),
 
@@ -35,21 +35,21 @@ return array(
         ),
 
         'driver' => array(
-            'SoliantEntityAudit_moduleDriver' => array(
-                'class' => 'SoliantEntityAudit\Mapping\Driver\AuditDriver',
+            'ZF_Doctrine_Audit_moduleDriver' => array(
+                'class' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
             ),
 
             __NAMESPACE__ . '_driver' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\StaticPHPDriver',
                 'paths' => array(
-                    __DIR__ . '/../SoliantEntityAuditTest/Models/Bootstrap',
+                    __DIR__ . '/../AuditTest/Models/Bootstrap',
                 ),
             ),
 
             'orm_default' => array(
                 'drivers' => array(
                     __NAMESPACE__ . '\Models' => __NAMESPACE__ . '_driver',
-                    'SoliantEntityAudit\Entity' => 'SoliantEntityAudit_moduleDriver',
+                    'ZF\Doctrine\Audit\Entity' => 'ZF_Doctrine_Audit_moduleDriver',
                 ),
             ),
         ),

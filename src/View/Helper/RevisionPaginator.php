@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\View\Helper;
+namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper
     , Doctrine\ORM\EntityManager
@@ -10,7 +10,7 @@ use Zend\View\Helper\AbstractHelper
     , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
     , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
     , Zend\Paginator\Paginator
-    , SoliantEntityAudit\Entity\AbstractAudit
+    , ZF\Doctrine\Audit\Entity\AbstractAudit
     ;
 
 final class RevisionPaginator extends AbstractHelper implements ServiceLocatorAwareInterface
@@ -35,7 +35,7 @@ final class RevisionPaginator extends AbstractHelper implements ServiceLocatorAw
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
 
-        $repository = $entityManager->getRepository('SoliantEntityAudit\\Entity\\Revision');
+        $repository = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\Revision');
 
         $qb = $repository->createQueryBuilder('revision');
         $qb->orderBy('revision.id', 'DESC');

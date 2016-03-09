@@ -2,7 +2,7 @@
 
 namespace ZF\Doctrine\Audit;
 
-use Zend\Mvc\MvcEvent
+use Zend\Mvc\MvcEvent;
 use ZF\Doctrine\Audit\Options\ModuleOptions;
 use ZF\Doctrine\Audit\Service\AuditService;
 use ZF\Doctrine\Audit\Loader\AuditAutoloader;
@@ -23,7 +23,7 @@ class Module
                 ),
             ),
 
-            'SoliantEntityAudit\Loader\AuditAutoloader' => array(
+            'ZF\Doctrine\Audit\Loader\AuditAutoloader' => array(
                 'namespaces' => array(
                     'ZF\Doctrine\Audit\Entity' => __DIR__,
                 )
@@ -33,7 +33,10 @@ class Module
 
     public function onBootstrap(MvcEvent $e)
     {
-        $moduleOptions = $e->getApplication()->getServiceManager()->get('auditModuleOptions');
+        $moduleOptions = $e->getApplication()
+            ->getServiceManager()
+            ->get('auditModuleOptions')
+            ;
 
         self::setModuleOptions($moduleOptions);
     }
@@ -88,10 +91,9 @@ class Module
          return array(
             'factories' => array(
                 'auditDateTimeFormatter' => function($sm) {
-                    $Servicelocator = $sm->getServiceLocator();
-                    $config = $Servicelocator->get("Config");
-                    $format = $config['audit']['datetimeFormat'];
+                    $format = $sm->getServiceLocator()->get("Config")['audit']['datetimeFormat'];
                     $formatter = new DateTimeFormatter();
+
                     return $formatter->setDateTimeFormat($format);
                 },
 

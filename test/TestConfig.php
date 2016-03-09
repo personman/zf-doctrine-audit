@@ -1,7 +1,7 @@
 <?php
 return array(
     'modules' => array(
-        'SoliantEntityAudit',
+        'ZF\Doctrine\Audit',
 
         'DoctrineModule',
         'DoctrineORMModule',
@@ -9,7 +9,6 @@ return array(
         'ZfcBase',
         'ZfcUser',
         'ZfcUserDoctrineORM',
-
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(

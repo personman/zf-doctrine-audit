@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\View\Helper;
+namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper
     , Doctrine\ORM\EntityManager
@@ -10,7 +10,7 @@ use Zend\View\Helper\AbstractHelper
     , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
     , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
     , Zend\Paginator\Paginator
-    , SoliantEntityAudit\Entity\AbstractAudit
+    , ZF\Doctrine\Audit\Entity\AbstractAudit
     ;
 
 final class EntityOptions extends AbstractHelper implements ServiceLocatorAwareInterface

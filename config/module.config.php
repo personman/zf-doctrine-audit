@@ -1,12 +1,12 @@
 <?php
 
-namespace SoliantEntityAudit;
+namespace ZF\Doctrine\Audit;
 
 return array(
     'doctrine' => array(
         'driver' => array(
             __NAMESPACE__ . '_driver' => array(
-                'class' => 'SoliantEntityAudit\Mapping\Driver\AuditDriver',
+                'class' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
             ),
 
             'orm_default' => array(
@@ -19,7 +19,7 @@ return array(
         'eventmanager' => array(
             'orm_default' => array(
                 'subscribers' => array(
-                    'SoliantEntityAudit\EventListener\LogRevision',
+                    'ZF\Doctrine\Audit\EventListener\LogRevision',
                 ),
             ),
         ),
@@ -27,7 +27,7 @@ return array(
 
     'controllers' => array(
         'invokables' => array(
-            'audit' => 'SoliantEntityAudit\Controller\IndexController'
+            'audit' => 'ZF\Doctrine\Audit\Controller\IndexController'
         ),
     ),
 
@@ -39,16 +39,16 @@ return array(
 
     'view_helpers' => array(
         'invokables' => array(
-            'auditCurrentRevisionEntity' => 'SoliantEntityAudit\View\Helper\CurrentRevisionEntity',
-            'auditEntityOptions' => 'SoliantEntityAudit\View\Helper\EntityOptions',
+            'auditCurrentRevisionEntity' => 'ZF\Doctrine\Audit\View\Helper\CurrentRevisionEntity',
+            'auditEntityOptions' => 'ZF\Doctrine\Audit\View\Helper\EntityOptions',
 
-            'auditRevisionEntityLink' => 'SoliantEntityAudit\View\Helper\RevisionEntityLink',
+            'auditRevisionEntityLink' => 'ZF\Doctrine\Audit\View\Helper\RevisionEntityLink',
 
-            'auditRevisionPaginator' => 'SoliantEntityAudit\View\Helper\RevisionPaginator',
-            'auditRevisionEntityPaginator' => 'SoliantEntityAudit\View\Helper\RevisionEntityPaginator',
-            'auditAssociationSourcePaginator' => 'SoliantEntityAudit\View\Helper\AssociationSourcePaginator',
-            'auditAssociationTargetPaginator' => 'SoliantEntityAudit\View\Helper\AssociationTargetPaginator',
-            'auditOneToManyPaginator' => 'SoliantEntityAudit\View\Helper\OneToManyPaginator',
+            'auditRevisionPaginator' => 'ZF\Doctrine\Audit\View\Helper\RevisionPaginator',
+            'auditRevisionEntityPaginator' => 'ZF\Doctrine\Audit\View\Helper\RevisionEntityPaginator',
+            'auditAssociationSourcePaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationSourcePaginator',
+            'auditAssociationTargetPaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationTargetPaginator',
+            'auditOneToManyPaginator' => 'ZF\Doctrine\Audit\View\Helper\OneToManyPaginator',
         ),
     ),
 

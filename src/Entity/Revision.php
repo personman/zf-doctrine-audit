@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\Entity;
+namespace ZF\Doctrine\Audit\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
     ;

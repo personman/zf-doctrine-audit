@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAuditTest;
+namespace ZFTest\Doctrine\Audit;
 
 use Zend\Loader\AutoloaderFactory
     , Zend\Mvc\Service\ServiceManagerConfig
@@ -86,7 +86,7 @@ class Bootstrap
             'Zend\Loader\StandardAutoloader' => array(
                 'autoregister_zf' => true,
                 'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/' . __NAMESPACE__,
+                    __NAMESPACE__ => __DIR__ . '/AuditTest',
                 ),
             ),
         ));

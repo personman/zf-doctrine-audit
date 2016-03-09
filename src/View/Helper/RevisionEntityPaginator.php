@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\View\Helper;
+namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper
     , Doctrine\ORM\EntityManager
@@ -10,7 +10,7 @@ use Zend\View\Helper\AbstractHelper
     , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
     , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
     , Zend\Paginator\Paginator
-    , SoliantEntityAudit\Entity\AbstractAudit
+    , ZF\Doctrine\Audit\Entity\AbstractAudit
     ;
 
 final class RevisionEntityPaginator extends AbstractHelper implements ServiceLocatorAwareInterface
@@ -35,19 +35,19 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
         if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($auditModuleOptions->getAuditedClassNames()))) {
-            $auditEntityClass = 'SoliantEntityAudit\\Entity\\' . str_replace('\\', '_', get_class($entity));
+            $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
             $identifiers = $auditService->getEntityIdentifierValues($entity);
         } elseif ($entity instanceof AbstractAudit) {
             $auditEntityClass = get_class($entity);
             $identifiers = $auditService->getEntityIdentifierValues($entity, true);
         } else {
-            $auditEntityClass = 'SoliantEntityAudit\\Entity\\' . str_replace('\\', '_', $entity);
+            $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $entity);
         }
 
         $search = array('auditEntityClass' => $auditEntityClass);
         if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
 
-        $queryBuilder = $entityManager->getRepository('SoliantEntityAudit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
+        $queryBuilder = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
         $queryBuilder->orderBy('rev.id', 'DESC');
         $i = 0;
         foreach ($search as $key => $val) {

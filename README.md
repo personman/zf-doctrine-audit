@@ -1,56 +1,55 @@
-SoliantEntityAudit
+zf-doctrine-audit
 ==============
 
-[![Build Status](https://travis-ci.org/TomHAnderson/SoliantEntityAudit.png)](https://travis-ci.org/TomHAnderson/SoliantEntityAudit)
+[![Build Status](https://travis-ci.org/API-Skeletons/zf-doctrine-audit.png)](https://travis-ci.org/API-Skeletons/zf-doctrine-audit)
 
-An auditing module for Doctrine 2.  Requires ZfcUser to map revisions to users.  This module creates an entity to audit a specified target entity and tracks revisions to that target.
+Auditing for Doctrine 2.  May use ZfcUser to map revisions to users.  This module creates an entity to audit a specified target entity and tracks revisions to that target.
 
 
 About
 =====
 
-This module takes a configuration of entities to audit and creates 
-entities to audit them and revision tracking entities.  Included is a view layer to browse the audit records.  Routing back to live application data is supported and view helpers
-allow you to find and browse to the latest audit record from a given audited entity.
+This module takes a configuration of entities to audit and creates entities to audit
+them and revision tracking entities.  Included is a view layer to browse the audit
+records.  Routing back to live application data is supported and view helpers allow
+you to find and browse to the latest audit record from a given audited entity.
 
 Revisions pool all audited entities into revision buckets.  Each bucket contains the revision entity for each audited record in a transaction.
 
-Auditing is done in it's own transaction after a flush has been performed.  Auditing takes two flushes in one transaction to complete.  
+Auditing is done in it's own transaction after a flush has been performed.  Auditing takes two flushes in one transaction to complete.
 
 
 Install
 =======
 
-Require SoliantEntityAudit with composer 
-
 ```php
-php composer.phar require "soliantconsulting/entity-audit": "dev-master"
+composer require "api-skeletons/zf-doctrine-audit": "^0.1"
 ```
 
 
-Enable SoliantEntityAudit in `config/application.config.php`: 
+Enable `config/application.config.php`:
 ```php
 return array(
     'modules' => array(
-        'SoliantEntityAudit'
+        'ZF\\Doctrine\\Audit'
         ...
     ),
 ```
 
-Copy `config/SoliantEntityAudit.global.php.dist` to `config/autoload/SoliantEntityAudit.global.php` and edit setting as
+Copy `config/zf-doctrine-audit.global.php.dist` to `config/autoload/zf-doctrine-audit.global.php` and edit setting as
 
 ```php
 return array(
     'audit' => array(
         'datetimeFormat' => 'r',
         'paginatorLimit' => 20,
-        
+
         'tableNamePrefix' => '',
         'tableNameSuffix' => '_audit',
         'revisionTableName' => 'Revision',
         'revisionEntityTableName' => 'RevisionEntity',
-        
-        'entities' => array(           
+
+        'entities' => array(
             'Db\Entity\Song' => array(),
             'Db\Entity\Performer' => array(),
         ),
@@ -60,7 +59,7 @@ return array(
 
 Use the Doctrine command line tool to update the database and create the auditing tables:
 
-```shell
+```sh
 vendor/bin/doctrine-module orm:schema-tool:update
 ```
 
@@ -77,14 +76,12 @@ RevisionEntity - A mapping entity which maps an AuditEntity to a Revision and ma
 Target entity - An auditable entity specified as string in the audit configuration.
 
 
-Authentication 
+Authentication
 --------------
 
 You may configure a custom entity to serve as the user entity for mapping revisions to users.  You may configure a custom authentication service too.  By default these map to ZfcUserDoctrineORM\Entity\User and zfcuser_auth_service.  For example to use a custom entity and service Db\Entity\User for an entity and Zend\Authentication\AuthenticationService would work.
 
 The user entity must implement getDisplayName, getId, and getEmail.  The authentication service must implement hasIdentity and getIdentity which returns an instance of the current user entity.
-
-Interfaces are not used so ZfcUser can be used out of the box.
 
 
 Routing
@@ -143,10 +140,10 @@ This class provides the following:
 
 3. getEntityIdentifierValues($entity);
     Return all the identifying keys and values for an entity.
-    
+
 4. getRevisionEntities($entity)
     Returns all RevisionEntity entities for the given audited entity or RevisionEntity.
-    
+
 ````
 $view->auditService();
 ```
@@ -161,7 +158,7 @@ Return a paginator for all revisions of the specified class name.
 $view->auditEntityPaginator($page, $entityClassName);
 ```
 
-Return a paginator for all RevisionEntity entities for the given entity or 
+Return a paginator for all RevisionEntity entities for the given entity or
 a paginator attached to every RevisionEntity for the given audited entity class.Pass an entity or a class name string.
 ```
 $view->auditRevisionEntityPaginator($page, $entity);
@@ -177,8 +174,8 @@ Returns the routing information for an entity by class name
 $view->auditEntityOptions($entityClassName);
 ```
 
-Titling
--------
+Revision Titles
+---------------
 
 If an entity has a __toString method it will be used to title an audit entity limited to 256 characters and stored in the RevisionEntity.
 

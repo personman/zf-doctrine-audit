@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\Entity;
+namespace ZF\Doctrine\Audit\Entity;
 
 abstract class AbstractAudit
 {

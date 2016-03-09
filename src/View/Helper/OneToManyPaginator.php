@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\View\Helper;
+namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 use Doctrine\ORM\EntityManager;
@@ -10,7 +10,7 @@ use Zend\View\Model\ViewModel;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
-use SoliantEntityAudit\Entity\AbstractAudit;
+use ZF\Doctrine\Audit\Entity\AbstractAudit;
 
 final class OneToManyPaginator extends AbstractHelper implements ServiceLocatorAwareInterface
 {
@@ -33,11 +33,11 @@ final class OneToManyPaginator extends AbstractHelper implements ServiceLocatorA
         $entityManager = $auditModuleOptions->getEntityManager();
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
-        $entityClassName = 'SoliantEntityAudit\\Entity\\' . str_replace('\\', '_', $joinTable);
+        $entityClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $joinTable);
 
         $query = $entityManager->createQuery("
             SELECT e
-            FROM SoliantEntityAudit\Entity\RevisionEntity e
+            FROM ZF\Doctrine\Audit\Entity\RevisionEntity e
             JOIN e.revision r
             WHERE e.id IN (
                 SELECT re.id

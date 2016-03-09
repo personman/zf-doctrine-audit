@@ -1,8 +1,8 @@
 <?php
 
-namespace SoliantEntityAudit\Options;
+namespace ZF\Doctrine\Audit\Options;
 use Doctrine\ORM\EntityManager
-    , SoliantEntityAudit\Service\AuditService
+    , ZF\Doctrine\Audit\Service\AuditService
     ;
 
 class ModuleOptions

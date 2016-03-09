@@ -1,6 +1,6 @@
 <?php
 
-namespace SoliantEntityAudit\Loader;
+namespace ZF\Doctrine\Audit\Loader;
 
 use Zend\Loader\StandardAutoloader
     , Zend\ServiceManager\ServiceManager
@@ -21,7 +21,7 @@ class AuditAutoloader extends StandardAutoloader
      */
     public function loadClass($className, $type)
     {
-        $moduleOptions = \SoliantEntityAudit\Module::getModuleOptions();
+        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
         if (!$moduleOptions) return;
         $entityManager = $moduleOptions->getEntityManager();
 
@@ -32,7 +32,7 @@ class AuditAutoloader extends StandardAutoloader
 
         if (in_array($className, array_keys($joinClasses))) {
 
-            $auditClass->setNamespaceName("SoliantEntityAudit\\Entity");
+            $auditClass->setNamespaceName("ZF\Doctrine\Audit\\Entity");
             $auditClass->setName($className);
             $auditClass->setExtendedClass('AbstractAudit');
 
@@ -60,14 +60,14 @@ class AuditAutoloader extends StandardAutoloader
             );
 
             $auditClass->addMethod(
-                'setTargetRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\SoliantEntityAudit\Entity\RevisionEntity'))),
+                'setTargetRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
                 MethodGenerator::FLAG_PUBLIC,
                 '$this->targetRevisionEntity = $value;' . "\n" .
                     'return $this;'
             );
 
             $auditClass->addMethod(
-                'setSourceRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\SoliantEntityAudit\Entity\RevisionEntity'))),
+                'setSourceRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
                 MethodGenerator::FLAG_PUBLIC,
                 '$this->sourceRevisionEntity = $value;' . "\n" .
                     'return $this;'
@@ -99,7 +99,7 @@ class AuditAutoloader extends StandardAutoloader
         #FIXME:  why is this sent work outside the set namespace?
         foreach($moduleOptions->getAuditedClassNames() as $targetClass => $targetClassOptions) {
 
-             $auditClassName = 'SoliantEntityAudit\\Entity\\' . str_replace('\\', '_', $targetClass);
+             $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $targetClass);
 
              if ($auditClassName == $className) {
                  $currentClass = $targetClass;
@@ -115,7 +115,7 @@ class AuditAutoloader extends StandardAutoloader
         $fields = $auditedClassMetadata->getFieldNames();
         $identifiers = $auditedClassMetadata->getFieldNames();
 
-        $service = \SoliantEntityAudit\Module::getModuleOptions()->getAuditService();
+        $service = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditService();
 
         // Generate audit entity
         foreach ($fields as $field) {
@@ -164,7 +164,7 @@ class AuditAutoloader extends StandardAutoloader
             " return '" .  addslashes($currentClass) . "';"
         );
 
-        $auditClass->setNamespaceName("SoliantEntityAudit\\Entity");
+        $auditClass->setNamespaceName("ZF\Doctrine\Audit\\Entity");
         $auditClass->setName(str_replace('\\', '_', $currentClass));
         $auditClass->setExtendedClass('AbstractAudit');
 
@@ -173,7 +173,7 @@ class AuditAutoloader extends StandardAutoloader
 
             foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
                 if (isset($mapping['joinTable']['name'])) {
-                    $auditJoinTableClassName = "SoliantEntityAudit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
+                    $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
                     $auditEntities[] = $auditJoinTableClassName;
                     $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
                 }
