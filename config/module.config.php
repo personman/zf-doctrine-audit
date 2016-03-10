@@ -1,22 +1,51 @@
 <?php
 
-namespace ZF\Doctrine\Audit;
-
 return array(
     'doctrine' => array(
         'driver' => array(
-            __NAMESPACE__ . '_driver' => array(
+            'zf_doctrine_audit_driver' => array(
                 'class' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
             ),
 
-            'orm_default' => array(
+            'orm_zf_doctrine_audit' => array(
+                'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
                 'drivers' => array(
-                    __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver',
+                    'ZF\Doctrine\Audit\Entity' => 'zf_doctrine_audit_driver',
                 ),
             ),
         ),
 
+        'configuration' => array(
+            'orm_zf_doctrine_audit' => array(
+                'metadata_cache'    => 'array',
+                'query_cache'       => 'array',
+                'result_cache'      => 'array',
+                'driver'            => 'orm_zf_doctrine_audit',
+                'generate_proxies'  => true,
+                'proxy_dir'         => 'data/DoctrineORMModule/Proxy',
+                'proxy_namespace'   => 'DoctrineORMModule\Proxy',
+                'filters'           => array()
+            ),
+        ),
+
+        'connection' => array(
+            'orm_zf_doctrine_audit' => array(
+                'eventmanager' => 'orm_zf_doctrine_audit',
+                'params' => array(
+                    'charset' => 'utf8',
+                ),
+            ),
+        ),
+
+        'entitymanager' => array(
+            'orm_zf_doctrine_audit' => array(
+                'connection'    => 'orm_zf_doctrine_audit',
+                'configuration' => 'orm_zf_doctrine_audit',
+            ),
+        ),
+
         'eventmanager' => array(
+            'orm_zf_doctrine_audit' => array(),
             'orm_default' => array(
                 'subscribers' => array(
                     'ZF\Doctrine\Audit\EventListener\LogRevision',
@@ -27,13 +56,14 @@ return array(
 
     'controllers' => array(
         'invokables' => array(
-            'audit' => 'ZF\Doctrine\Audit\Controller\IndexController'
+            'ZF\Doctrine\Audit\Controller\Index' => 'ZF\Doctrine\Audit\Controller\IndexController',
+            'ZF\\Doctrine\\Audit\\Controller\\SchemaTool' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
         ),
     ),
 
     'view_manager' => array(
         'template_path_stack' => array(
-            __DIR__ . '/../view',
+            'zf-doctrine-audit' => __DIR__ . '/../view',
         ),
     ),
 
@@ -60,7 +90,7 @@ return array(
                 'options' => array(
                     'route' => '/audit',
                     'defaults' => array(
-                        'controller' => 'audit',
+                        'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                         'action'     => 'index',
                     ),
                 ),
@@ -74,7 +104,7 @@ return array(
                                 'page' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'index',
                                 'page' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
@@ -88,7 +118,7 @@ return array(
                                 'userId' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'user',
                             ),
                         ),
@@ -102,7 +132,7 @@ return array(
                                 'revisionId' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'revision',
                                 'revisionId' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
@@ -117,7 +147,7 @@ return array(
                                 'page' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'revisionEntity',
                             ),
                         ),
@@ -131,7 +161,7 @@ return array(
                                 'page' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'one-to-many',
                             ),
                         ),
@@ -145,7 +175,7 @@ return array(
                                 'page' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'association-target',
                             ),
                         ),
@@ -159,7 +189,7 @@ return array(
                                 'page' => '[0-9]*',
                             ),
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'association-source',
                             ),
                         ),
@@ -169,7 +199,7 @@ return array(
                         'options' => array(
                             'route' => '/entity[/:entityClass][/:page]',
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action'     => 'entity',
                             ),
                         ),
@@ -179,9 +209,24 @@ return array(
                         'options' => array(
                             'route' => '/audit/compare',
                             'defaults' => array(
-                                'controller' => 'audit',
+                                'controller' => 'ZF\Doctrine\Audit\Controller\Index',
                                 'action' => 'compare',
                             ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'db-schema-tool-update' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:schema-tool:update',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaTool',
+                            'action' => 'update',
                         ),
                     ),
                 ),

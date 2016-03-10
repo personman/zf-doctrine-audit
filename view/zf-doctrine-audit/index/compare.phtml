@@ -32,55 +32,52 @@
         </tr>
     </thead>
     <tbody>
-        <?php $oldValues = $this->auditService()->getEntityValues($revisionEntity_old->getAuditEntity()); ?>
-        <?php $newValues = $this->auditService()->getEntityValues($revisionEntity_new->getAuditEntity()); ?>
 
-        <?php foreach ($oldValues as $field => $value): ?>
+        <?php
+        $oldValues = $this->auditService()->getEntityValues($revisionEntity_old->getAuditEntity());
+        $newValues = $this->auditService()->getEntityValues($revisionEntity_new->getAuditEntity());
+
+        foreach ($oldValues as $field => $value) {
+        ?>
             <tr>
-                <td><?= $field ?></td>
+                <td><?= $field; ?></td>
                 <td>
                     <?php
-                    if ($oldValues[$field] != $newValues[$field] and !$newValues[$field] and $oldValues[$field]) {
-                    ?>
-
-                        <?php if ($oldValues[$field] instanceof \DateTime): ?>
-                            <?php echo $this->AuditDateTimeFormatter($oldValues[$field]); ?>
-                        <?php else: ?>
-                            <?php echo  $this->escapeHtml($oldValues[$field]); ?>
-                        <?php endif; ?></td>
-                    <?php
+                    if ($oldValues[$field] != $newValues[$field] && !$newValues[$field] && $oldValues[$field]) {
+                        if ($oldValues[$field] instanceof DateTime) {
+                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+                        } else {
+                            echo $this->escapeHtml($oldValues[$field]);
+                        }
                     }
                     ?>
                 </td>
                 <td>
                     <?php
-                    if ($oldValues[$field] == $newValues[$field]){
-                    ?>
-                        <?php if ($oldValues[$field] instanceof \DateTime): ?>
-                            <?php echo $this->AuditDateTimeFormatter($oldValues[$field]); ?>
-                        <?php else: ?>
-                            <?php echo  $this->escapeHtml($oldValues[$field]); ?>
-                        <?php endif; ?></td>
-                    <?php
+                    if ($oldValues[$field] == $newValues[$field]) {
+                        if ($oldValues[$field] instanceof DateTime) {
+                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+                        } else {
+                            echo $this->escapeHtml($oldValues[$field]);
+                        }
                     }
                     ?>
                 </td>
                 <td>
                     <?php
-                    if ($oldValues[$field] != $newValues[$field] and $newValues[$field]) {
-                    ?>
-
-                        <?php if ($newValues[$field] instanceof \DateTime): ?>
-                            <?php echo $this->AuditDateTimeFormatter($newValues[$field]); ?>
-                        <?php else: ?>
-                            <?php echo  $this->escapeHtml($newValues[$field]); ?>
-                        <?php endif; ?></td>
-                    <?php
+                    if ($oldValues[$field] != $newValues[$field] && $newValues[$field]) {
+                        if ($newValues[$field] instanceof DateTime) {
+                            echo $this->AuditDateTimeFormatter($newValues[$field]);
+                        } else {
+                            echo $this->escapeHtml($newValues[$field]);
+                        }
                     }
                     ?>
                 </td>
             </tr>
-        <? endforeach; ?>
+        <?php
+        }
+        ?>
     </tbody>
 </table>
 
@@ -123,7 +120,7 @@
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
-                    <?php if ($value instanceof \DateTime): ?>
+                    <?php if ($value instanceof DateTime): ?>
                         <?php echo  $this->AuditDateTimeFormatter($value); ?>
                     <?php else : ?>
                         <?php  echo $this->escapeHtml($value); ?>
@@ -171,7 +168,7 @@
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
-                    <?php if ($value instanceof \DateTime): ?>
+                    <?php if ($value instanceof DateTime): ?>
                         <?php echo  $this->AuditDateTimeFormatter($value); ?>
                     <?php else : ?>
                         <?php  echo $this->escapeHtml($value); ?>

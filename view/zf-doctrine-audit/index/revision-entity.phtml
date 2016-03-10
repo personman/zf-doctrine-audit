@@ -78,13 +78,18 @@
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
                 <?php
-
                     // Is this an association?
                     if (in_array($field, array_keys($this->auditService()->getEntityAssociations($this->revisionEntity->getAuditEntity())))) {
                         $associationRevisionEntity = $this->auditService()->getAssociationRevisionEntity($this->revisionEntity->getAuditEntity(), $field, $value);
 
                         if ($associationRevisionEntity) {
                             echo $this->auditRevisionEntityLink($associationRevisionEntity);
+                        }
+                    } else {
+                        if ($value instanceof DateTime) {
+                            echo $this->AuditDateTimeFormatter($value);
+                        } else {
+                            echo $this->escapeHtml($value);
                         }
                     }
                     ?>
@@ -289,7 +294,7 @@
                 <?=
                 $this->paginationControl($paginator,
                     'Sliding',
-                    'soliant-entity-audit/pagination/revision-entity',
+                    'zf-doctrine-audit/pagination/revision-entity',
                     array(
                         'route' => 'audit/revision-entity',
                         'revisionEntityId' => $this->revisionEntity->getId(),
@@ -313,7 +318,7 @@
                 <?=
                 $this->paginationControl($paginator,
                     'Sliding',
-                    'soliant-entity-audit/pagination/revision-entity',
+                    'zf-doctrine-audit/pagination/revision-entity',
                     array(
                         'route' => 'audit/revision-entity',
                         'revisionEntityId' => $this->revisionEntity->getId(),
@@ -395,10 +400,8 @@
     </tbody>
 </table>
 
+<btngroup>
     <input type="submit" class="btn btn-primary" value="Compare revisions" />
-
-</form>
-
     <a href="<?=
             $this->url(
                 'audit/entity',
@@ -407,3 +410,6 @@
                 )
             );?>
     " class="btn btn-primary">All Revisons for <?= $this->escapeHtml($this->revisionEntity->getAuditEntity()->getAuditedEntityClass()); ?></a>
+</btngroup>
+</form>
+

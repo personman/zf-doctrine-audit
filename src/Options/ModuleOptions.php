@@ -14,7 +14,8 @@ class ModuleOptions
     private $auditedClassNames;
     private $joinClasses;
     private $user;
-    private $entityManager;
+    private $objectManager;
+    private $auditObjectManager;
     private $auditService;
     private $userEntityClassName;
     private $authenticationService;
@@ -41,14 +42,24 @@ class ModuleOptions
         $this->auditService = $auditService;
     }
 
-    public function getEntityManager()
+    public function getObjectManager()
     {
-        return $this->entityManager;
+        return $this->objectManager;
     }
 
-    public function setEntityManager(EntityManager $entityManager)
+    public function getAuditObjectManager()
     {
-        $this->entityManager = $entityManager;
+        return $this->auditObjectManager;
+    }
+
+    public function setObjectManager(EntityManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
+
+    public function setAuditObjectManager(EntityManager $objectManager)
+    {
+        $this->auditObjectManager = $objectManager;
     }
 
     public function getAuthenticationService()

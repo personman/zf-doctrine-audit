@@ -5,6 +5,7 @@ namespace ZF\Doctrine\Audit\Service;
 use Zend\View\Helper\AbstractHelper
     , ZF\Doctrine\Audit\Entity\AbstractAudit
     ;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 
 class AuditService extends AbstractHelper
 {
@@ -30,7 +31,7 @@ class AuditService extends AbstractHelper
     }
 
     public function getEntityValues($entity) {
-        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
+        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
 
         $metadata = $em->getClassMetadata(get_class($entity));
         $fields = $metadata->getFieldNames();
@@ -62,7 +63,7 @@ class AuditService extends AbstractHelper
      * Find a mapping to the given field for 1:many
      */
     public function getAssociationRevisionEntity(AbstractAudit $entity, $field, $value) {
-        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
+        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
 
         foreach ($entity->getAssociationMappings() as $mapping) {
 
@@ -92,11 +93,21 @@ class AuditService extends AbstractHelper
 
     public function getEntityIdentifierValues($entity, $cleanRevisionEntity = false)
     {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
-        $metadataFactory = $entityManager->getMetadataFactory();
+        try {
+            // Try orm_default first
+            $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
+            $metadataFactory = $entityManager->getMetadataFactory();
 
-        // Get entity metadata - Audited entities will always have composite keys
-        $metadata = $metadataFactory->getMetadataFor(get_class($entity));
+            // Get entity metadata - Audited entities will always have composite keys
+            $metadata = $metadataFactory->getMetadataFor(get_class($entity));
+        } catch (MappingException $e) {
+            // Try audit
+            $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
+            $metadataFactory = $entityManager->getMetadataFactory();
+
+            // Get entity metadata - Audited entities will always have composite keys
+            $metadata = $metadataFactory->getMetadataFor(get_class($entity));
+        }
         $values = $metadata->getIdentifierValues($entity);
 
         if ($cleanRevisionEntity and $values['revisionEntity'] instanceof \ZF\Doctrine\Audit\Entity\RevisionEntity) {
@@ -117,22 +128,22 @@ class AuditService extends AbstractHelper
      */
     public function getRevisionEntities($entity)
     {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
+        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
 
         if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys(\ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditedClassNames()))) {
-            $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
+            $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
             $identifiers = $this->getEntityIdentifierValues($entity);
         } elseif ($entity instanceof AbstractAudit) {
             $auditEntityClass = get_class($entity);
             $identifiers = $this->getEntityIdentifierValues($entity, true);
         } else {
-            $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $entity);
+            $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', $entity);
         }
 
         $search = array('auditEntityClass' => $auditEntityClass);
         if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
 
-        return $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')
+        return $entityManager->getRepository('ZF\\Doctrine\\Audit\\Entity\\RevisionEntity')
             ->findBy($search, array('id' => 'DESC'));
     }
 }

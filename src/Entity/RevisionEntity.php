@@ -76,6 +76,10 @@ class RevisionEntity
     {
         unset($value['revisionEntity']);
 
+        foreach ($value as $key => $val) {
+            $value[$key] = (string) $val;
+        }
+
         $this->entityKeys = serialize($value);
     }
 
@@ -106,14 +110,14 @@ class RevisionEntity
 
     public function getAuditEntity()
     {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
+        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
 
         return $entityManager->getRepository($this->getAuditEntityClass())->findOneBy(array('revisionEntity' => $this));
     }
 
     public function getTargetEntity()
     {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager();
+        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
 
         return $entityManager->getRepository(
             $entityManager

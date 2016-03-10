@@ -9,9 +9,27 @@ use ZF\Doctrine\Audit\Loader\AuditAutoloader;
 use ZF\Doctrine\Audit\EventListener\LogRevision;
 use ZF\Doctrine\Audit\View\Helper\DateTimeFormatter;
 use ZF\Doctrine\Audit\View\Helper\EntityValues;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
-class Module
+use DoctrineORMModule\Service\EntityManagerFactory;
+use DoctrineORMModule\Service\DBALConnectionFactory;
+use DoctrineORMModule\Service\ConfigurationFactory;
+use DoctrineModule\Service\EventManagerFactory;
+
+class Module implements
+    ConfigProviderInterface,
+    ConsoleUsageProviderInterface
 {
+    public function getConsoleUsage(Console $console)
+    {
+        return array(
+            'zf-doctrine-audit:schema-tool:update' => 'Get Update SQL',
+        );
+    }
+
     private static $moduleOptions;
 
     public function getAutoloaderConfig()
@@ -60,19 +78,24 @@ class Module
     {
         return array(
             'factories' => array(
-                'auditModuleOptions' => function($serviceManager){
+                'doctrine.entitymanager.orm_zf_doctrine_audit' => new EntityManagerFactory('orm_zf_doctrine_audit'),
+                'doctrine.connection.orm_zf_doctrine_audit' => new DBALConnectionFactory('orm_zf_doctrine_audit'),
+                'doctrine.configuration.orm_zf_doctrine_audit' => new ConfigurationFactory('orm_zf_doctrine_audit'),
+                'doctrine.eventmanager.orm_zf_doctrine_audit' => new EventManagerFactory('orm_zf_doctrine_audit'),
+                'auditModuleOptions' => function($serviceManager) {
                     $config = $serviceManager->get('Application')->getConfig();
                     $auditConfig = new ModuleOptions();
                     $auditConfig->setDefaults($config['audit']);
-                    $auditConfig->setEntityManager($serviceManager->get('doctrine.entitymanager.orm_default'));
+                    $auditConfig->setObjectManager($serviceManager->get('doctrine.entitymanager.orm_default'));
+                    $auditConfig->setAuditObjectManager($serviceManager->get('doctrine.entitymanager.orm_zf_doctrine_audit'));
                     $auditConfig->setAuditService($serviceManager->get('auditService'));
 
                     $auth = $serviceManager->get($auditConfig->getAuthenticationService());
                     if ($auth->hasIdentity()) {
-                        if ($auditConfig->getEntityManager()->contains($auth->getIdentity())) {
+                        if ($auditConfig->getObjectManager()->contains($auth->getIdentity())) {
                             $auditConfig->setUser($auth->getIdentity());
                         } else {
-                            $auditConfig->setUser($auditConfig->getEntityManager()->merge($auth->getIdentity()));
+                            $auditConfig->setUser($auditConfig->getObjectManager()->merge($auth->getIdentity()));
                         }
                     }
 

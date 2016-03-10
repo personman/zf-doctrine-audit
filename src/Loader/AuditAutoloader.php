@@ -23,7 +23,7 @@ class AuditAutoloader extends StandardAutoloader
     {
         $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
         if (!$moduleOptions) return;
-        $entityManager = $moduleOptions->getEntityManager();
+        $entityManager = $moduleOptions->getObjectManager();
 
         $auditClass = new ClassGenerator();
 
@@ -110,7 +110,6 @@ class AuditAutoloader extends StandardAutoloader
 
         // Get fields from target entity
         $metadataFactory = $entityManager->getMetadataFactory();
-
         $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
         $fields = $auditedClassMetadata->getFieldNames();
         $identifiers = $auditedClassMetadata->getFieldNames();

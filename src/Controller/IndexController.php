@@ -7,6 +7,7 @@ use Zend\Mvc\Controller\AbstractActionController
  , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
  , Zend\Paginator\Paginator
  ;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
@@ -18,9 +19,13 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
-        return array(
+
+        $viewModel = new ViewModel([
             'page' => $page,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/index');
+
+        return $viewModel;
     }
 
     /**
@@ -33,13 +38,16 @@ class IndexController extends AbstractActionController
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $userId = (int)$this->getEvent()->getRouteMatch()->getParam('userId');
 
-        $user = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $user = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager()
             ->getRepository(\ZF\Doctrine\Audit\Module::getModuleOptions()->getUserEntityClassName())->find($userId);
 
-        return array(
+        $viewModel = new ViewModel([
             'page' => $page,
             'user' => $user,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/user');
+
+        return $viewModel;
     }
 
     /**
@@ -52,16 +60,19 @@ class IndexController extends AbstractActionController
     {
         $revisionId = (int)$this->getEvent()->getRouteMatch()->getParam('revisionId');
 
-        $revision = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revision = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\Revision')
             ->find($revisionId);
 
         if (!$revision)
             return $this->plugin('redirect')->toRoute('audit');
 
-        return array(
+        $viewModel = new ViewModel([
             'revision' => $revision,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/revision');
+
+        return $viewModel;
     }
 
     /**
@@ -74,20 +85,23 @@ class IndexController extends AbstractActionController
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $revisionEntityId = (int) $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
             return $this->plugin('redirect')->toRoute('audit');
 
-        $repository = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $repository = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
-        return array(
+        $viewModel = new ViewModel([
             'page' => $page,
             'revisionEntity' => $revisionEntity,
             'auditService' => $this->getServiceLocator()->get('auditService'),
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/revision-entity');
+
+        return $viewModel;
     }
 
     /**
@@ -101,10 +115,13 @@ class IndexController extends AbstractActionController
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $entityClass = $this->getEvent()->getRouteMatch()->getParam('entityClass');
 
-        return array(
+        $viewModel = new ViewModel([
             'entityClass' => $entityClass,
             'page' => $page,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/entity');
+
+        return $viewModel;
     }
 
     /**
@@ -122,18 +139,21 @@ class IndexController extends AbstractActionController
         $revisionEntityId_old = $this->getRequest()->getPost()->get('revisionEntityId_old');
         $revisionEntityId_new = $this->getRequest()->getPost()->get('revisionEntityId_new');
 
-        $revisionEntity_old = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revisionEntity_old = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId_old);
-        $revisionEntity_new = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revisionEntity_new = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId_new);
 
         if (!$revisionEntity_old and !$revisionEntity_new)
             return $this->plugin('redirect')->toRoute('audit');
 
-        return array(
+        $viewModel = new ViewModel([
             'revisionEntity_old' => $revisionEntity_old,
             'revisionEntity_new' => $revisionEntity_new,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/compare');
+
+        return $viewModel;
     }
 
     public function oneToManyAction()
@@ -148,18 +168,21 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('auditService');
 
-        $revisionEntity = $moduleOptions->getEntityManager()
+        $revisionEntity = $moduleOptions->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
             return $this->plugin('redirect')->toRoute('audit');
 
-        return array(
+        $viewModel = new ViewModel([
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
             'mappedBy' => $mappedBy,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/one-to-many');
+
+        return $viewModel;
 
     }
 
@@ -181,18 +204,20 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('auditService');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
             return $this->plugin('redirect')->toRoute('audit');
 
-        return array(
+        $viewModel = new ViewModel([
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/association-source');
 
+        return $viewModel;
     }
 
     public function associationTargetAction()
@@ -218,18 +243,20 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('auditService');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getEntityManager()
+        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
             return $this->plugin('redirect')->toRoute('audit');
 
-        return array(
+        $viewModel = new ViewModel([
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
-        );
+        ]);
+        $viewModel->setTemplate('zf-doctrine-audit/index/association-target');
 
+        return $viewModel;
     }
 
     private function mapAllAuditedClasses() {
@@ -246,6 +273,5 @@ class IndexController extends AbstractActionController
             $x = new $auditClassName;
         }
     }
-
 }
 

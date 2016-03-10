@@ -3,7 +3,7 @@
 namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper
-    , Doctrine\ORM\EntityManager
+    , Doctrine\ORM\auditObjectManager
     , Zend\ServiceManager\ServiceLocatorAwareInterface
     , Zend\ServiceManager\ServiceLocatorInterface
     , Zend\View\Model\ViewModel
@@ -31,7 +31,7 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
     public function __invoke($page, $entity)
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $entityManager = $auditModuleOptions->getEntityManager();
+        $auditObjectManager = $auditModuleOptions->getAuditObjectManager();
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
         if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($auditModuleOptions->getAuditedClassNames()))) {
@@ -44,16 +44,23 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $entity);
         }
 
-        $search = array('auditEntityClass' => $auditEntityClass);
-        if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
+        $search = array(
+            'auditEntityClass' => $auditEntityClass
+        );
 
-        $queryBuilder = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
+        if (isset($identifiers)) {
+            $search['entityKeys'] = serialize($identifiers);
+        }
+
+        $queryBuilder = $auditObjectManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
         $queryBuilder->orderBy('rev.id', 'DESC');
         $i = 0;
         foreach ($search as $key => $val) {
             $i ++;
             $queryBuilder->andWhere("rev.$key = ?$i");
             $queryBuilder->setParameter($i, $val);
+
+            echo "$key = $val<BR>";
         }
 
         $adapter = new DoctrineAdapter(new ORMPaginator($queryBuilder));

@@ -31,7 +31,7 @@ final class RevisionPaginator extends AbstractHelper implements ServiceLocatorAw
     public function __invoke($page, $filter = array())
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $entityManager = $auditModuleOptions->getEntityManager();
+        $entityManager = $auditModuleOptions->getAuditObjectManager();
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
 

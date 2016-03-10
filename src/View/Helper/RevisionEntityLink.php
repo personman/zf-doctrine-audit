@@ -24,7 +24,7 @@ final class RevisionEntityLink extends AbstractHelper implements ServiceLocatorA
     {
         $view = $this->getServiceLocator()->getServiceLocator()->get('View');
         $model = new ViewModel();
-        $model->setTemplate('soliant-entity-audit/helper/revision-entity-link.phtml');
+        $model->setTemplate('zf-doctrine-audit/helper/revision-entity-link.phtml');
         $model->setVariable('revisionEntity', $revisionEntity);
         $model->setOption('has_parent', true);
         return $view->render($model);

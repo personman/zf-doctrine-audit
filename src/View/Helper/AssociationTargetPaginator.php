@@ -30,7 +30,7 @@ final class AssociationTargetPaginator extends AbstractHelper implements Service
     public function __invoke($page, $revisionEntity, $joinTable)
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $entityManager = $auditModuleOptions->getEntityManager();
+        $entityManager = $auditModuleOptions->getAuditObjectManager();
         $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
 
         foreach($auditService->getEntityAssociations($revisionEntity->getAuditEntity()) as $field => $value) {
