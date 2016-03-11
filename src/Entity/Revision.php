@@ -3,7 +3,6 @@
 namespace ZF\Doctrine\Audit\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-    ;
 
 class Revision
 {
@@ -55,9 +54,11 @@ class Revision
 
     private $revisionEntities;
 
-    public function getRevisionEntities() {
-        if (!$this->revisionEntities)
+    public function getRevisionEntities()
+    {
+        if (!$this->revisionEntities) {
             $this->revisionEntities = new ArrayCollection();
+        }
 
         return $this->revisionEntities;
     }

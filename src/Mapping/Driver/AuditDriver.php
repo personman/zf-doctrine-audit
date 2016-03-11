@@ -29,10 +29,10 @@ class AuditDriver implements
     /**
      * Load the metadata for the specified class into the provided container.
      *
-     * @param string $className
+     * @param string        $className
      * @param ClassMetadata $metadata
      */
-    function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
@@ -61,21 +61,21 @@ class AuditDriver implements
             $builder->addOneToMany('revisionEntities', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity', 'revision');
 
             // Add assoication between User and Revision
-#            $userMetadata = $metadataFactory->getMetadataFor($moduleOptions->getUserEntityClassName());
-#            $builder
-#                ->createManyToOne('user', $userMetadata->getName())
-#                ->addJoinColumn('user_id', $userMetadata->getSingleIdentifierColumnName())
-#                ->build();
+            // $userMetadata = $metadataFactory->getMetadataFor($moduleOptions->getUserEntityClassName());
+            // $builder
+            // ->createManyToOne('user', $userMetadata->getName())
+            // ->addJoinColumn('user_id', $userMetadata->getSingleIdentifierColumnName())
+            // ->build();
 
             $metadata->setTableName($this->getAuditOptions()['revision_table_name']);
             return;
         }
 
-#        $builder->createField('audit_id', 'integer')->isPrimaryKey()->generatedValue()->build();
+        // $builder->createField('audit_id', 'integer')->isPrimaryKey()->generatedValue()->build();
         $identifiers = array();
-#        $metadata->setIdentifier(array('audit_id'));
+        // $metadata->setIdentifier(array('audit_id'));
 
-/*
+        /*
         //  Build a discovered many to many join class
         $joinClasses = $moduleOptions->getJoinClasses();
         if (in_array($className, array_keys($joinClasses))) {
@@ -84,11 +84,12 @@ class AuditDriver implements
             $builder->addManyToOne('targetRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
             $builder->addManyToOne('sourceRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
-            $metadata->setTableName($moduleOptions->getTableNamePrefix() . $joinClasses[$className]['joinTable']['name'] . $moduleOptions->getTableNameSuffix());
-//            $metadata->setIdentifier($identifiers);
+            $metadata->setTableName($moduleOptions->getTableNamePrefix()
+                . $joinClasses[$className]['joinTable']['name'] . $moduleOptions->getTableNameSuffix());
+        //            $metadata->setIdentifier($identifiers);
             return;
         }
-*/
+        */
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
         $metadataClass = new $metadataClassName();
@@ -121,13 +122,21 @@ class AuditDriver implements
 
             if (isset($mapping['joinTableColumns'])) {
                 foreach ($mapping['joinTableColumns'] as $field) {
-                    # FIXME:  set data type correct for mapping info
-                    $builder->addField($mapping['fieldName'], 'bigint', array('nullable' => true, 'columnName' => $field));
+                    // FIXME:  set data type correct for mapping info
+                    $builder->addField(
+                        $mapping['fieldName'],
+                        'bigint',
+                        array('nullable' => true, 'columnName' => $field)
+                    );
                 }
             } elseif (isset($mapping['joinColumnFieldNames'])) {
                 foreach ($mapping['joinColumnFieldNames'] as $field) {
-                    # FIXME:  set data type correct for mapping info
-                    $builder->addField($mapping['fieldName'], 'bigint', array('nullable' => true, 'columnName' => $field));
+                    // FIXME:  set data type correct for mapping info
+                    $builder->addField(
+                        $mapping['fieldName'],
+                        'bigint',
+                        array('nullable' => true, 'columnName' => $field)
+                    );
                 }
             } else {
                 throw new Exception('Unhandled association mapping');
@@ -149,7 +158,7 @@ class AuditDriver implements
      *
      * @return array The names of all mapped classes known to this driver.
      */
-    function getAllClassNames()
+    public function getAllClassNames()
     {
         $objectManager = $this->getObjectManager();
         $metadataFactory = $objectManager->getMetadataFactory();
@@ -163,9 +172,10 @@ class AuditDriver implements
             // FIXME:  done in autoloader
             foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
                 if (isset($mapping['joinTable']['name'])) {
-                    $auditJoinTableClassName = "ZF\\Doctrine\\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
+                    $auditJoinTableClassName = "ZF\\Doctrine\\Audit\\Entity\\"
+                        . str_replace('\\', '_', $mapping['joinTable']['name']);
                     $auditEntities[] = $auditJoinTableClassName;
-####                    $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
+                    // $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
                 }
             }
         }
@@ -182,10 +192,11 @@ class AuditDriver implements
      * This is only the case if it is either mapped as an Entity or a
      * MappedSuperclass.
      *
-     * @param string $className
+     * @param  string $className
      * @return boolean
      */
-    function isTransient($className) {
+    public function isTransient($className)
+    {
         return true;
     }
 }

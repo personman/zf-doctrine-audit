@@ -2,53 +2,48 @@
 
 namespace ZF\Doctrine\Audit\View\Helper;
 
-use Zend\View\Helper\AbstractHelper
-    , Doctrine\ORM\EntityManager
-    , Zend\ServiceManager\ServiceLocatorAwareInterface
-    , Zend\ServiceManager\ServiceLocatorInterface
-    , Zend\View\Model\ViewModel
-    , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
-    , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
-    , Zend\Paginator\Paginator
-    , ZF\Doctrine\Audit\Entity\AbstractAudit
-    ;
+use Zend\View\Helper\AbstractHelper;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
+use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+use Zend\Paginator\Paginator;
+use ZF\Doctrine\Audit\Entity\AbstractAudit;
 
-final class RevisionEntityPaginator extends AbstractHelper implements ServiceLocatorAwareInterface
+final class RevisionEntityPaginator extends AbstractHelper implements
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\AuditServiceAwareInterface,
+    Persistence\AuditEntitiesAwareInterface,
+    Persistence\AuditOptionsAwareInterface
 {
-    private $serviceLocator;
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\AuditServiceAwareTrait;
+    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
 
     public function __invoke($page, $entity)
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $entityManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
-        if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($auditModuleOptions->getAuditedClassNames()))) {
+        if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($this->getAuditEntities()))) {
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
-            $identifiers = $auditService->getEntityIdentifierValues($entity);
+            $identifiers = $this->getAuditService()->getEntityIdentifierValues($entity);
         } elseif ($entity instanceof AbstractAudit) {
             $auditEntityClass = get_class($entity);
-            $identifiers = $auditService->getEntityIdentifierValues($entity, true);
+            $identifiers = $this->getAuditService()->getEntityIdentifierValues($entity, true);
         } else {
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $entity);
         }
 
         $search = array('auditEntityClass' => $auditEntityClass);
-        if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
+        if (isset($identifiers)) {
+            $search['entityKeys'] = serialize($identifiers);
+        }
 
-        $queryBuilder = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
+        $queryBuilder = $this->getAuditObjectManager()
+            ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')
+            ->createQueryBuilder('rev');
+
         $queryBuilder->orderBy('rev.id', 'DESC');
+
         $i = 0;
         foreach ($search as $key => $val) {
             $i ++;
@@ -58,7 +53,8 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
 
         $adapter = new DoctrineAdapter(new ORMPaginator($queryBuilder));
         $paginator = new Paginator($adapter);
-        $paginator->setDefaultItemCountPerPage($auditModuleOptions->getPaginatorLimit());
+
+        $paginator->setDefaultItemCountPerPage($this->getAuditOptions()['paginator_limit']);
         $paginator->setCurrentPageNumber($page);
 
         return $paginator;

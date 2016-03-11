@@ -116,7 +116,9 @@ class AuditService extends AbstractHelper implements
         }
 
         foreach ($values as $key => $val) {
-            if (gettype($val) == 'object') $values[$key] = $val->getId();
+            if (gettype($val) == 'object') {
+                $values[$key] = $val->getId();
+            }
         }
 
         // All keys are handled as strings for array serialization
@@ -145,7 +147,9 @@ class AuditService extends AbstractHelper implements
         }
 
         $search = array('auditEntityClass' => $auditEntityClass);
-        if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
+        if (isset($identifiers)) {
+            $search['entityKeys'] = serialize($identifiers);
+        }
 
         return $this->getAuditObjectManager()
             ->getRepository('ZF\\Doctrine\\Audit\\Entity\\RevisionEntity')
@@ -168,7 +172,7 @@ class AuditService extends AbstractHelper implements
         return $this->getObjectManager()->getRepository(
             $this->getObjectManager()
                 ->getRepository($this->getAuditEntityClass())
-                    ->findOneBy($this->getEntityKeys())->getAuditedEntityClass()
-            )->findOneBy($this->getEntityKeys());
+                ->findOneBy($this->getEntityKeys())->getAuditedEntityClass()
+        )->findOneBy($this->getEntityKeys());
     }
 }

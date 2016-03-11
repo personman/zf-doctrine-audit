@@ -132,7 +132,9 @@ class LogRevision implements
 
     public function getCollections()
     {
-        if (!$this->collections) $this->collections = array();
+        if (!$this->collections) {
+            $this->collections = array();
+        }
 
         return $this->collections;
     }
@@ -164,7 +166,9 @@ class LogRevision implements
     // You must flush the revision for the compound audit key to work
     private function buildRevision(ObjectManager $objectManager)
     {
-        if ($this->revision) return;
+        if ($this->revision) {
+            return;
+        }
 
         $revision = new RevisionEntity();
         $revision->setObjectManager($objectManager);
@@ -193,7 +197,7 @@ class LogRevision implements
 
         // Get mapping from metadata
 
-        foreach($reflectedAuditedEntity->getProperties() as $property) {
+        foreach ($reflectedAuditedEntity->getProperties() as $property) {
             $property->setAccessible(true);
             $value = $property->getValue($entity);
 
@@ -245,11 +249,13 @@ class LogRevision implements
 
         // Re-exchange data after flush to map generated fields
         if ($revisionType ==  'INS' or $revisionType ==  'UPD') {
-            $this->addReexchangeEntity(array(
+            $this->addReexchangeEntity(
+                array(
                 'auditEntity' => $auditEntity,
                 'entity' => $entity,
                 'revisionEntity' => $revisionEntity,
-            ));
+                )
+            );
         } else {
             $revisionEntity->setAuditEntityClass(get_class($auditEntity));
             $revisionEntity->setTargetEntityClass($auditEntity->getAuditedEntityClass());
@@ -262,7 +268,9 @@ class LogRevision implements
         foreach ($this->getClassProperties($entity) as $key => $value) {
 
             if ($value instanceof PersistentCollection) {
-                if (!$this->many2many) $this->many2many = array();
+                if (!$this->many2many) {
+                    $this->many2many = array();
+                }
                 $this->many2many[] = array(
                     'revisionEntity' => $revisionEntity,
                     'collection' => $value,
@@ -279,25 +287,29 @@ class LogRevision implements
 
         $this->buildRevision($eventArgs->getEntityManager());
 
-        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions() AS $entity) {
+        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions() as $entity) {
             $entities = array_merge($entities, $this->auditEntity($entity, 'INS'));
         }
 
-        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityUpdates() AS $entity) {
+        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityUpdates() as $entity) {
             $entities = array_merge($entities, $this->auditEntity($entity, 'UPD'));
         }
 
-        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityDeletions() AS $entity) {
+        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityDeletions() as $entity) {
             $entities = array_merge($entities, $this->auditEntity($entity, 'DEL'));
         }
 
-        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledCollectionDeletions() AS $collectionToDelete) {
+        foreach ($eventArgs->getEntityManager()
+            ->getUnitOfWork()
+            ->getScheduledCollectionDeletions() as $collectionToDelete) {
             if ($collectionToDelete instanceof PersistentCollection) {
                 $this->addCollection($collectionToDelete);
             }
         }
 
-        foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledCollectionUpdates() AS $collectionToUpdate) {
+        foreach ($eventArgs->getEntityManager()
+            ->getUnitOfWork()
+            ->getScheduledCollectionUpdates() as $collectionToUpdate) {
             if ($collectionToUpdate instanceof PersistentCollection) {
                 $this->addCollection($collectionToUpdate);
             }
@@ -316,10 +328,14 @@ class LogRevision implements
             // Insert entites will trigger key generation and must be
             // re-exchanged (delete entites go out of scope)
             foreach ($this->getReexchangeEntities() as $entityMap) {
-                $entityMap['auditEntity']->exchangeArray($this->getClassProperties($entityMap['entity']));
-                $entityMap['revisionEntity']->setAuditEntityClass(get_class($entityMap['auditEntity']));
-                $entityMap['revisionEntity']->setTargetEntityClass($entityMap['auditEntity']->getAuditedEntityClass());
-                $entityMap['revisionEntity']->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entityMap['auditEntity']));
+                $entityMap['auditEntity']
+                    ->exchangeArray($this->getClassProperties($entityMap['entity']));
+                $entityMap['revisionEntity']
+                    ->setAuditEntityClass(get_class($entityMap['auditEntity']));
+                $entityMap['revisionEntity']
+                    ->setTargetEntityClass($entityMap['auditEntity']->getAuditedEntityClass());
+                $entityMap['revisionEntity']
+                    ->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entityMap['auditEntity']));
             }
 
             // Flush revision and revisionEntities
@@ -338,12 +354,14 @@ class LogRevision implements
             foreach ($this->getCollections() as $value) {
                 $mapping = $value->getMapping();
 
-                if (!$mapping['isOwningSide']) continue;
+                if (!$mapping['isOwningSide']) {
+                    continue;
+                }
 
                 $joinClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
-# FIXME:  redo many to many mappings
-# use ZF\Doctrine\Audit\Options\ModuleOptions;
-#                $moduleOptions->addJoinClass($joinClassName, $mapping);
+                // FIXME:  redo many to many mappings
+                // use ZF\Doctrine\Audit\Options\ModuleOptions;
+                // $moduleOptions->addJoinClass($joinClassName, $mapping);
 
                 foreach ($this->many2many as $map) {
                     if ($map['collection'] == $value) {
@@ -355,10 +373,15 @@ class LogRevision implements
                     $audit = new $joinClassName();
 
                     // Get current inverse revision entity
-                    $revisionEntities = $this->getAuditObjectManager()->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->findBy(array(
-                        'targetEntityClass' => get_class($element),
-                        'entityKeys' => serialize(array('id' => (string) $element->getId())),
-                    ), array('id' => 'DESC'), 1);
+                    $revisionEntities = $this->getAuditObjectManager()
+                        ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->findBy(
+                            array(
+                            'targetEntityClass' => get_class($element),
+                            'entityKeys' => serialize(array('id' => (string) $element->getId())),
+                            ),
+                            array('id' => 'DESC'),
+                            1
+                        );
 
                     $inverseRevisionEntity = reset($revisionEntities);
 

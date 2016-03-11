@@ -29,9 +29,11 @@ class IndexController extends AbstractActionController implements
     {
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'page' => $page,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/index');
 
         return $viewModel;
@@ -49,13 +51,14 @@ class IndexController extends AbstractActionController implements
 
         $user = $this->getObjectManager()
             ->getRepository($this->getAuditOptions()['user_entity_class_name'])
-            ->find($userId)
-            ;
+            ->find($userId);
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'page' => $page,
             'user' => $user,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/user');
 
         return $viewModel;
@@ -65,7 +68,6 @@ class IndexController extends AbstractActionController implements
      * Shows entities changed in the specified revision.
      *
      * @param integer $rev
-     *
      */
     public function revisionAction()
     {
@@ -75,12 +77,15 @@ class IndexController extends AbstractActionController implements
             ->getRepository('ZF\Doctrine\Audit\\Entity\\Revision')
             ->find($revisionId);
 
-        if (!$revision)
+        if (!$revision) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'revision' => $revision,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/revision');
 
         return $viewModel;
@@ -99,17 +104,20 @@ class IndexController extends AbstractActionController implements
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
-        if (!$revisionEntity)
+        if (!$revisionEntity) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
         $repository = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'page' => $page,
             'revisionEntity' => $revisionEntity,
             'auditService' => $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService'),
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/revision-entity');
 
         return $viewModel;
@@ -126,10 +134,12 @@ class IndexController extends AbstractActionController implements
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $entityClass = $this->getEvent()->getRouteMatch()->getParam('entityClass');
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'entityClass' => $entityClass,
             'page' => $page,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/entity');
 
         return $viewModel;
@@ -138,11 +148,10 @@ class IndexController extends AbstractActionController implements
     /**
      * Compares an entity at 2 different revisions.
      *
-     *
-     * @param string $className
-     * @param string $id Comma separated list of identifiers
-     * @param null|int $oldRev if null, pulled from the posted data
-     * @param null|int $newRev if null, pulled from the posted data
+     * @param  string   $className
+     * @param  string   $id        Comma separated list of identifiers
+     * @param  null|int $oldRev    if null, pulled from the posted data
+     * @param  null|int $newRev    if null, pulled from the posted data
      * @return Response
      */
     public function compareAction()
@@ -155,13 +164,16 @@ class IndexController extends AbstractActionController implements
         $revisionEntity_new = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId_new);
 
-        if (!$revisionEntity_old and !$revisionEntity_new)
+        if (!$revisionEntity_old and !$revisionEntity_new) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'revisionEntity_old' => $revisionEntity_old,
             'revisionEntity_new' => $revisionEntity_new,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/compare');
 
         return $viewModel;
@@ -182,15 +194,18 @@ class IndexController extends AbstractActionController implements
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
-        if (!$revisionEntity)
+        if (!$revisionEntity) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
             'mappedBy' => $mappedBy,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/one-to-many');
 
         return $viewModel;
@@ -218,14 +233,17 @@ class IndexController extends AbstractActionController implements
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
-        if (!$revisionEntity)
+        if (!$revisionEntity) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/association-source');
 
         return $viewModel;
@@ -256,14 +274,17 @@ class IndexController extends AbstractActionController implements
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
-        if (!$revisionEntity)
+        if (!$revisionEntity) {
             return $this->plugin('redirect')->toRoute('audit');
+        }
 
-        $viewModel = new ViewModel([
+        $viewModel = new ViewModel(
+            [
             'revisionEntity' => $revisionEntity,
             'page' => $page,
             'joinTable' => $joinTable,
-        ]);
+            ]
+        );
         $viewModel->setTemplate('zf-doctrine-audit/index/association-target');
 
         return $viewModel;
@@ -281,4 +302,3 @@ class IndexController extends AbstractActionController implements
         }
     }
 }
-

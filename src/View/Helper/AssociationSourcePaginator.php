@@ -3,52 +3,40 @@
 namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Doctrine\ORM\EntityManager;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Model\ViewModel;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
-use ZF\Doctrine\Audit\Entity\AbstractAudit;
+use ZF\Doctrine\Audit\Persistence;
 
-final class AssociationSourcePaginator extends AbstractHelper implements ServiceLocatorAwareInterface
+final class AssociationSourcePaginator extends AbstractHelper implements
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\AuditServiceAwareInterface,
+    Persistence\AuditOptionsAwareInterface
 {
-    private $serviceLocator;
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\AuditServiceAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
 
     public function __invoke($page, $revisionEntity, $joinTable)
     {
-        $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $entityManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
-
-        foreach($auditService->getEntityAssociations($revisionEntity->getAuditEntity()) as $field => $value) {
+        foreach ($this->getAuditService()
+            ->getEntityAssociations($revisionEntity->getAuditEntity()) as $field => $value) {
             if (isset($value['joinTable']['name']) and $value['joinTable']['name'] == $joinTable) {
                 $mapping = $value;
                 break;
             }
         }
 
-        $repository = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $joinTable));
+        $repository = $this->getAuditObjectManager()
+            ->getRepository('ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $joinTable));
 
-        $qb = $repository->createQueryBuilder('association');
-        $qb->andWhere('association.sourceRevisionEntity = :var');
-        $qb->setParameter('var', $revisionEntity);
+        $queryBuilder = $repository->createQueryBuilder('association');
+        $queryBuilder->andWhere('association.sourceRevisionEntity = :var');
+        $queryBuilder->setParameter('var', $revisionEntity);
 
-        $adapter = new DoctrineAdapter(new ORMPaginator($qb));
+        $adapter = new DoctrineAdapter(new ORMPaginator($queryBuilder));
         $paginator = new Paginator($adapter);
-        $paginator->setDefaultItemCountPerPage($auditModuleOptions->getPaginatorLimit());
+        $paginator->setDefaultItemCountPerPage($this->getAuditOptions()['paginator_limit']);
 
         $paginator->setCurrentPageNumber($page);
 

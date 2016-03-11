@@ -27,7 +27,7 @@ final class RevisionPaginator extends AbstractHelper implements
         $qb->orderBy('revision.id', 'DESC');
 
         $i = 0;
-        foreach($filter as $field => $value) {
+        foreach ($filter as $field => $value) {
             if (!is_null($value)) {
                 $qb->andWhere("revision.$field = ?$i");
                 $qb->setParameter($i, $value);

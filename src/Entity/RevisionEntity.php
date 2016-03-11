@@ -94,15 +94,6 @@ class RevisionEntity
         return $this;
     }
 
-    public function setAuditEntity(AbstractAudit $entity)
-    {
-        throw new Exception('This function components must be called separately:
-            $this->setAuditEntityClass(get_class($entity));
-            $this->setTargetEntityClass($entity->getAuditedEntityClass());
-            $this->setEntityKeys($identifiers);
-        ');
-    }
-
     public function getTitle()
     {
         return $this->title;
@@ -110,7 +101,7 @@ class RevisionEntity
 
     public function setTitle($value)
     {
-        $this->title = substr($value, 0, 256);
+        $this->title = substr($value, 0, 255);
 
         return $this;
     }

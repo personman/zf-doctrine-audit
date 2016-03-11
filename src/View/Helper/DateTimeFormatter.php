@@ -1,24 +1,17 @@
 <?php
 namespace ZF\Doctrine\Audit\View\Helper ;
 
-
 use Zend\Http\Request;
 use Zend\View\Helper\AbstractHelper;
+use ZF\Doctrine\Audit\Entity\Persistence;
 
-
-class DateTimeFormatter extends AbstractHelper
+class DateTimeFormatter extends AbstractHelper implements
+    Persistence\AuditOptionsAwareInterface
 {
-
-    protected $format;
-
-    public function setDateTimeFormat($format = "r")
-    {
-        $this->format = $format ;
-        return $this ;
-    }
+    use Persistence\AuditOptionsAwareTrait;
 
     public function __invoke(\DateTime $datetime)
     {
-        return $datetime->format($this->format);
+        return $datetime->format($this->getAuditOptions()['datetime_format']);
     }
 }

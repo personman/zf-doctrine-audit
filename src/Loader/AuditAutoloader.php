@@ -30,13 +30,13 @@ class AuditAutoloader extends StandardAutoloader implements
      */
     public function loadClass($className, $type)
     {
-#        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-#        if (!$moduleOptions) return;
+        // $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
+        // if (!$moduleOptions) return;
 
         $auditClass = new ClassGenerator();
 
         //  Build a discovered many to many join class
-/*
+        /*
         $joinClasses = $moduleOptions->getJoinClasses();
 
         if (in_array($className, array_keys($joinClasses))) {
@@ -69,52 +69,58 @@ class AuditAutoloader extends StandardAutoloader implements
             );
 
             $auditClass->addMethod(
-                'setTargetRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
+                'setTargetRevisionEntity', array(ParameterGenerator::fromArray(
+                    array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
                 MethodGenerator::FLAG_PUBLIC,
                 '$this->targetRevisionEntity = $value;' . "\n" .
                     'return $this;'
             );
 
             $auditClass->addMethod(
-                'setSourceRevisionEntity', array(ParameterGenerator::fromArray(array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
+                'setSourceRevisionEntity', array(ParameterGenerator::fromArray(
+                    array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
                 MethodGenerator::FLAG_PUBLIC,
                 '$this->sourceRevisionEntity = $value;' . "\n" .
                     'return $this;'
             );
 
-#            print_r($auditClass->generate());
-#            die();
+        #            print_r($auditClass->generate());
+        #            die();
             eval($auditClass->generate());
             return;
         }
-*/
+        */
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
         $auditClass->addMethod(
             'getRevisionEntity',
             array(),
             MethodGenerator::FLAG_PUBLIC,
-            " return \$this->revisionEntity;");
+            " return \$this->revisionEntity;"
+        );
 
         $auditClass->addMethod(
             'setRevisionEntity',
             array('value'),
             MethodGenerator::FLAG_PUBLIC,
             " \$this->revisionEntity = \$value;\nreturn \$this;
-            ");
+            "
+        );
 
 
         // Verify this autoloader is used for target class
-        #FIXME:  why is this sent work outside the set namespace?
-        foreach($this->getAuditEntities() as $targetClass => $targetClassOptions) {
+        // FIXME:  why is this sent work outside the set namespace?
+        foreach ($this->getAuditEntities() as $targetClass => $targetClassOptions) {
              $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $targetClass);
 
-             if ($auditClassName == $className) {
-                 $currentClass = $targetClass;
-             }
+            if ($auditClassName == $className) {
+                $currentClass = $targetClass;
+            }
              $autoloadClasses[] = $auditClassName;
         }
-        if (!in_array($className, $autoloadClasses)) return;
+        if (!in_array($className, $autoloadClasses)) {
+            return;
+        }
 
         // Get fields from target entity
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
@@ -142,7 +148,8 @@ class AuditAutoloader extends StandardAutoloader implements
         // Add exchange array method
         $setters = array();
         foreach ($fields as $fieldName) {
-            $setters[] = '$this->' . $fieldName . ' = (isset($data["' . $fieldName . '"])) ? $data["' . $fieldName . '"]: null;';
+            $setters[] = '$this->' . $fieldName
+                . ' = (isset($data["' . $fieldName . '"])) ? $data["' . $fieldName . '"]: null;';
             $arrayCopy[] = "    \"$fieldName\"" . ' => $this->' . $fieldName;
         }
 
@@ -172,28 +179,28 @@ class AuditAutoloader extends StandardAutoloader implements
         $auditClass->setName(str_replace('\\', '_', $currentClass));
         $auditClass->setExtendedClass('AbstractAudit');
 
-        #    $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
+        // $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
         $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
 
-            foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
-                if (isset($mapping['joinTable']['name'])) {
-                    $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
-                    $auditEntities[] = $auditJoinTableClassName;
-#                     $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
-                }
+        foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
+            if (isset($mapping['joinTable']['name'])) {
+                $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\"
+                    . str_replace('\\', '_', $mapping['joinTable']['name']);
+                $auditEntities[] = $auditJoinTableClassName;
+                // $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
             }
+        }
 
-#        if ($auditClass->getName() == 'AppleConnect_Entity_UserAuthenticationLog') {
-#            echo '<pre>';
-#            echo($auditClass->generate());
-#            die();
-#        }
+        // if ($auditClass->getName() == 'AppleConnect_Entity_UserAuthenticationLog') {
+        // echo '<pre>';
+        // echo($auditClass->generate());
+        // die();
+        // }
 
         eval($auditClass->generate());
 
-#            die();
+        // die();
 
         return true;
     }
-
 }
