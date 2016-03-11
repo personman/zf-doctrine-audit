@@ -97,7 +97,7 @@ class IndexController extends AbstractActionController
         $viewModel = new ViewModel([
             'page' => $page,
             'revisionEntity' => $revisionEntity,
-            'auditService' => $this->getServiceLocator()->get('auditService'),
+            'auditService' => $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService'),
         ]);
         $viewModel->setTemplate('zf-doctrine-audit/index/revision-entity');
 
@@ -166,7 +166,7 @@ class IndexController extends AbstractActionController
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
         $mappedBy = $this->getEvent()->getRouteMatch()->getParam('mappedBy');
 
-        $auditService = $this->getServiceLocator()->get('auditService');
+        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = $moduleOptions->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
@@ -202,7 +202,7 @@ class IndexController extends AbstractActionController
         $joinTable = $this->getEvent()->getRouteMatch()->getParam('joinTable');
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
 
-        $auditService = $this->getServiceLocator()->get('auditService');
+        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
@@ -241,7 +241,7 @@ class IndexController extends AbstractActionController
         $joinTable = $this->getEvent()->getRouteMatch()->getParam('joinTable');
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
 
-        $auditService = $this->getServiceLocator()->get('auditService');
+        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);

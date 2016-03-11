@@ -31,7 +31,7 @@ final class OneToManyPaginator extends AbstractHelper implements ServiceLocatorA
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
         $entityManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
+        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $entityClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $joinTable);
 

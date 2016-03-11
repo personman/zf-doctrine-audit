@@ -3,34 +3,34 @@
 namespace ZF\Doctrine\Audit;
 
 use Zend\Mvc\MvcEvent;
-use ZF\Doctrine\Audit\Options\ModuleOptions;
-use ZF\Doctrine\Audit\Service\AuditService;
-use ZF\Doctrine\Audit\Loader\AuditAutoloader;
-use ZF\Doctrine\Audit\EventListener\LogRevision;
-use ZF\Doctrine\Audit\View\Helper\DateTimeFormatter;
-use ZF\Doctrine\Audit\View\Helper\EntityValues;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
-use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
-
+use Zend\Console\Adapter\AdapterInterface as Console;
+use Zend\ServiceManager\ServiceManager;
 use DoctrineORMModule\Service\EntityManagerFactory;
 use DoctrineORMModule\Service\DBALConnectionFactory;
 use DoctrineORMModule\Service\ConfigurationFactory;
 use DoctrineModule\Service\EventManagerFactory;
+use ZF\Doctrine\Audit\Options\ModuleOptions;
+use ZF\Doctrine\Audit\Service\AuditService;
+use ZF\Doctrine\Audit\View\Helper\DateTimeFormatter;
+use ZF\Doctrine\Audit\EventListener\LogRevision;
+use ZF\Doctrine\Audit\Mapping\Driver\AuditDriver;
 
 class Module implements
     ConfigProviderInterface,
-    ConsoleUsageProviderInterface
+    ConsoleUsageProviderInterface,
+    ServiceProviderInterface
 {
+    private static $moduleOptions;
+
     public function getConsoleUsage(Console $console)
     {
         return array(
-            'zf-doctrine-audit:schema-tool:update' => 'Get Update SQL',
+            'zf-doctrine-audit:schema-tool:update' => 'Get Update SQL for Audit',
         );
     }
-
-    private static $moduleOptions;
 
     public function getAutoloaderConfig()
     {
@@ -49,16 +49,6 @@ class Module implements
         );
     }
 
-    public function onBootstrap(MvcEvent $e)
-    {
-        $moduleOptions = $e->getApplication()
-            ->getServiceManager()
-            ->get('auditModuleOptions')
-            ;
-
-        self::setModuleOptions($moduleOptions);
-    }
-
     public static function setModuleOptions(ModuleOptions $moduleOptions)
     {
         self::$moduleOptions = $moduleOptions;
@@ -74,21 +64,70 @@ class Module implements
         return include __DIR__ . '/config/module.config.php';
     }
 
+    public function onBootstrap(MvcEvent $e)
+    {
+        $serviceManager = $e->getParam('application')->getServiceManager();
+        $objectManager = $serviceManager->get('doctrine.entitymanager.orm_default');
+        $auditObjectManager = $serviceManager->get('doctrine.entitymanager.orm_zf_doctrine_audit');
+
+        self::setModuleOptions($serviceManager->get('auditModuleOptions'));
+
+        // Subscribe all event listeners in the manager
+        $logRevisionEventSubscriber = $serviceManager->get('ZF\Doctrine\Audit\EventListener\LogRevision');
+        $objectManager->getEventManager()->addEventSubscriber($logRevisionEventSubscriber);
+
+        // Add audit driver
+        $auditDriver = $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver');
+        $auditObjectManager->getConfiguration()->getMetadataDriverImpl()
+            ->addDriver($auditDriver, 'ZF\Doctrine\Audit\Entity');
+    }
+
     public function getServiceConfig()
     {
         return array(
             'factories' => array(
+                'ZF\Doctrine\Audit\EventListener\LogRevision' => function(ServiceManager $serviceManager) {
+                    $eventSubscriber = new LogRevision();
+                    $auditObjectManager = $serviceManager->get('doctrine.entitymanager.orm_zf_doctrine_audit');
+                    $config = $serviceManager->get('Config')['zf-doctrine-audit'];
+
+                    $eventSubscriber->setAuditObjectManager($auditObjectManager);
+                    $eventSubscriber->setAuditedEntities(array_keys($config['entities']));
+                    $eventSubscriber->setAuthenticationService($serviceManager->get($config['authenticationService']));
+                    $eventSubscriber->setAuditService($serviceManager->get('ZF\Doctrine\Audit\Service\AuditService'));
+
+                    return $eventSubscriber;
+                },
+
+                'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver' => function(ServiceManager $serviceManager) {
+                    $config = $serviceManager->get('Config')['zf-doctrine-audit'];
+
+                    $auditDriver = new AuditDriver();
+                    $auditDriver->setAuditedEntities(array_keys($config['entities']));
+                    $auditObjectManager = $serviceManager->get('doctrine.entitymanager.orm_zf_doctrine_audit');
+                    $objectManager = $serviceManager->get('doctrine.entitymanager.orm_default');
+                    $auditDriver->setObjectManager($objectManager);
+                    $auditDriver->setAuditObjectManager($auditObjectManager);
+
+                    return $auditDriver;
+                },
+
+                'ZF\Doctrine\Audit\Service\AuditService' => function(ServiceManager $serviceManager) {
+                    return new AuditService();
+                },
+
                 'doctrine.entitymanager.orm_zf_doctrine_audit' => new EntityManagerFactory('orm_zf_doctrine_audit'),
                 'doctrine.connection.orm_zf_doctrine_audit' => new DBALConnectionFactory('orm_zf_doctrine_audit'),
                 'doctrine.configuration.orm_zf_doctrine_audit' => new ConfigurationFactory('orm_zf_doctrine_audit'),
                 'doctrine.eventmanager.orm_zf_doctrine_audit' => new EventManagerFactory('orm_zf_doctrine_audit'),
+
                 'auditModuleOptions' => function($serviceManager) {
                     $config = $serviceManager->get('Application')->getConfig();
                     $auditConfig = new ModuleOptions();
-                    $auditConfig->setDefaults($config['audit']);
+                    $auditConfig->setDefaults($config['zf-doctrine-audit']);
                     $auditConfig->setObjectManager($serviceManager->get('doctrine.entitymanager.orm_default'));
                     $auditConfig->setAuditObjectManager($serviceManager->get('doctrine.entitymanager.orm_zf_doctrine_audit'));
-                    $auditConfig->setAuditService($serviceManager->get('auditService'));
+                    $auditConfig->setAuditService($serviceManager->get('ZF\Doctrine\Audit\Service\AuditService'));
 
                     $auth = $serviceManager->get($auditConfig->getAuthenticationService());
                     if ($auth->hasIdentity()) {
@@ -101,10 +140,6 @@ class Module implements
 
                     return $auditConfig;
                 },
-
-                'auditService' => function($sm) {
-                    return new AuditService();
-                }
             ),
         );
     }
@@ -113,14 +148,15 @@ class Module implements
     {
          return array(
             'factories' => array(
-                'auditDateTimeFormatter' => function($sm) {
-                    $format = $sm->getServiceLocator()->get("Config")['audit']['datetimeFormat'];
+                'auditDateTimeFormatter' => function(ServiceManager $serviceManager) {
+                    $format = $serviceManager->getServiceLocator()
+                        ->get('Config')['zf-doctrine-audit']['datetimeFormat'];
                     $formatter = new DateTimeFormatter();
 
                     return $formatter->setDateTimeFormat($format);
                 },
 
-                'auditService' => function($sm) {
+                'auditService' => function(ServiceManager $serviceManager) {
                     return new AuditService();
                 }
             )

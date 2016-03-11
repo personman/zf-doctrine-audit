@@ -2,16 +2,16 @@
 
 namespace ZF\Doctrine\Audit\EventListener;
 
-use Doctrine\Common\EventSubscriber
-    , Doctrine\ORM\Events
-    , Doctrine\ORM\Event\OnFlushEventArgs
-    , Doctrine\ORM\Event\PostFlushEventArgs
-    , ZF\Doctrine\Audit\Entity\Revision as RevisionEntity
-    , ZF\Doctrine\Audit\Options\ModuleOptions
-    , ZF\Doctrine\Audit\Entity\RevisionEntity as RevisionEntityEntity
-    , Zend\Code\Reflection\ClassReflection
-    , Doctrine\ORM\PersistentCollection
-    ;
+use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
+use ZF\Doctrine\Audit\Entity\Revision as RevisionEntity;
+use ZF\Doctrine\Audit\Entity\RevisionEntity as RevisionEntityEntity;
+use Zend\Code\Reflection\ClassReflection;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\Common\Persistence\ObjectManager;
+use ZF\Doctrine\Audit\Service\AuditService;
 
 class LogRevision implements EventSubscriber
 {
@@ -22,10 +22,68 @@ class LogRevision implements EventSubscriber
     private $inAuditTransaction;
     private $many2many;
 
+    protected $auditObjectManager;
+    protected $auditedEntities = array();
+    protected $authenticationService;
+    protected $auditService;
+
     public function getSubscribedEvents()
     {
-        return array(Events::onFlush, Events::postFlush);
+        return array(
+            Events::onFlush,
+            Events::postFlush
+        );
     }
+
+    public function setAuditObjectManager(ObjectManager $objectManager)
+    {
+        $this->auditObjectManager = $objectManager;
+
+        return $this;
+    }
+
+    public function getAuditObjectManager()
+    {
+        return $this->auditObjectManager;
+    }
+
+    public function setAuditedEntities(array $entities)
+    {
+        $this->auditedEntities = $entities;
+
+        return $this;
+    }
+
+    public function getAuditedEntities()
+    {
+        return $this->auditedEntities;
+    }
+
+    public function setAuthenticationService($service)
+    {
+        $this->authenticationService = $service;
+
+        return $this;
+    }
+
+    public function getAuthenticationService()
+    {
+        return $this->authenticationService;
+    }
+
+    public function setAuditService(AuditService $auditService)
+    {
+        $this->auditService = $auditService;
+
+        return $this;
+    }
+
+    public function getAuditService()
+    {
+        return $this->auditService;
+    }
+
+
 
     private function setEntities($entities)
     {
@@ -113,16 +171,23 @@ class LogRevision implements EventSubscriber
     }
 
     // You must flush the revision for the compound audit key to work
-    private function buildRevision()
+    private function buildRevision(ObjectManager $objectManager)
     {
         if ($this->revision) return;
 
         $revision = new RevisionEntity();
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        if ($moduleOptions->getUser()) $revision->setUser($moduleOptions->getUser());
 
-        $comment = $moduleOptions->getAuditService()->getComment();
-        $revision->setComment($comment);
+        if ($this->getAuthenticationService()->hasIdentity()) {
+            if ($objectManager->contains($this->getAuthenticationService()->getIdentity())) {
+                $user = $this->getAuthenticationService()->getIdentity();
+            } else {
+                $user = $objectManager->merge($this->getAuthenticationService()->getIdentity());
+            }
+
+            $revision->setUser($user);
+        }
+
+        $revision->setComment($this->getAuditService()->getComment());
 
         $this->revision = $revision;
     }
@@ -159,28 +224,32 @@ class LogRevision implements EventSubscriber
     private function auditEntity($entity, $revisionType)
     {
         $auditEntities = array();
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
 
-        if (!in_array(get_class($entity), array_keys($moduleOptions->getAuditedClassNames()))) {
-            return array();
+        // Entities may be proxy objects
+        $found = false;
+        foreach ($this->getAuditedEntities() as $auditedEntityClassName) {
+            if ($entity instanceof $auditedEntityClassName) {
+                $found = true;
+                break;
+            }
         }
-
-        $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
-        $auditEntity = new $auditEntityClass();
-        $auditEntity->exchangeArray($this->getClassProperties($entity));
+        if (! $found) {
+            return [];
+        }
 
         $revisionEntity = new RevisionEntityEntity();
         $revisionEntity->setRevision($this->getRevision());
         $this->getRevision()->getRevisionEntities()->add($revisionEntity);
         $revisionEntity->setRevisionType($revisionType);
-
         if (method_exists($entity, '__toString')) {
-            $revisionEntity->setTitle((string)$entity);
+            $revisionEntity->setTitle((string) $entity);
         }
         $this->addRevisionEntity($revisionEntity);
 
-        $revisionEntitySetter = 'set' . $moduleOptions->getRevisionEntityFieldName();
-        $auditEntity->$revisionEntitySetter($revisionEntity);
+        $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
+        $auditEntity = new $auditEntityClass();
+        $auditEntity->exchangeArray($this->getClassProperties($entity));
+        $auditEntity->setRevisionEntity($revisionEntity);
 
         // Re-exchange data after flush to map generated fields
         if ($revisionType ==  'INS' or $revisionType ==  'UPD') {
@@ -190,7 +259,9 @@ class LogRevision implements EventSubscriber
                 'revisionEntity' => $revisionEntity,
             ));
         } else {
-            $revisionEntity->setAuditEntity($auditEntity);
+            $revisionEntity->setAuditEntityClass(get_class($auditEntity));
+            $revisionEntity->setTargetEntityClass($auditEntity->getAuditedEntityClass());
+            $revisionEntity->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($auditEntity));
         }
 
         $auditEntities[] = $auditEntity;
@@ -214,7 +285,7 @@ class LogRevision implements EventSubscriber
     {
         $entities = array();
 
-        $this->buildRevision();
+        $this->buildRevision($eventArgs->getEntityManager());
 
         foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions() AS $entity) {
             $entities = array_merge($entities, $this->auditEntity($entity, 'INS'));
@@ -248,28 +319,27 @@ class LogRevision implements EventSubscriber
         if ($this->getEntities() and !$this->getInAuditTransaction()) {
             $this->setInAuditTransaction(true);
 
-            $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-            $auditObjectManager = $moduleOptions->getAuditObjectManager();
-            $auditObjectManager->beginTransaction();
+            $this->getAuditObjectManager()->beginTransaction();
 
             // Insert entites will trigger key generation and must be
             // re-exchanged (delete entites go out of scope)
             foreach ($this->getReexchangeEntities() as $entityMap) {
                 $entityMap['auditEntity']->exchangeArray($this->getClassProperties($entityMap['entity']));
-                $entityMap['revisionEntity']->setAuditEntity($entityMap['auditEntity']);
+                $entityMap['revisionEntity']->setAuditEntityClass(get_class($entityMap['auditEntity']));
+                $entityMap['revisionEntity']->setTargetEntityClass($entityMap['auditEntity']->getAuditedEntityClass());
+                $entityMap['revisionEntity']->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entityMap['auditEntity']));
             }
 
             // Flush revision and revisionEntities
-            $auditObjectManager->persist($this->getRevision());
+            $this->getAuditObjectManager()->persist($this->getRevision());
             foreach ($this->getRevisionEntities() as $entity) {
-                $auditObjectManager->persist($entity);
+                $this->getAuditObjectManager()->persist($entity);
             }
 
-            $auditObjectManager->flush();
+            $this->getAuditObjectManager()->flush();
 
-            $auditObjectManager = $moduleOptions->getAuditObjectManager();
             foreach ($this->getEntities() as $entity) {
-                $auditObjectManager->persist($entity);
+                $this->getAuditObjectManager()->persist($entity);
             }
 
             // Persist many to many collections
@@ -279,22 +349,24 @@ class LogRevision implements EventSubscriber
                 if (!$mapping['isOwningSide']) continue;
 
                 $joinClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
-                $moduleOptions->addJoinClass($joinClassName, $mapping);
+# FIXME:  redo many to many mappings
+# use ZF\Doctrine\Audit\Options\ModuleOptions;
+#                $moduleOptions->addJoinClass($joinClassName, $mapping);
 
                 foreach ($this->many2many as $map) {
-                    if ($map['collection'] == $value)
+                    if ($map['collection'] == $value) {
                         $revisionEntity = $map['revisionEntity'];
+                    }
                 }
 
                 foreach ($value->getSnapshot() as $element) {
                     $audit = new $joinClassName();
 
                     // Get current inverse revision entity
-                    $revisionEntities = $auditObjectManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')
-                        ->findBy(array(
-                            'targetEntityClass' => get_class($element),
-                            'entityKeys' => serialize(array('id' => (string) $element->getId())),
-                        ), array('id' => 'DESC'), 1);
+                    $revisionEntities = $this->getAuditObjectManager()->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->findBy(array(
+                        'targetEntityClass' => get_class($element),
+                        'entityKeys' => serialize(array('id' => (string) $element->getId())),
+                    ), array('id' => 'DESC'), 1);
 
                     $inverseRevisionEntity = reset($revisionEntities);
 
@@ -306,13 +378,13 @@ class LogRevision implements EventSubscriber
                     $audit->setTargetRevisionEntity($revisionEntity);
                     $audit->setSourceRevisionEntity($inverseRevisionEntity);
 
-                    $auditObjectManager->persist($audit);
+                    $this->getAuditObjectManager()->persist($audit);
                 }
             }
 
-            $auditObjectManager->flush();
+            $this->getAuditObjectManager()->flush();
+            $this->getAuditObjectManager()->commit();
 
-            $auditObjectManager->commit();
             $this->resetEntities();
             $this->resetReexchangeEntities();
             $this->resetRevision();

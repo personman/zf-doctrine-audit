@@ -56,6 +56,11 @@ class Bootstrap
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
         $schemaTool->createSchema($entityManager->getMetadataFactory()->getAllMetadata());
 
+        // build audit database
+        $auditEntityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_zf_doctrine_audit');
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($auditEntityManager);
+        $schemaTool->createSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
+
         static::$application = $application;
     }
 

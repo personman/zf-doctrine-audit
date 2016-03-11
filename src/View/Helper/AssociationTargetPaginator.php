@@ -31,7 +31,7 @@ final class AssociationTargetPaginator extends AbstractHelper implements Service
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
         $entityManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
+        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         foreach($auditService->getEntityAssociations($revisionEntity->getAuditEntity()) as $field => $value) {
             if (isset($value['joinTable']['name']) and $value['joinTable']['name'] == $joinTable) {

@@ -44,7 +44,7 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
         $sm = Bootstrap::getApplication()->getServiceManager();
 
         $this->assertInstanceOf('ZF\Doctrine\Audit\Options\ModuleOptions', $sm->get('auditModuleOptions'));
-        $this->assertInstanceOf('ZF\Doctrine\Audit\Service\AuditService', $sm->get('auditService'));
+        $this->assertInstanceOf('ZF\Doctrine\Audit\Service\AuditService', $sm->get('ZF\Doctrine\Audit\Service\AuditService'));
     }
 
     public function testViewHelperConfig()

@@ -3,7 +3,7 @@
 namespace ZF\Doctrine\Audit\View\Helper;
 
 use Zend\View\Helper\AbstractHelper
-    , Doctrine\ORM\auditObjectManager
+    , Doctrine\ORM\EntityManager
     , Zend\ServiceManager\ServiceLocatorAwareInterface
     , Zend\ServiceManager\ServiceLocatorInterface
     , Zend\View\Model\ViewModel
@@ -31,8 +31,8 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
     public function __invoke($page, $entity)
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $auditObjectManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
+        $entityManager = $auditModuleOptions->getAuditObjectManager();
+        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($auditModuleOptions->getAuditedClassNames()))) {
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
@@ -44,23 +44,16 @@ final class RevisionEntityPaginator extends AbstractHelper implements ServiceLoc
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $entity);
         }
 
-        $search = array(
-            'auditEntityClass' => $auditEntityClass
-        );
+        $search = array('auditEntityClass' => $auditEntityClass);
+        if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
 
-        if (isset($identifiers)) {
-            $search['entityKeys'] = serialize($identifiers);
-        }
-
-        $queryBuilder = $auditObjectManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
+        $queryBuilder = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->createQueryBuilder('rev');
         $queryBuilder->orderBy('rev.id', 'DESC');
         $i = 0;
         foreach ($search as $key => $val) {
             $i ++;
             $queryBuilder->andWhere("rev.$key = ?$i");
             $queryBuilder->setParameter($i, $val);
-
-            echo "$key = $val<BR>";
         }
 
         $adapter = new DoctrineAdapter(new ORMPaginator($queryBuilder));

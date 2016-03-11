@@ -3,7 +3,7 @@
 namespace ZFTest\Doctrine\Audit;
 
 return array(
-    'audit' => array(
+    'zf-doctrine-audit' => array(
         'datetimeFormat' => 'r',
         'paginatorLimit' => 999999,
 
@@ -25,6 +25,14 @@ return array(
     'doctrine' => array(
         'connection' => array(
             'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                'params' => array(
+                    'user' => 'test',
+                    'password' => 'test',
+                    'memory' => true,
+                ),
+            ),
+            'orm_zf_doctrine_audit' => array(
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
                 'params' => array(
                     'user' => 'test',

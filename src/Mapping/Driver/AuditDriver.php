@@ -6,9 +6,50 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata
     , Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
     , Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder
     ;
+use Doctrine\Common\Persistence\ObjectManager;
 
 final class AuditDriver implements MappingDriver
 {
+    protected $objectManager;
+    protected $auditObjectManager;
+    protected $auditedEntities;
+
+    public function setObjectManager(ObjectManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
+
+        return $this;
+    }
+
+    public function getObjectManager()
+    {
+        return $this->objectManager;
+    }
+
+    public function setAuditObjectManager(ObjectManager $objectManager)
+    {
+        $this->auditObjectManager = $objectManager;
+
+        return $this;
+    }
+
+    public function getAuditObjectManager()
+    {
+        return $this->auditObjectManager;
+    }
+
+    public function setAuditedEntities(array $entities)
+    {
+        $this->auditedEntities = $entities;
+
+        return $this;
+    }
+
+    public function getAuditedEntities()
+    {
+        return $this->auditedEntities;
+    }
+
     /**
      * Loads the metadata for the specified class into the provided container.
      *
@@ -18,7 +59,7 @@ final class AuditDriver implements MappingDriver
     function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        $entityManager = $moduleOptions->getAuditObjectManager();
+        $entityManager = $this->getAuditObjectManager();
         $metadataFactory = $entityManager->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
 
@@ -80,9 +121,9 @@ final class AuditDriver implements MappingDriver
 
         $auditedClassMetadata = $metadataFactory->getMetadataFor($metadataClass->getAuditedEntityClass());
 
-        $builder->addManyToOne($moduleOptions->getRevisionEntityFieldName(), 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
+        $builder->addManyToOne('revisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 # Compound keys removed in favor of auditId (audit_id)
-        $identifiers[] = $moduleOptions->getRevisionEntityFieldName();
+        $identifiers[] = 'revisionEntity';
 
         // Add fields from target to audit entity
         foreach ($auditedClassMetadata->getFieldNames() as $fieldName) {
@@ -127,11 +168,11 @@ final class AuditDriver implements MappingDriver
     function getAllClassNames()
     {
         $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        $entityManager = $moduleOptions->getObjectManager();
-        $metadataFactory = $entityManager->getMetadataFactory();
+        $objectManager = $this->getObjectManager();
+        $metadataFactory = $objectManager->getMetadataFactory();
 
         $auditEntities = array();
-        foreach ($moduleOptions->getAuditedClassNames() as $name => $targetClassOptions) {
+        foreach ($this->getAuditedEntities() as $name) {
             $auditClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $name);
             $auditEntities[] = $auditClassName;
             $auditedClassMetadata = $metadataFactory->getMetadataFor($name);

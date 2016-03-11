@@ -28,7 +28,7 @@ class ModuleOptionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('revisionEntity', $moduleOptions->getRevisionEntityFieldName());
         $moduleOptions->setUserEntityClassName($serviceManager->get('zfcuser_module_options')->getUserEntityClass());
         $moduleOptions->setAuthenticationService('ZfcUserDoctrineORM\\Entity\\User');
-        $moduleOptions->setAuditService($serviceManager->get('auditService'));
+        $moduleOptions->setAuditService($serviceManager->get('ZF\Doctrine\Audit\Service\AuditService'));
     }
 
     public function testModuleOptionsAuditedEntityClasses()

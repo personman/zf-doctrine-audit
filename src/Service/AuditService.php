@@ -118,6 +118,10 @@ class AuditService extends AbstractHelper
             if (gettype($val) == 'object') $values[$key] = $val->getId();
         }
 
+        foreach ($values as $key => $val) {
+            $values[$key] = (string) $val;
+        }
+
         return $values;
     }
 

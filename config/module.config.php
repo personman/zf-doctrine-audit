@@ -3,15 +3,8 @@
 return array(
     'doctrine' => array(
         'driver' => array(
-            'zf_doctrine_audit_driver' => array(
-                'class' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
-            ),
-
             'orm_zf_doctrine_audit' => array(
                 'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
-                'drivers' => array(
-                    'ZF\Doctrine\Audit\Entity' => 'zf_doctrine_audit_driver',
-                ),
             ),
         ),
 
@@ -46,11 +39,6 @@ return array(
 
         'eventmanager' => array(
             'orm_zf_doctrine_audit' => array(),
-            'orm_default' => array(
-                'subscribers' => array(
-                    'ZF\Doctrine\Audit\EventListener\LogRevision',
-                ),
-            ),
         ),
     ),
 

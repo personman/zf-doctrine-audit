@@ -32,8 +32,7 @@ final class RevisionPaginator extends AbstractHelper implements ServiceLocatorAw
     {
         $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
         $entityManager = $auditModuleOptions->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditService');
-
+        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $repository = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\Revision');
 

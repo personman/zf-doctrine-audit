@@ -31,14 +31,16 @@ final class CurrentRevisionEntity extends AbstractHelper implements ServiceLocat
 
     public function __invoke($entity)
     {
-        $entityManager = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions')->getAuditObjectManager();
-        $auditService = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions')->getAuditService();
+        $entityManager = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\EventListener\LogRevision')->getAuditObjectManager();
+        $auditService = $this->getServiceLocator()->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntities = $entityManager->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->findBy(array(
             'targetEntityClass' => get_class($entity),
             'entityKeys' => serialize($auditService->getEntityIdentifierValues($entity)),
         ), array('id' => 'DESC'), 1);
 
-        if (sizeof($revisionEntities)) return $revisionEntities[0];
+        if (sizeof($revisionEntities)) {
+            return $revisionEntities[0];
+        }
     }
 }

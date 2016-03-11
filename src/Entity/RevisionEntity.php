@@ -2,10 +2,10 @@
 
 namespace ZF\Doctrine\Audit\Entity;
 
-use Doctrine\ORM\Mapping\ClassMetadata
-    , Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder
-    , Zend\Code\Reflection\ClassReflection;
-    ;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Zend\Code\Reflection\ClassReflection;
+use Exception;
 
 class RevisionEntity
 {
@@ -96,16 +96,11 @@ class RevisionEntity
 
     public function setAuditEntity(AbstractAudit $entity)
     {
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-
-        $auditService = $moduleOptions->getAuditService();
-        $identifiers = $auditService->getEntityIdentifierValues($entity);
-
-        $this->setAuditEntityClass(get_class($entity));
-        $this->setTargetEntityClass($entity->getAuditedEntityClass());
-        $this->setEntityKeys($identifiers);
-
-        return $this;
+        throw new Exception('This function components must be called separately:
+            $this->setAuditEntityClass(get_class($entity));
+            $this->setTargetEntityClass($entity->getAuditedEntityClass());
+            $this->setEntityKeys($identifiers);
+        ');
     }
 
     public function getAuditEntity()
