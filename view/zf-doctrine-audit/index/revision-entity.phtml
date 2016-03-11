@@ -73,14 +73,15 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($this->auditService()->getEntityValues($this->revisionEntity->getAuditEntity()) as $field => $value) { ?>
+        <?php foreach (
+            $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($this->revisionEntity)) as $field => $value) { ?>
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
                 <?php
                     // Is this an association?
-                    if (in_array($field, array_keys($this->auditService()->getEntityAssociations($this->revisionEntity->getAuditEntity())))) {
-                        $associationRevisionEntity = $this->auditService()->getAssociationRevisionEntity($this->revisionEntity->getAuditEntity(), $field, $value);
+                    if (in_array($field, array_keys($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity))))) {
+                        $associationRevisionEntity = $this->auditService()->getAssociationRevisionEntity($this->auditService()->getAuditEntity($this->revisionEntity), $field, $value);
 
                         if ($associationRevisionEntity) {
                             echo $this->auditRevisionEntityLink($associationRevisionEntity);
@@ -100,7 +101,7 @@
         ?>
 
         <?php
-        if ($this->auditService()->getEntityAssociations($this->revisionEntity->getAuditEntity())) {
+        if ($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity))) {
         ?>
             <tr>
                 <th>Associations</th>
@@ -108,7 +109,7 @@
             </tr>
 
             <?php
-                foreach($this->auditService()->getEntityAssociations($this->revisionEntity->getAuditEntity()) as $field => $value) {
+                foreach($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity)) as $field => $value) {
             ?>
                     <?php
 
@@ -281,7 +282,7 @@
 <?php
     $first = true;
     $oldSet = false;
-    $paginator = $this->auditRevisionEntityPaginator($page, $this->revisionEntity->getAuditEntity());
+    $paginator = $this->auditRevisionEntityPaginator($page, $this->auditService()->getAuditEntity($this->revisionEntity));
 ?>
 
 <table class="table table-striped table-hover table-bordered ">
@@ -406,10 +407,12 @@
             $this->url(
                 'audit/entity',
                 array(
-                    'entityClass' => $this->revisionEntity->getAuditEntity()->getAuditedEntityClass(),
+                    'entityClass' => $this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass(),
                 )
             );?>
-    " class="btn btn-primary">All Revisons for <?= $this->escapeHtml($this->revisionEntity->getAuditEntity()->getAuditedEntityClass()); ?></a>
+    " class="btn btn-primary">All Revisons for <?=
+        $this->escapeHtml($this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass());
+    ?></a>
 </btngroup>
 </form>
 

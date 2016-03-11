@@ -1,6 +1,23 @@
 <?php
 
 return array(
+    'service_manager' => array(
+        'invokables' => array(
+            'ZF\Doctrine\Audit\EventListener\LogRevision' => 'ZF\Doctrine\Audit\EventListener\LogRevision',
+            'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
+            'ZF\Doctrine\Audit\Service\AuditService' => 'ZF\Doctrine\Audit\Service\AuditService',
+            'ZF\Doctrine\Audit\Loader\AuditAutoloader' => 'ZF\Doctrine\Audit\Loader\AuditAutoloader',
+        ),
+        'initializers' => array(
+            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
+        ),
+    ),
+
     'doctrine' => array(
         'driver' => array(
             'orm_zf_doctrine_audit' => array(
@@ -47,6 +64,14 @@ return array(
             'ZF\Doctrine\Audit\Controller\Index' => 'ZF\Doctrine\Audit\Controller\IndexController',
             'ZF\\Doctrine\\Audit\\Controller\\SchemaTool' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
         ),
+        'initializers' => array(
+            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
+        ),
     ),
 
     'view_manager' => array(
@@ -59,14 +84,20 @@ return array(
         'invokables' => array(
             'auditCurrentRevisionEntity' => 'ZF\Doctrine\Audit\View\Helper\CurrentRevisionEntity',
             'auditEntityOptions' => 'ZF\Doctrine\Audit\View\Helper\EntityOptions',
-
             'auditRevisionEntityLink' => 'ZF\Doctrine\Audit\View\Helper\RevisionEntityLink',
-
             'auditRevisionPaginator' => 'ZF\Doctrine\Audit\View\Helper\RevisionPaginator',
             'auditRevisionEntityPaginator' => 'ZF\Doctrine\Audit\View\Helper\RevisionEntityPaginator',
             'auditAssociationSourcePaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationSourcePaginator',
             'auditAssociationTargetPaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationTargetPaginator',
             'auditOneToManyPaginator' => 'ZF\Doctrine\Audit\View\Helper\OneToManyPaginator',
+        ),
+        'initializers' => array(
+            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
         ),
     ),
 

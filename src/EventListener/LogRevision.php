@@ -11,21 +11,29 @@ use ZF\Doctrine\Audit\Entity\RevisionEntity as RevisionEntityEntity;
 use Zend\Code\Reflection\ClassReflection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Persistence\ObjectManager;
-use ZF\Doctrine\Audit\Service\AuditService;
+use ZF\Doctrine\Audit\Persistence;
 
-class LogRevision implements EventSubscriber
+class LogRevision implements
+    EventSubscriber,
+    Persistence\AuditEntitiesAwareInterface,
+    Persistence\AuditServiceAwareInterface,
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuthenticationServiceAwareInterface
 {
-    private $revision;
-    private $entities;
-    private $reexchangeEntities;
-    private $collections;
-    private $inAuditTransaction;
-    private $many2many;
+    use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\AuditServiceAwareTrait;
+    use Persistence\AuthenticationServiceAwareTrait;
 
-    protected $auditObjectManager;
-    protected $auditedEntities = array();
     protected $authenticationService;
-    protected $auditService;
+    protected $revision;
+    protected $entities;
+    protected $reexchangeEntities;
+    protected $collections;
+    protected $inAuditTransaction;
+    protected $many2many;
 
     public function getSubscribedEvents()
     {
@@ -35,28 +43,9 @@ class LogRevision implements EventSubscriber
         );
     }
 
-    public function setAuditObjectManager(ObjectManager $objectManager)
+    public function register()
     {
-        $this->auditObjectManager = $objectManager;
-
-        return $this;
-    }
-
-    public function getAuditObjectManager()
-    {
-        return $this->auditObjectManager;
-    }
-
-    public function setAuditedEntities(array $entities)
-    {
-        $this->auditedEntities = $entities;
-
-        return $this;
-    }
-
-    public function getAuditedEntities()
-    {
-        return $this->auditedEntities;
+        $this->getObjectManager()->getEventManager()->addEventSubscriber($this);
     }
 
     public function setAuthenticationService($service)
@@ -71,23 +60,12 @@ class LogRevision implements EventSubscriber
         return $this->authenticationService;
     }
 
-    public function setAuditService(AuditService $auditService)
-    {
-        $this->auditService = $auditService;
-
-        return $this;
-    }
-
-    public function getAuditService()
-    {
-        return $this->auditService;
-    }
-
-
-
     private function setEntities($entities)
     {
-        if ($this->entities) return $this;
+        if ($this->entities) {
+            return $this;
+        }
+
         $this->entities = $entities;
 
         return $this;
@@ -96,6 +74,7 @@ class LogRevision implements EventSubscriber
     private function resetEntities()
     {
         $this->entities = array();
+
         return $this;
     }
 
@@ -106,7 +85,10 @@ class LogRevision implements EventSubscriber
 
     private function getReexchangeEntities()
     {
-        if (!$this->reexchangeEntities) $this->reexchangeEntities = array();
+        if (!$this->reexchangeEntities) {
+            $this->reexchangeEntities = array();
+        }
+
         return $this->reexchangeEntities;
     }
 
@@ -137,20 +119,28 @@ class LogRevision implements EventSubscriber
 
     public function addCollection($collection)
     {
-        if (!$this->collections) $this->collections = array();
-        if (in_array($collection, $this->collections, true)) return;
+        if (!$this->collections) {
+            $this->collections = array();
+        }
+
+        if (in_array($collection, $this->collections, true)) {
+            return;
+        }
+
         $this->collections[] = $collection;
     }
 
     public function getCollections()
     {
         if (!$this->collections) $this->collections = array();
+
         return $this->collections;
     }
 
     public function setInAuditTransaction($setting)
     {
         $this->inAuditTransaction = $setting;
+
         return $this;
     }
 
@@ -167,6 +157,7 @@ class LogRevision implements EventSubscriber
     private function resetRevision()
     {
         $this->revision = null;
+
         return $this;
     }
 
@@ -176,6 +167,7 @@ class LogRevision implements EventSubscriber
         if ($this->revision) return;
 
         $revision = new RevisionEntity();
+        $revision->setObjectManager($objectManager);
 
         if ($this->getAuthenticationService()->hasIdentity()) {
             if ($objectManager->contains($this->getAuthenticationService()->getIdentity())) {
@@ -227,8 +219,8 @@ class LogRevision implements EventSubscriber
 
         // Entities may be proxy objects
         $found = false;
-        foreach ($this->getAuditedEntities() as $auditedEntityClassName) {
-            if ($entity instanceof $auditedEntityClassName) {
+        foreach ($this->getAuditEntities() as $auditEntityClassName => $auditEntityOptions) {
+            if ($entity instanceof $auditEntityClassName) {
                 $found = true;
                 break;
             }

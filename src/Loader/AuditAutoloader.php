@@ -2,17 +2,26 @@
 
 namespace ZF\Doctrine\Audit\Loader;
 
-use Zend\Loader\StandardAutoloader
-    , Zend\ServiceManager\ServiceManager
-    , Zend\Code\Reflection\ClassReflection
-    , Zend\Code\Generator\ClassGenerator
-    , Zend\Code\Generator\MethodGenerator
-    , Zend\Code\Generator\ParameterGenerator
-    , Zend\Code\Generator\PropertyGenerator
-    ;
+use Zend\Loader\StandardAutoloader;
+use Zend\ServiceManager\ServiceManager;
+use Zend\Code\Reflection\ClassReflection;
+use Zend\Code\Generator\ClassGenerator;
+use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\ParameterGenerator;
+use Zend\Code\Generator\PropertyGenerator;
+use ZF\Doctrine\Audit\Persistence;
 
-class AuditAutoloader extends StandardAutoloader
+class AuditAutoloader extends StandardAutoloader implements
+    Persistence\AuditEntitiesAwareInterface,
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditOptionsAwareInterface,
+    Persistence\AuditServiceAwareInterface
 {
+    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
+    use Persistence\AuditServiceAwareTrait;
+
     /**
      * Dynamically scope an audit class
      *
@@ -21,13 +30,13 @@ class AuditAutoloader extends StandardAutoloader
      */
     public function loadClass($className, $type)
     {
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        if (!$moduleOptions) return;
-        $entityManager = $moduleOptions->getObjectManager();
+#        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
+#        if (!$moduleOptions) return;
 
         $auditClass = new ClassGenerator();
 
         //  Build a discovered many to many join class
+/*
         $joinClasses = $moduleOptions->getJoinClasses();
 
         if (in_array($className, array_keys($joinClasses))) {
@@ -78,27 +87,26 @@ class AuditAutoloader extends StandardAutoloader
             eval($auditClass->generate());
             return;
         }
-
+*/
         // Add revision reference getter and setter
-        $auditClass->addProperty($moduleOptions->getRevisionEntityFieldName(), null, PropertyGenerator::FLAG_PROTECTED);
+        $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
         $auditClass->addMethod(
-            'get' . $moduleOptions->getRevisionEntityFieldName(),
+            'getRevisionEntity',
             array(),
             MethodGenerator::FLAG_PUBLIC,
-            " return \$this->" .  $moduleOptions->getRevisionEntityFieldName() . ";");
+            " return \$this->revisionEntity;");
 
         $auditClass->addMethod(
-            'set' . $moduleOptions->getRevisionEntityFieldName(),
+            'setRevisionEntity',
             array('value'),
             MethodGenerator::FLAG_PUBLIC,
-            " \$this->" .  $moduleOptions->getRevisionEntityFieldName() . " = \$value;\nreturn \$this;
+            " \$this->revisionEntity = \$value;\nreturn \$this;
             ");
 
 
         // Verify this autoloader is used for target class
         #FIXME:  why is this sent work outside the set namespace?
-        foreach($moduleOptions->getAuditedClassNames() as $targetClass => $targetClassOptions) {
-
+        foreach($this->getAuditEntities() as $targetClass => $targetClassOptions) {
              $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $targetClass);
 
              if ($auditClassName == $className) {
@@ -109,12 +117,10 @@ class AuditAutoloader extends StandardAutoloader
         if (!in_array($className, $autoloadClasses)) return;
 
         // Get fields from target entity
-        $metadataFactory = $entityManager->getMetadataFactory();
+        $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
         $fields = $auditedClassMetadata->getFieldNames();
         $identifiers = $auditedClassMetadata->getFieldNames();
-
-        $service = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditService();
 
         // Generate audit entity
         foreach ($fields as $field) {
@@ -125,7 +131,6 @@ class AuditAutoloader extends StandardAutoloader
             $auditClass->addProperty($associationName, null, PropertyGenerator::FLAG_PROTECTED);
             $fields[] = $associationName;
         }
-
 
         $auditClass->addMethod(
             'getAssociationMappings',
@@ -174,7 +179,7 @@ class AuditAutoloader extends StandardAutoloader
                 if (isset($mapping['joinTable']['name'])) {
                     $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
                     $auditEntities[] = $auditJoinTableClassName;
-                    $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
+#                     $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
                 }
             }
 

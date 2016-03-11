@@ -2,39 +2,22 @@
 
 namespace ZF\Doctrine\Audit\View\Helper;
 
-use Zend\View\Helper\AbstractHelper
-    , Doctrine\ORM\EntityManager
-    , Zend\ServiceManager\ServiceLocatorAwareInterface
-    , Zend\ServiceManager\ServiceLocatorInterface
-    , Zend\View\Model\ViewModel
-    , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
-    , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
-    , Zend\Paginator\Paginator
-    , ZF\Doctrine\Audit\Entity\AbstractAudit
-    ;
+use Zend\View\Helper\AbstractHelper;
+use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+use Zend\Paginator\Paginator;
+use ZF\Doctrine\Audit\Persistence;
 
-final class EntityOptions extends AbstractHelper implements ServiceLocatorAwareInterface
+final class EntityOptions extends AbstractHelper implements
+    Persistence\AuditEntitiesAwareInterface
 {
-    private $serviceLocator;
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
+    use Persistence\AuditEntitiesAwareTrait;
 
     public function __invoke($entityClass = null)
     {
-        $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-        $auditedClassNames = $auditModuleOptions->getAuditedClassNames();
+        if ($entityClass) {
+            return $this->getAuditEntities()[$entityClass];
+        }
 
-        if ($entityClass) return $auditedClassNames[$entityClass];
-
-        return $auditedClassNames;
+        return $this->getAuditEntities();
     }
 }

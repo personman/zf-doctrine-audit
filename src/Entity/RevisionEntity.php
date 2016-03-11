@@ -103,24 +103,6 @@ class RevisionEntity
         ');
     }
 
-    public function getAuditEntity()
-    {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
-
-        return $entityManager->getRepository($this->getAuditEntityClass())->findOneBy(array('revisionEntity' => $this));
-    }
-
-    public function getTargetEntity()
-    {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
-
-        return $entityManager->getRepository(
-            $entityManager
-                ->getRepository($this->getAuditEntityClass())
-                    ->findOneBy($this->getEntityKeys())->getAuditedEntityClass()
-            )->findOneBy($this->getEntityKeys());
-    }
-
     public function getTitle()
     {
         return $this->title;

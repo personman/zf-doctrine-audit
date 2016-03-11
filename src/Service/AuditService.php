@@ -2,14 +2,22 @@
 
 namespace ZF\Doctrine\Audit\Service;
 
-use Zend\View\Helper\AbstractHelper
-    , ZF\Doctrine\Audit\Entity\AbstractAudit
-    ;
+use Zend\View\Helper\AbstractHelper;
+use ZF\Doctrine\Audit\Entity\AbstractAudit;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use ZF\Doctrine\Audit\Entity\RevisionEntity;
+use ZF\Doctrine\Audit\Persistence;
 
-class AuditService extends AbstractHelper
+class AuditService extends AbstractHelper implements
+    Persistence\AuditEntitiesAwareInterface,
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditObjectManagerAwareInterface
 {
-    private $comment;
+    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
+
+    protected $comment;
 
     /**
      * To add a comment to a revision fetch this object before flushing
@@ -27,19 +35,18 @@ class AuditService extends AbstractHelper
     public function setComment($comment)
     {
         $this->comment = $comment;
+
         return $this;
     }
 
-    public function getEntityValues($entity) {
-        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
+    public function getEntityValues($entity)
+    {
+        $return = [];
 
-        $metadata = $em->getClassMetadata(get_class($entity));
+        $metadata = $this->getObjectManager()->getClassMetadata(get_class($entity));
         $fields = $metadata->getFieldNames();
 
-#        $targetEntityMetadata = $em->getClassMetadata($entity->getRevisionEntity()->getTargetEntity());
-
-        $return = array();
-        foreach ($fields AS $fieldName) {
+        foreach ($fields as $fieldName) {
             $return[$fieldName] = $metadata->getFieldValue($entity, $fieldName);
         }
 
@@ -47,7 +54,6 @@ class AuditService extends AbstractHelper
 
         return $return;
     }
-
 
     public function getEntityAssociations(AbstractAudit $entity)
     {
@@ -62,14 +68,13 @@ class AuditService extends AbstractHelper
     /**
      * Find a mapping to the given field for 1:many
      */
-    public function getAssociationRevisionEntity(AbstractAudit $entity, $field, $value) {
-        $em = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
-
+    public function getAssociationRevisionEntity(AbstractAudit $entity, $field, $value)
+    {
         foreach ($entity->getAssociationMappings() as $mapping) {
 
             if ($mapping['fieldName'] == $field) {
-                $qb = $em->createQueryBuilder();
-                $qb->select('revisionEntity')
+                $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
+                $queryBuilder->select('revisionEntity')
                     ->from('ZF\Doctrine\Audit\\Entity\\RevisionEntity', 'revisionEntity')
                     ->innerJoin('revisionEntity.revision', 'revision')
                     ->andWhere('revisionEntity.targetEntityClass = ?1')
@@ -81,36 +86,32 @@ class AuditService extends AbstractHelper
                     ->orderBy('revision.timestamp', 'DESC')
                     ->setMaxResults(1);
 
-                $result = $qb->getQuery()->getResult();
+                $result = $queryBuilder->getQuery()->getResult();
 
-                if ($result) return reset($result);
+                if ($result) {
+                    return reset($result);
+                }
             }
-
         }
-
-        return;
     }
 
     public function getEntityIdentifierValues($entity, $cleanRevisionEntity = false)
     {
         try {
             // Try orm_default first
-            $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager();
-            $metadataFactory = $entityManager->getMetadataFactory();
-
             // Get entity metadata - Audited entities will always have composite keys
+            $metadataFactory = $this->getObjectManager()->getMetadataFactory();
             $metadata = $metadataFactory->getMetadataFor(get_class($entity));
         } catch (MappingException $e) {
             // Try audit
-            $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
-            $metadataFactory = $entityManager->getMetadataFactory();
-
             // Get entity metadata - Audited entities will always have composite keys
+            $metadataFactory = $this->getAuditObjectManager()->getMetadataFactory();
             $metadata = $metadataFactory->getMetadataFor(get_class($entity));
         }
+
         $values = $metadata->getIdentifierValues($entity);
 
-        if ($cleanRevisionEntity and $values['revisionEntity'] instanceof \ZF\Doctrine\Audit\Entity\RevisionEntity) {
+        if ($cleanRevisionEntity and $values['revisionEntity'] instanceof RevisionEntity) {
             unset($values['revisionEntity']);
         }
 
@@ -118,6 +119,7 @@ class AuditService extends AbstractHelper
             if (gettype($val) == 'object') $values[$key] = $val->getId();
         }
 
+        // All keys are handled as strings for array serialization
         foreach ($values as $key => $val) {
             $values[$key] = (string) $val;
         }
@@ -132,9 +134,7 @@ class AuditService extends AbstractHelper
      */
     public function getRevisionEntities($entity)
     {
-        $entityManager = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager();
-
-        if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys(\ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditedClassNames()))) {
+        if (gettype($entity) != 'string' && in_array(get_class($entity), array_keys($this->getAuditEntities()))) {
             $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
             $identifiers = $this->getEntityIdentifierValues($entity);
         } elseif ($entity instanceof AbstractAudit) {
@@ -147,7 +147,28 @@ class AuditService extends AbstractHelper
         $search = array('auditEntityClass' => $auditEntityClass);
         if (isset($identifiers)) $search['entityKeys'] = serialize($identifiers);
 
-        return $entityManager->getRepository('ZF\\Doctrine\\Audit\\Entity\\RevisionEntity')
-            ->findBy($search, array('id' => 'DESC'));
+        return $this->getAuditObjectManager()
+            ->getRepository('ZF\\Doctrine\\Audit\\Entity\\RevisionEntity')
+            ->findBy(
+                $search,
+                array('id' => 'DESC')
+            );
+    }
+
+    public function getAuditEntity(RevisionEntity $entity)
+    {
+        return $this->getAuditObjectManager()
+            ->getRepository(
+                $entity->getAuditEntityClass()
+            )->findOneBy(array('revisionEntity' => $entity));
+    }
+
+    public function getTargetEntity()
+    {
+        return $this->getObjectManager()->getRepository(
+            $this->getObjectManager()
+                ->getRepository($this->getAuditEntityClass())
+                    ->findOneBy($this->getEntityKeys())->getAuditedEntityClass()
+            )->findOneBy($this->getEntityKeys());
     }
 }

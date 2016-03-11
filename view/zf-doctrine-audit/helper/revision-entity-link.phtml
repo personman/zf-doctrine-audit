@@ -47,7 +47,11 @@
         );?>"
     >
 
-    <?= $this->escapeHtml(substr($this->revisionEntity->getAuditEntity()->getAuditedEntityClass(), strrpos($this->revisionEntity->getAuditEntity()->getAuditedEntityClass(), '\\') + 1)); ?>:
+    <?=
+        $this->escapeHtml(
+            substr($this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass(),
+                strrpos($this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass(), '\\') + 1));
+    ?>:
 
     <?php
     if ($this->revisionEntity->getTitle()) {
@@ -57,9 +61,6 @@
     <?php
     }
     ?>
-
-<!--   (<?= $this->revisionEntity->getId(); ?>) -->
-
 
     <div class="entityKeys">
         <?php

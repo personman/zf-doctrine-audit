@@ -2,15 +2,24 @@
 
 namespace ZF\Doctrine\Audit\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController
- , DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter
- , Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator
- , Zend\Paginator\Paginator
- ;
+use Zend\Mvc\Controller\AbstractActionController;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
+use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
+use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
+use ZF\Doctrine\Audit\Persistence;
 
-class IndexController extends AbstractActionController
+class IndexController extends AbstractActionController implements
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\AuditOptionsAwareInterface,
+    Persistence\AuditEntitiesAwareInterface
 {
+    use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
+    use Persistence\AuditEntitiesAwareTrait;
+
     /**
      * Renders a paginated list of revisions.
      *
@@ -38,8 +47,10 @@ class IndexController extends AbstractActionController
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $userId = (int)$this->getEvent()->getRouteMatch()->getParam('userId');
 
-        $user = \ZF\Doctrine\Audit\Module::getModuleOptions()->getObjectManager()
-            ->getRepository(\ZF\Doctrine\Audit\Module::getModuleOptions()->getUserEntityClassName())->find($userId);
+        $user = $this->getObjectManager()
+            ->getRepository($this->getAuditOptions()['user_entity_class_name'])
+            ->find($userId)
+            ;
 
         $viewModel = new ViewModel([
             'page' => $page,
@@ -60,7 +71,7 @@ class IndexController extends AbstractActionController
     {
         $revisionId = (int)$this->getEvent()->getRouteMatch()->getParam('revisionId');
 
-        $revision = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revision = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\Revision')
             ->find($revisionId);
 
@@ -85,13 +96,13 @@ class IndexController extends AbstractActionController
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $revisionEntityId = (int) $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
             return $this->plugin('redirect')->toRoute('audit');
 
-        $repository = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $repository = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
         $viewModel = new ViewModel([
@@ -139,9 +150,9 @@ class IndexController extends AbstractActionController
         $revisionEntityId_old = $this->getRequest()->getPost()->get('revisionEntityId_old');
         $revisionEntityId_new = $this->getRequest()->getPost()->get('revisionEntityId_new');
 
-        $revisionEntity_old = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revisionEntity_old = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId_old);
-        $revisionEntity_new = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revisionEntity_new = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId_new);
 
         if (!$revisionEntity_old and !$revisionEntity_new)
@@ -168,7 +179,7 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
-        $revisionEntity = $moduleOptions->getAuditObjectManager()
+        $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
@@ -204,7 +215,7 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
@@ -230,8 +241,7 @@ class IndexController extends AbstractActionController
 
         $this->mapAllAuditedClasses();
 
-        foreach ($moduleOptions->getAuditedClassNames()
-            as $className => $route) {
+        foreach ($this->getAuditEntities() as $className => $route) {
             $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $className);
             $x = new $auditClassName;
         }
@@ -243,7 +253,7 @@ class IndexController extends AbstractActionController
 
         $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
-        $revisionEntity = \ZF\Doctrine\Audit\Module::getModuleOptions()->getAuditObjectManager()
+        $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
 
         if (!$revisionEntity)
@@ -259,16 +269,13 @@ class IndexController extends AbstractActionController
         return $viewModel;
     }
 
-    private function mapAllAuditedClasses() {
-
+    private function mapAllAuditedClasses()
+    {
         // When an association is requested all audit metadata must
         // be loaded in order to create the necessary join table
         // information
-        $moduleOptions = $this->getServiceLocator()
-            ->get('auditModuleOptions');
 
-        foreach ($moduleOptions->getAuditedClassNames()
-            as $className => $route) {
+        foreach ($this->getAuditEntities() as $className => $route) {
             $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $className);
             $x = new $auditClassName;
         }

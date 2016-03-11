@@ -2,65 +2,39 @@
 
 namespace ZF\Doctrine\Audit\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata
-    , Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
-    , Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder
-    ;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use ZF\Doctrine\Audit\Persistence;
+use Exception;
 
-final class AuditDriver implements MappingDriver
+class AuditDriver implements
+    MappingDriver,
+    Persistence\AuditEntitiesAwareInterface,
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\AuditOptionsAwareInterface
 {
-    protected $objectManager;
-    protected $auditObjectManager;
-    protected $auditedEntities;
+    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
 
-    public function setObjectManager(ObjectManager $objectManager)
+    public function register()
     {
-        $this->objectManager = $objectManager;
-
-        return $this;
-    }
-
-    public function getObjectManager()
-    {
-        return $this->objectManager;
-    }
-
-    public function setAuditObjectManager(ObjectManager $objectManager)
-    {
-        $this->auditObjectManager = $objectManager;
-
-        return $this;
-    }
-
-    public function getAuditObjectManager()
-    {
-        return $this->auditObjectManager;
-    }
-
-    public function setAuditedEntities(array $entities)
-    {
-        $this->auditedEntities = $entities;
-
-        return $this;
-    }
-
-    public function getAuditedEntities()
-    {
-        return $this->auditedEntities;
+        $this->getAuditObjectManager()->getConfiguration()->getMetadataDriverImpl()
+            ->addDriver($this, 'ZF\Doctrine\Audit\Entity');
     }
 
     /**
-     * Loads the metadata for the specified class into the provided container.
+     * Load the metadata for the specified class into the provided container.
      *
      * @param string $className
      * @param ClassMetadata $metadata
      */
     function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        $entityManager = $this->getAuditObjectManager();
-        $metadataFactory = $entityManager->getMetadataFactory();
+        $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
 
         if ($className == 'ZF\Doctrine\Audit\\Entity\RevisionEntity') {
@@ -72,7 +46,8 @@ final class AuditDriver implements MappingDriver
             $builder->addField('revisionType', 'string');
             $builder->addField('title', 'string', array('nullable' => true));
 
-            $metadata->setTableName($moduleOptions->getRevisionEntityTableName());
+            $metadata->setTableName($this->getAuditOptions()['revision_entity_table_name']);
+
             return;
         }
 
@@ -92,7 +67,7 @@ final class AuditDriver implements MappingDriver
 #                ->addJoinColumn('user_id', $userMetadata->getSingleIdentifierColumnName())
 #                ->build();
 
-            $metadata->setTableName($moduleOptions->getRevisionTableName());
+            $metadata->setTableName($this->getAuditOptions()['revision_table_name']);
             return;
         }
 
@@ -100,12 +75,12 @@ final class AuditDriver implements MappingDriver
         $identifiers = array();
 #        $metadata->setIdentifier(array('audit_id'));
 
+/*
         //  Build a discovered many to many join class
         $joinClasses = $moduleOptions->getJoinClasses();
         if (in_array($className, array_keys($joinClasses))) {
 
             $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
-
             $builder->addManyToOne('targetRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
             $builder->addManyToOne('sourceRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
@@ -113,28 +88,34 @@ final class AuditDriver implements MappingDriver
 //            $metadata->setIdentifier($identifiers);
             return;
         }
-
-
+*/
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
         $metadataClass = new $metadataClassName();
 
         $auditedClassMetadata = $metadataFactory->getMetadataFor($metadataClass->getAuditedEntityClass());
 
-        $builder->addManyToOne('revisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
-# Compound keys removed in favor of auditId (audit_id)
+        $builder->addManyToOne('revisionEntity', 'ZF\\Doctrine\\Audit\\Entity\\RevisionEntity');
         $identifiers[] = 'revisionEntity';
 
         // Add fields from target to audit entity
         foreach ($auditedClassMetadata->getFieldNames() as $fieldName) {
-            $builder->addField($fieldName, $auditedClassMetadata->getTypeOfField($fieldName), array('nullable' => true, 'quoted' => true));
-            if ($auditedClassMetadata->isIdentifier($fieldName)) $identifiers[] = $fieldName;
+            $builder->addField(
+                $fieldName,
+                $auditedClassMetadata->getTypeOfField($fieldName),
+                array(
+                    'nullable' => true,
+                    'quoted' => true
+                )
+            );
+
+            if ($auditedClassMetadata->isIdentifier($fieldName)) {
+                $identifiers[] = $fieldName;
+            }
         }
 
         foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
-            if (!$mapping['isOwningSide']) continue;
-
-            if (isset($mapping['joinTable'])) {
+            if (! $mapping['isOwningSide'] || isset($mapping['joinTable'])) {
                 continue;
             }
 
@@ -149,12 +130,15 @@ final class AuditDriver implements MappingDriver
                     $builder->addField($mapping['fieldName'], 'bigint', array('nullable' => true, 'columnName' => $field));
                 }
             } else {
-                throw new \Exception('Unhandled association mapping');
+                throw new Exception('Unhandled association mapping');
             }
-
         }
 
-        $metadata->setTableName($moduleOptions->getTableNamePrefix() . $auditedClassMetadata->getTableName() . $moduleOptions->getTableNameSuffix());
+        $metadata->setTableName(
+            $this->getAuditOptions()['audit_table_name_prefix']
+                . $auditedClassMetadata->getTableName()
+                . $this->getAuditOptions()['audit_table_name_suffix']
+        );
         $metadata->setIdentifier($identifiers);
 
         return;
@@ -167,29 +151,28 @@ final class AuditDriver implements MappingDriver
      */
     function getAllClassNames()
     {
-        $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
         $objectManager = $this->getObjectManager();
         $metadataFactory = $objectManager->getMetadataFactory();
 
         $auditEntities = array();
-        foreach ($this->getAuditedEntities() as $name) {
-            $auditClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $name);
+        foreach ($this->getAuditEntities() as $name => $auditEntityOptions) {
+            $auditClassName = "ZF\\Doctrine\\Audit\\Entity\\" . str_replace('\\', '_', $name);
             $auditEntities[] = $auditClassName;
             $auditedClassMetadata = $metadataFactory->getMetadataFor($name);
 
             // FIXME:  done in autoloader
             foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
                 if (isset($mapping['joinTable']['name'])) {
-                    $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
+                    $auditJoinTableClassName = "ZF\\Doctrine\\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
                     $auditEntities[] = $auditJoinTableClassName;
-                    $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
+####                    $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
                 }
             }
         }
 
         // Add revision (manage here rather than separate namespace)
-        $auditEntities[] = 'ZF\Doctrine\Audit\\Entity\\Revision';
-        $auditEntities[] = 'ZF\Doctrine\Audit\\Entity\\RevisionEntity';
+        $auditEntities[] = 'ZF\\Doctrine\\Audit\\Entity\\Revision';
+        $auditEntities[] = 'ZF\\Doctrine\\Audit\\Entity\\RevisionEntity';
 
         return $auditEntities;
     }

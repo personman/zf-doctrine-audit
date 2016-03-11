@@ -61,7 +61,7 @@ foreach ($this->revision->getRevisionEntities() as $revisionEntity) {
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($this->auditService()->getEntityValues($revisionEntity->getAuditEntity()) as $field => $value): ?>
+        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity)) as $field => $value): ?>
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
