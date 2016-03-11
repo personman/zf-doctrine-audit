@@ -22,6 +22,7 @@
     },
     "require-dev": {
         "zf-commons/zfc-user": "^1.0",
+        "squizlabs/php_codesniffer": "^2",
         "zf-commons/zfc-user-doctrine-orm": "dev-master",
         "phpunit/phpunit": "^4.0"
     },
