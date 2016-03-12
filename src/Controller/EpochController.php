@@ -72,8 +72,9 @@ class EpochController extends AbstractActionController implements
             Color::GREEN
         );
 
-        // Get connection from target object manager
-        // for each entity in target object manager
+        if (! Prompt\Confirm::prompt('Continue? y/n ')) {
+            return;
+        }
 
         $revisionNumber = 0;
         foreach ($this->getAuditEntities() as $className => $classInfo) {
