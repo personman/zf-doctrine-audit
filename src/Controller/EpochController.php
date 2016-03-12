@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 namespace ZF\Doctrine\Audit\Controller;
 
@@ -8,6 +8,7 @@ use Zend\Console\Request as ConsoleRequest;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\Console\ColorInterface as Color;
 use Zend\Console\Prompt;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
 use RuntimeException;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -54,6 +55,17 @@ class EpochController extends AbstractActionController implements
         $revisionNumber = 0;
         foreach ($this->getAuditEntities() as $className => $classInfo) {
 
+            $queryBuilder = $this->getObjectManager()->createQueryBuilder();
+            $queryBuilder->select('row')
+                ->from($className, 'row')
+                ;
+
+            $paginator = new Paginator(
+                $queryBuilder->getQuery()
+                    ->setFirstResult(0)
+                    ->setMaxResults(100)
+            );
+
             $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', $className);
 
             $revisionNumber ++;
@@ -62,33 +74,46 @@ class EpochController extends AbstractActionController implements
             $revision->setComment('Epoch');
             $this->getAuditObjectManager()->persist($revision);
 
-            foreach ($this->getObjectManager()->getRepository($className)->findAll() as $entity) {
+            $start = 0;
+            $dataCount = 0;
+            while (true) {
+                foreach ($paginator as $entity) {
 
-                $revisionEntity = new Entity\RevisionEntity();
-                $revisionEntity->setRevision($revision);
+                    $revisionEntity = new Entity\RevisionEntity();
+                    $revisionEntity->setRevision($revision);
 
-                $revisionEntity->setRevisionType('EPO');
-                $revisionEntity->setAuditEntityClass($auditEntityClass);
-                $revisionEntity->setTargetEntityClass($className);
-                $revisionEntity->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entity));
+                    $revisionEntity->setRevisionType('EPO');
+                    $revisionEntity->setAuditEntityClass($auditEntityClass);
+                    $revisionEntity->setTargetEntityClass($className);
+                    $revisionEntity->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entity));
 
-                if (method_exists($entity, '__toString')) {
-                    $revisionEntity->setTitle((string) $entity);
+                    if (method_exists($entity, '__toString')) {
+                        $revisionEntity->setTitle((string) $entity);
+                    }
+                    echo $revisionEntity->getTitle();
+
+                    $auditEntity = new $auditEntityClass();
+                    $auditEntity->exchangeArray($this->getClassProperties($entity));
+                    $auditEntity->setRevisionEntity($revisionEntity);
+
+                    $this->getAuditObjectManager()->persist($revisionEntity);
+                    $this->getAuditObjectManager()->persist($auditEntity);
+
+                    $dataCount ++;
                 }
-                echo $revisionEntity->getTitle();
 
-                $auditEntity = new $auditEntityClass();
-                $auditEntity->exchangeArray($this->getClassProperties($entity));
-                $auditEntity->setRevisionEntity($revisionEntity);
+                $this->getObjectManager()->clear();
+                $this->getAuditObjectManager()->flush();
 
-                $this->getAuditObjectManager()->persist($revisionEntity);
-                $this->getAuditObjectManager()->persist($auditEntity);
+                if (! $dataCount) {
+                    break;
+                }
+                $dataCount = 0;
 
+                $start += 100;
+                $paginator->getQuery()->setFirstResult($start);
             }
             // when to flush?
-
-            $this->getAuditObjectManager()->flush();
-            break;
         }
     }
 
