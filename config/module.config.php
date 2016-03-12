@@ -11,6 +11,7 @@ return array(
         'initializers' => array(
             'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
+            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
             'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
@@ -21,6 +22,7 @@ return array(
         'invokables' => array(
             'ZF\Doctrine\Audit\Controller\Index' => 'ZF\Doctrine\Audit\Controller\IndexController',
             'ZF\\Doctrine\\Audit\\Controller\\SchemaTool' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
+            'ZF\\Doctrine\\Audit\\Controller\\Epoch' => 'ZF\\Doctrine\\Audit\\Controller\\EpochController',
         ),
         'initializers' => array(
             'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
@@ -198,7 +200,16 @@ return array(
     'console' => array(
         'router' => array(
             'routes' => array(
-                'db-schema-tool-update' => array(
+                'zf-doctrine-audit-epoch' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:epoch:create',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Epoch',
+                            'action' => 'index',
+                        ),
+                    ),
+                ),
+                'zf-doctrine-audit-schema-tool-update' => array(
                     'options' => array(
                         'route' => 'zf-doctrine-audit:schema-tool:update',
                         'defaults' => array(

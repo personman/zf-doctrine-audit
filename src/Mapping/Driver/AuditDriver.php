@@ -37,7 +37,7 @@ class AuditDriver implements
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
 
-        if ($className == 'ZF\Doctrine\Audit\\Entity\RevisionEntity') {
+        if ($className == 'ZF\\Doctrine\\Audit\\Entity\RevisionEntity') {
             $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
             $builder->addManyToOne('revision', 'ZF\Doctrine\Audit\\Entity\\Revision', 'revisionEntities');
             $builder->addField('entityKeys', 'string');
@@ -52,7 +52,7 @@ class AuditDriver implements
         }
 
         // Revision is managed here rather than a separate namespace and driver
-        if ($className == 'ZF\Doctrine\Audit\\Entity\\Revision') {
+        if ($className == 'ZF\\Doctrine\\Audit\\Entity\\Revision') {
             $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
             $builder->addField('comment', 'text', array('nullable' => true));
             $builder->addField('timestamp', 'datetime');
