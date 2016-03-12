@@ -43,13 +43,34 @@ class EpochController extends AbstractActionController implements
             throw new RuntimeException('You can only use this action from a console.');
         }
 
-        $console->write("********************************************************************************\n", Color::GREEN);
-        $console->write("* This epoch tool will populate the zf-apigility-audit auditing tables with a  *\n", Color::GREEN);
-        $console->write("* snapshot of the database as it exists at this point in time.  The audit      *\n", Color::GREEN);
-        $console->write("* tables must be empty when this tool is ran.  In order to retire a set of     *\n", Color::GREEN);
-        $console->write("* audit tables you may continue the audit trail by setting the auto_increment  *\n", Color::GREEN);
-        $console->write("* values of the Revision and RevisionEntity tables to the next id in series    *\n", Color::GREEN);
-        $console->write("********************************************************************************\n", Color::GREEN);
+        $console->write(
+            "********************************************************************************\n",
+            Color::GREEN
+        );
+        $console->write(
+            "* This epoch tool will populate the zf-apigility-audit auditing tables with a  *\n",
+            Color::GREEN
+        );
+        $console->write(
+            "* snapshot of the database as it exists at this point in time.  The audit      *\n",
+            Color::GREEN
+        );
+        $console->write(
+            "* tables must be empty when this tool is ran.  In order to retire a set of     *\n",
+            Color::GREEN
+        );
+        $console->write(
+            "* audit tables you may continue the audit trail by setting the auto_increment  *\n",
+            Color::GREEN
+        );
+        $console->write(
+            "* values of the Revision and RevisionEntity tables to the next id in series    *\n",
+            Color::GREEN
+        );
+        $console->write(
+            "********************************************************************************\n",
+            Color::GREEN
+        );
 
         // Get connection from target object manager
         // for each entity in target object manager
@@ -128,10 +149,13 @@ class EpochController extends AbstractActionController implements
                     $this->getObjectManager()->clear();
                 }
                 $progressBar->notify(
-                    $totalCount, 
-                    $paginatorCount, 
-                    round($totalCount / $paginatorCount, 2), 
-                    null, null, null);
+                    $totalCount,
+                    $paginatorCount,
+                    round($totalCount / $paginatorCount, 2),
+                    null,
+                    null,
+                    null
+                );
 
                 $dataCount = 0;
 
@@ -159,10 +183,10 @@ class EpochController extends AbstractActionController implements
             // Set values to getId for classes
             if (gettype($value) == 'object' and method_exists($value, 'getId')) {
                 $value = $value->getId();
-            } else if ($value instanceof \Doctrine\ORM\PersistentCollection) {
+            } elseif ($value instanceof \Doctrine\ORM\PersistentCollection) {
                 continue;
-            } else if ($value instanceof \DateTime) {
-            } else if (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
+            } elseif ($value instanceof \DateTime) {
+            } elseif (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
                 echo get_class($value);
                 die();
             }

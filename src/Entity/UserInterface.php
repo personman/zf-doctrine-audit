@@ -2,7 +2,7 @@
 
 namespace ZF\Doctrine\Audit\Entity;
 
-interface User 
+interface User
 {
     public function getId();
     public function getDisplayName();
