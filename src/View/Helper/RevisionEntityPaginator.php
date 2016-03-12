@@ -7,6 +7,7 @@ use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrineAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
 use ZF\Doctrine\Audit\Entity\AbstractAudit;
+use ZF\Doctrine\Audit\Persistence;
 
 final class RevisionEntityPaginator extends AbstractHelper implements
     Persistence\AuditObjectManagerAwareInterface,
@@ -21,8 +22,6 @@ final class RevisionEntityPaginator extends AbstractHelper implements
 
     public function __invoke($page, $entity)
     {
-        $auditModuleOptions = $this->getServiceLocator()->getServiceLocator()->get('auditModuleOptions');
-
         if (gettype($entity) != 'string' and in_array(get_class($entity), array_keys($this->getAuditEntities()))) {
             $auditEntityClass = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
             $identifiers = $this->getAuditService()->getEntityIdentifierValues($entity);

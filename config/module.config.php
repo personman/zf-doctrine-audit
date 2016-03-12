@@ -11,51 +11,9 @@ return array(
         'initializers' => array(
             'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
             'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
-        ),
-    ),
-
-    'doctrine' => array(
-        'driver' => array(
-            'orm_zf_doctrine_audit' => array(
-                'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
-            ),
-        ),
-
-        'configuration' => array(
-            'orm_zf_doctrine_audit' => array(
-                'metadata_cache'    => 'array',
-                'query_cache'       => 'array',
-                'result_cache'      => 'array',
-                'driver'            => 'orm_zf_doctrine_audit',
-                'generate_proxies'  => true,
-                'proxy_dir'         => 'data/DoctrineORMModule/Proxy',
-                'proxy_namespace'   => 'DoctrineORMModule\Proxy',
-                'filters'           => array()
-            ),
-        ),
-
-        'connection' => array(
-            'orm_zf_doctrine_audit' => array(
-                'eventmanager' => 'orm_zf_doctrine_audit',
-                'params' => array(
-                    'charset' => 'utf8',
-                ),
-            ),
-        ),
-
-        'entitymanager' => array(
-            'orm_zf_doctrine_audit' => array(
-                'connection'    => 'orm_zf_doctrine_audit',
-                'configuration' => 'orm_zf_doctrine_audit',
-            ),
-        ),
-
-        'eventmanager' => array(
-            'orm_zf_doctrine_audit' => array(),
         ),
     ),
 
@@ -70,13 +28,6 @@ return array(
             'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
-        ),
-    ),
-
-    'view_manager' => array(
-        'template_path_stack' => array(
-            'zf-doctrine-audit' => __DIR__ . '/../view',
         ),
     ),
 
@@ -90,6 +41,8 @@ return array(
             'auditAssociationSourcePaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationSourcePaginator',
             'auditAssociationTargetPaginator' => 'ZF\Doctrine\Audit\View\Helper\AssociationTargetPaginator',
             'auditOneToManyPaginator' => 'ZF\Doctrine\Audit\View\Helper\OneToManyPaginator',
+            'auditDateTimeFormatter' => 'ZF\Doctrine\Audit\View\Helper\DateTimeFormatter',
+            'auditService' => 'ZF\Doctrine\Audit\Service\AuditService',
         ),
         'initializers' => array(
             'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
@@ -97,7 +50,12 @@ return array(
             'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
             'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
+        ),
+    ),
+
+    'view_manager' => array(
+        'template_path_stack' => array(
+            'zf-doctrine-audit' => __DIR__ . '/../view',
         ),
     ),
 

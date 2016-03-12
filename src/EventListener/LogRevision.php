@@ -171,7 +171,6 @@ class LogRevision implements
         }
 
         $revision = new RevisionEntity();
-        $revision->setObjectManager($objectManager);
 
         if ($this->getAuthenticationService()->hasIdentity()) {
             if ($objectManager->contains($this->getAuthenticationService()->getIdentity())) {

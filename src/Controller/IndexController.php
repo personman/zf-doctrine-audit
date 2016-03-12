@@ -111,13 +111,10 @@ class IndexController extends AbstractActionController implements
         $repository = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity');
 
-        $viewModel = new ViewModel(
-            [
+        $viewModel = new ViewModel([
             'page' => $page,
             'revisionEntity' => $revisionEntity,
-            'auditService' => $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService'),
-            ]
-        );
+        ]);
         $viewModel->setTemplate('zf-doctrine-audit/index/revision-entity');
 
         return $viewModel;
@@ -181,15 +178,10 @@ class IndexController extends AbstractActionController implements
 
     public function oneToManyAction()
     {
-        $moduleOptions = $this->getServiceLocator()
-            ->get('auditModuleOptions');
-
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $joinTable = $this->getEvent()->getRouteMatch()->getParam('joinTable');
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
         $mappedBy = $this->getEvent()->getRouteMatch()->getParam('mappedBy');
-
-        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
@@ -217,18 +209,13 @@ class IndexController extends AbstractActionController implements
         // When an association is requested all audit metadata must
         // be loaded in order to create the necessary join table
         // information
-        $moduleOptions = $this->getServiceLocator()
-            ->get('auditModuleOptions');
-
         $this->mapAllAuditedClasses();
 
-        $joinClasses = $moduleOptions->getJoinClasses();
+#        $joinClasses = $moduleOptions->getJoinClasses();
 
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $joinTable = $this->getEvent()->getRouteMatch()->getParam('joinTable');
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
-
-        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);
@@ -254,22 +241,17 @@ class IndexController extends AbstractActionController implements
         // When an association is requested all audit metadata must
         // be loaded in order to create the necessary join table
         // information
-        $moduleOptions = $this->getServiceLocator()
-            ->get('auditModuleOptions');
-
         $this->mapAllAuditedClasses();
 
         foreach ($this->getAuditEntities() as $className => $route) {
             $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $className);
             $x = new $auditClassName;
         }
-        $joinClasses = $moduleOptions->getJoinClasses();
+#        $joinClasses = $moduleOptions->getJoinClasses();
 
         $page = (int)$this->getEvent()->getRouteMatch()->getParam('page');
         $joinTable = $this->getEvent()->getRouteMatch()->getParam('joinTable');
         $revisionEntityId = $this->getEvent()->getRouteMatch()->getParam('revisionEntityId');
-
-        $auditService = $this->getServiceLocator()->get('ZF\Doctrine\Audit\Service\AuditService');
 
         $revisionEntity = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->find($revisionEntityId);

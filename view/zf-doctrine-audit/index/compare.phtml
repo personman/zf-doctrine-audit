@@ -9,11 +9,11 @@
                     $this->url(
                         'audit/entity',
                         array(
-                            'entityClass' => $revisionEntity_old->getAuditEntity()->getAuditedEntityClass(),
+                            'entityClass' => $this->auditService()->getAuditEntity($revisionEntity_old)->getAuditedEntityClass(),
                         )
                     );?>
 
-        " class="btn btn-primary"><?php echo $this->escapeHtml($revisionEntity_old->getAuditEntity()->getAuditedEntityClass()); ?></a>
+        " class="btn btn-primary"><?php echo $this->escapeHtml($this->auditService()->getAuditEntity($revisionEntity_old)->getAuditedEntityClass()); ?></a>
         between
 
             <?= $this->auditRevisionEntityLink($revisionEntity_old); ?>
@@ -34,8 +34,8 @@
     <tbody>
 
         <?php
-        $oldValues = $this->auditService()->getEntityValues($revisionEntity_old->getAuditEntity());
-        $newValues = $this->auditService()->getEntityValues($revisionEntity_new->getAuditEntity());
+        $oldValues = $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_old));
+        $newValues = $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_new));
 
         foreach ($oldValues as $field => $value) {
         ?>
@@ -116,7 +116,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($this->auditService()->getEntityValues($revisionEntity_old->getAuditEntity()) as $field => $value): ?>
+        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_old)) as $field => $value): ?>
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
@@ -164,7 +164,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($this->auditService()->getEntityValues($revisionEntity_new->getAuditEntity()) as $field => $value): ?>
+        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_new)) as $field => $value): ?>
             <tr>
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
