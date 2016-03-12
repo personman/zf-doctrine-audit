@@ -24,6 +24,7 @@ class AuditOptionsInitializer implements InitializerInterface
                 'revision_table_name' => $config['revision_table_name'] ?? 'Revision',
                 'revision_entity_table_name' => $config['revision_entity_table_name'] ?? 'RevisionEntity',
                 'user_entity_class_name' => $config['user_entity_class_name'] ?? '',
+                'epoch_import_limit' => $config['epoch_import_limit'] ?? 200,
             ];
 
             $instance->setAuditOptions($options);

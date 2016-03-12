@@ -20,6 +20,9 @@ the revision entity for each audited record in a flush.
 Auditing is done in it's own transaction after a flush has been performed.  
 Auditing takes two flushes in one transaction to complete.
 
+The basic concept was inspired by 
+[SimpleThings](https://packagist.org/packages/simplethings/entity-audit-bundle)
+
 
 Install
 =======
@@ -171,6 +174,3 @@ Returns the routing information for an entity by class name
 ```
 $view->auditEntityOptions($entityClassName);
 ```
-
-
-Inspired by SimpleThings

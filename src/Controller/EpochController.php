@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 namespace ZF\Doctrine\Audit\Controller;
 
@@ -8,6 +8,7 @@ use Zend\Console\Request as ConsoleRequest;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\Console\ColorInterface as Color;
 use Zend\Console\Prompt;
+use Zend\ProgressBar\Adapter\Console as ProgressBar;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
 use RuntimeException;
@@ -16,6 +17,7 @@ use ZF\Doctrine\Audit\Persistence;
 use Zend\Code\Reflection\ClassReflection;
 use DateTime;
 use ZF\Doctrine\Audit\Entity;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class EpochController extends AbstractActionController implements
     Persistence\AuditEntitiesAwareInterface,
@@ -63,21 +65,35 @@ class EpochController extends AbstractActionController implements
             $paginator = new Paginator(
                 $queryBuilder->getQuery()
                     ->setFirstResult(0)
-                    ->setMaxResults(100)
+                    ->setMaxResults($this->getAuditOptions()['epoch_import_limit'])
             );
+
+            $paginatorCount = count($paginator);
+
+            if ($paginatorCount) {
+                $progressBar = new ProgressBar($console);
+                $console->write($className . " ", Color::YELLOW);
+                $console->write($paginatorCount . ' records' . "\n", Color::RED);
+                $timeStart = new DateTime();
+                $totalCount = 0;
+            }
 
             $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', $className);
 
             $revisionNumber ++;
-            $revision = new Entity\Revision();
-            $revision->setTimestamp(new \DateTime());
-            $revision->setComment('Epoch');
-            $this->getAuditObjectManager()->persist($revision);
 
             $start = 0;
             $dataCount = 0;
             while (true) {
                 foreach ($paginator as $entity) {
+                    if (! isset($revision) || ! $revision) {
+                        $revision = new Entity\Revision();
+                        $revision->setTimestamp(new \DateTime());
+                        $revision->setComment('Epoch');
+                        $this->getAuditObjectManager()->persist($revision);
+                    } else {
+                        $revision = $this->getAuditObjectManager()->merge($revision);
+                    }
 
                     $revisionEntity = new Entity\RevisionEntity();
                     $revisionEntity->setRevision($revision);
@@ -90,7 +106,6 @@ class EpochController extends AbstractActionController implements
                     if (method_exists($entity, '__toString')) {
                         $revisionEntity->setTitle((string) $entity);
                     }
-                    echo $revisionEntity->getTitle();
 
                     $auditEntity = new $auditEntityClass();
                     $auditEntity->exchangeArray($this->getClassProperties($entity));
@@ -100,20 +115,31 @@ class EpochController extends AbstractActionController implements
                     $this->getAuditObjectManager()->persist($auditEntity);
 
                     $dataCount ++;
+                    $totalCount ++;
                 }
-
-                $this->getObjectManager()->clear();
-                $this->getAuditObjectManager()->flush();
 
                 if (! $dataCount) {
+                    unset($revision);
                     break;
+                } else {
+                    $this->getAuditObjectManager()->flush();
+                    $this->getAuditObjectManager()->detach($revision);
+                    $this->getAuditObjectManager()->clear();
+                    $this->getObjectManager()->clear();
                 }
+                $progressBar->notify(
+                    $totalCount, 
+                    $paginatorCount, 
+                    round($totalCount / $paginatorCount, 2), 
+                    null, null, null);
+
                 $dataCount = 0;
 
-                $start += 100;
+                $start += $this->getAuditOptions()['epoch_import_limit'];
                 $paginator->getQuery()->setFirstResult($start);
             }
-            // when to flush?
+
+            $progressBar->finish();
         }
     }
 
@@ -122,14 +148,9 @@ class EpochController extends AbstractActionController implements
     {
         $properties = array();
 
-        $reflectedAuditedEntity = new ClassReflection($entity);
+        $hydrator = new DoctrineHydrator($this->getObjectManager());
 
-        // Get mapping from metadata
-
-        foreach ($reflectedAuditedEntity->getProperties() as $property) {
-            $property->setAccessible(true);
-            $value = $property->getValue($entity);
-
+        foreach ($hydrator->extract($entity) as $key => $value) {
             // If a property is an object we probably are not mapping that to
             // a field.  Do no special handing...
             if ($value instanceof PersistentCollection) {
@@ -138,9 +159,15 @@ class EpochController extends AbstractActionController implements
             // Set values to getId for classes
             if (gettype($value) == 'object' and method_exists($value, 'getId')) {
                 $value = $value->getId();
+            } else if ($value instanceof \Doctrine\ORM\PersistentCollection) {
+                continue;
+            } else if ($value instanceof \DateTime) {
+            } else if (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
+                echo get_class($value);
+                die();
             }
 
-            $properties[$property->getName()] = $value;
+            $properties[$key] = $value;
         }
 
         return $properties;

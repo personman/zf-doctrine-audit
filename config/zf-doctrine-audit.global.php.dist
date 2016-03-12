@@ -44,15 +44,14 @@ return array(
          * The user_entity_class_name is a string for the doctrine entity class
          * identifying a user in your application on the target_object_manager.
          *
-         * This class MUST implement:
-            $user->getId()
-            $user->getDisplayName()
-            $user->getEmail()
-         * No interface is provided so an out-of-the-box implementation of ZfcUser
-         * will work without adding an interface to define these functions.
-         * *No validation of implementation of these functions is made.*
+         * This class MUST implement ZF\Doctrine\Audit\Entity\UserInterface.php
          */
         'user_entity_class_name' => 'Database\Entity\User',
+
+        /**
+         * The authentication service for fetching the user_entity_class_name
+         */
+        'authentication_service' => 'Zend\Authentication\AuthenticationService',
 
         /*
          * Entities to audit are specified as array keys
