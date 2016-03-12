@@ -23,10 +23,22 @@ return array(
 
         'datetime_format' => 'r',
         'paginator_limit' => 20,
+
+        // If you use the same entity manager for the target and audit your table must
+        // be named differently.  Suffix is strongly recommended over prefix.
+        'audit_table_name_suffix' => '_audit',
         'audit_table_name_prefix' => '',
-        'audit_table_name_suffix' => '',
+
+	// In case you already have tables of the same name and use the same target 
+        // and audit database, you may customize the table names here.
         'revision_table_name' => 'Revision',
         'revision_entity_table_name' => 'RevisionEntity',
+
+	// The epoch command line tool will import an existing database into an
+        // empty audit database.  This setting controls how many entities are 
+        // imported per cycle.  If you run out of memory lower this value.  
+        // If memory is not a problem, to increase speed raise this value.
+        'epoch_import_limit' => 200,
 
         /**
          * The user_entity_class_name is a string for the doctrine entity class

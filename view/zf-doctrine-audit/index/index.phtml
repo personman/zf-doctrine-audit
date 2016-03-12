@@ -56,12 +56,28 @@
 
             <td>
             <?php
+            $count = 0;
             foreach ($revision->getRevisionEntities() as $revisionEntity) {
+                $count ++;
             ?>
                 <div>
                     <?= $this->auditRevisionEntityLink($revisionEntity); ?>
                 </div>
             <?php
+
+                if ($count == 25) {
+                    echo '<a href="';
+                    echo $this->url('audit/revisions',
+                        array(
+                            'revisionId' => $revision->getId()
+                        )
+                    );
+                ?>"> See More...
+                </a>
+            </td>
+                <?php
+                    break;
+                }
             }
             ?>
             </td>
