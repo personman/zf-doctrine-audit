@@ -243,7 +243,9 @@ class LogRevision implements
 
         $auditEntityClass = 'ZF\\Doctrine\\Audit\\Entity\\' . str_replace('\\', '_', get_class($entity));
         $auditEntity = new $auditEntityClass();
-        $auditEntity->exchangeArray($this->getClassProperties($entity));
+
+        $this->getAuditService()
+            ->hydrateAuditEntityFromTargetEntity($auditEntity, $entity);
         $auditEntity->setRevisionEntity($revisionEntity);
 
         // Re-exchange data after flush to map generated fields

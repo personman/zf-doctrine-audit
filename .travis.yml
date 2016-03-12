@@ -1,15 +1,29 @@
+sudo: false
+
 language: php
 
-php: 
-    - 5.5
-    - 5.4
-    - 5.3
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 matrix:
-    allow_failures:
-        - php: 5.5
-env:
-    - DB=sqlite
+  fast_finish: true
+  include:
+    - php: 7
+        - EXECUTE_CS_CHECK=true
+        - EXECUTE_COVERAGE=true
+    - php: hhvm 
+  allow_failures:
+    - php: hhvm
+  
+before_install:
+  - phpenv config-add .travis-config.ini || return 0
+  - if [[ $EXECUTE_COVERAGE != 'true' ]]; then phpenv config-rm xdebug.ini || return 0 ; fi
+  - composer self-update
 
-before_script:
-    - composer install --dev --prefer-source
+install:
+  - travis_retry composer install --no-interaction --ignore-platform-reqs --prefer-source
+
+script:
+  - ./vendor/bin/phpunit
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=test/Bootstrap.php src; fi

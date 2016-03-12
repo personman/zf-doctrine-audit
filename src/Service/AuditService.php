@@ -7,6 +7,7 @@ use ZF\Doctrine\Audit\Entity\AbstractAudit;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use ZF\Doctrine\Audit\Entity\RevisionEntity;
 use ZF\Doctrine\Audit\Persistence;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class AuditService extends AbstractHelper implements
     Persistence\AuditEntitiesAwareInterface,
@@ -53,6 +54,36 @@ class AuditService extends AbstractHelper implements
         ksort($return);
 
         return $return;
+    }
+
+    /**
+     * Extract entity into a flat array where references become getId()
+     * then hydrate the auditEntity with those values
+     */
+    public function hydrateAuditEntityFromTargetEntity($auditEntity, $entity)
+    {
+        $properties = array();
+        $hydrator = new DoctrineHydrator($this->getObjectManager());
+        $auditHydrator = new DoctrineHydrator($this->getAuditObjectManager());
+
+        foreach ($hydrator->extract($entity) as $key => $value) {
+            if (gettype($value) == 'object' and method_exists($value, 'getId')) {
+                // Set values to getId for classes
+                $value = $value->getId();
+            } elseif ($value instanceof \Doctrine\ORM\PersistentCollection) {
+                // If a property is an object we probably are not mapping that to
+                // a field.  Do no special handing...
+                continue;
+            } elseif ($value instanceof \DateTime) {
+                // DateTime is special and ok as-is
+            } elseif (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
+                throw new Exception(get_class($value) . " does not have a getId function");
+            }
+
+            $properties[$key] = $value;
+        }
+
+        $auditHydrator->hydrate($auditEntity, $properties);
     }
 
     public function getEntityAssociations(AbstractAudit $entity)

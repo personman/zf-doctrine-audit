@@ -10,14 +10,11 @@ use Zend\Console\ColorInterface as Color;
 use Zend\Console\Prompt;
 use Zend\ProgressBar\Adapter\Console as ProgressBar;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
-use RuntimeException;
 use Doctrine\ORM\Tools\SchemaTool;
 use ZF\Doctrine\Audit\Persistence;
-use Zend\Code\Reflection\ClassReflection;
-use DateTime;
 use ZF\Doctrine\Audit\Entity;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use RuntimeException;
+use DateTime;
 
 class EpochController extends AbstractActionController implements
     Persistence\AuditEntitiesAwareInterface,
@@ -110,7 +107,7 @@ class EpochController extends AbstractActionController implements
                 foreach ($paginator as $entity) {
                     if (! isset($revision) || ! $revision) {
                         $revision = new Entity\Revision();
-                        $revision->setTimestamp(new \DateTime());
+                        $revision->setTimestamp(new DateTime());
                         $revision->setComment('Epoch');
                         $this->getAuditObjectManager()->persist($revision);
                     } else {
@@ -123,14 +120,18 @@ class EpochController extends AbstractActionController implements
                     $revisionEntity->setRevisionType('EPO');
                     $revisionEntity->setAuditEntityClass($auditEntityClass);
                     $revisionEntity->setTargetEntityClass($className);
-                    $revisionEntity->setEntityKeys($this->getAuditService()->getEntityIdentifierValues($entity));
+                    $revisionEntity->setEntityKeys(
+                        $this->getAuditService()->getEntityIdentifierValues($entity)
+                    );
 
                     if (method_exists($entity, '__toString')) {
                         $revisionEntity->setTitle((string) $entity);
                     }
 
                     $auditEntity = new $auditEntityClass();
-                    $auditEntity->exchangeArray($this->getClassProperties($entity));
+
+                    $this->getAuditService()
+                        ->hydrateAuditEntityFromTargetEntity($auditEntity, $entity);
                     $auditEntity->setRevisionEntity($revisionEntity);
 
                     $this->getAuditObjectManager()->persist($revisionEntity);
@@ -166,35 +167,5 @@ class EpochController extends AbstractActionController implements
 
             $progressBar->finish();
         }
-    }
-
-    // Reflect audited entity properties
-    private function getClassProperties($entity)
-    {
-        $properties = array();
-
-        $hydrator = new DoctrineHydrator($this->getObjectManager());
-
-        foreach ($hydrator->extract($entity) as $key => $value) {
-            // If a property is an object we probably are not mapping that to
-            // a field.  Do no special handing...
-            if ($value instanceof PersistentCollection) {
-            }
-
-            // Set values to getId for classes
-            if (gettype($value) == 'object' and method_exists($value, 'getId')) {
-                $value = $value->getId();
-            } elseif ($value instanceof \Doctrine\ORM\PersistentCollection) {
-                continue;
-            } elseif ($value instanceof \DateTime) {
-            } elseif (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
-                echo get_class($value);
-                die();
-            }
-
-            $properties[$key] = $value;
-        }
-
-        return $properties;
     }
 }
