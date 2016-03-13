@@ -1,0 +1,219 @@
+association-source.phtml:<?php $paginator = $this->auditAssociationSourcePaginator($this->page, $this->revisionEntity, $this->joinTable); ?>
+association-source.phtml:            <?php echo $this->paginationControl($paginator,
+association-source.phtml:            <?php echo $this->paginationControl($paginator,
+association-source.phtml:                    $this->url('audit/revisions',
+association-source.phtml:                    <?= $this->escapeHtml($revisionEntity->getRevision()->getId());?>
+association-source.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+association-source.phtml:                <?= $this->auditRevisionEntityLink($association->getSourceRevisionEntity()); ?>
+association-source.phtml:                <?= $this->auditRevisionEntityLink($association->getTargetRevisionEntity()); ?>
+association-source.phtml:                <?= $this->escapeHtml($revisionEntity->getRevision()->getComment()); ?>
+association-source.phtml:                        echo $this->url('audit/user', array('userId' => $revisionEntity->getRevision()->getUser()->getId()));
+association-source.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+association-source.phtml:                            echo $this->gravatar($revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+association-source.phtml:                            echo $this->escapeHtml($revisionEntity->getRevision()->getUser()->getDisplayName());
+association-source.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+association-target.phtml:<?php $paginator = $this->auditAssociationTargetPaginator($this->page, $this->revisionEntity, $this->joinTable); ?>
+association-target.phtml:            <?php echo $this->paginationControl($paginator,
+association-target.phtml:            <?php echo $this->paginationControl($paginator,
+association-target.phtml:                    $this->url('audit/revisions',
+association-target.phtml:                    <?= $this->escapeHtml($revisionEntity->getRevision()->getId());?>
+association-target.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+association-target.phtml:                <?= $this->auditRevisionEntityLink($association->getTargetRevisionEntity()); ?>
+association-target.phtml:                <?= $this->auditRevisionEntityLink($association->getSourceRevisionEntity()); ?>
+association-target.phtml:            <td><?= $this->escapeHtml($revisionEntity->getRevision()->getComment()); ?></td>
+association-target.phtml:                        echo $this->url('audit/user', array('userId' => $revisionEntity->getRevision()->getUser()->getId()));
+association-target.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+association-target.phtml:                            echo $this->gravatar($revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+association-target.phtml:                            echo $this->escapeHtml($revisionEntity->getRevision()->getUser()->getDisplayName());
+association-target.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+association.phtml:<?php $paginator = $this->auditAssociationPaginator($this->page, $this->revisionEntity, $this->joinTable); ?>
+association.phtml:            <?php echo $this->paginationControl($paginator,
+association.phtml:            <?php echo $this->paginationControl($paginator,
+association.phtml:                    $this->url('audit/revisions',
+association.phtml:                    <?= $this->escapeHtml($revisionEntity->getRevision()->getId());?>
+association.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+association.phtml:                <?= $this->auditRevisionEntityLink($association->getTargetRevisionEntity()); ?>
+association.phtml:                <?= $this->auditRevisionEntityLink($association->getSourceRevisionEntity()); ?>
+association.phtml:            <td><?= $this->escapeHtml($revisionEntity->getRevision()->getComment()); ?></td>
+association.phtml:                        echo $this->url('audit/user', array('userId' => $revisionEntity->getRevision()->getUser()->getId()));
+association.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+association.phtml:                            echo $this->gravatar($revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+association.phtml:                            echo $this->escapeHtml($revisionEntity->getRevision()->getUser()->getDisplayName());
+association.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+compare.phtml:                    $this->url(
+compare.phtml:                            'entityClass' => $this->auditService()->getAuditEntity($revisionEntity_old)->getAuditedEntityClass(),
+compare.phtml:        " class="btn btn-primary"><?php echo $this->escapeHtml($this->auditService()->getAuditEntity($revisionEntity_old)->getAuditedEntityClass()); ?></a>
+compare.phtml:            <?= $this->auditRevisionEntityLink($revisionEntity_old); ?>
+compare.phtml:            <?= $this->auditRevisionEntityLink($revisionEntity_new); ?>
+compare.phtml:        $oldValues = $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_old));
+compare.phtml:        $newValues = $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_new));
+compare.phtml:                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+compare.phtml:                            echo $this->escapeHtml($oldValues[$field]);
+compare.phtml:                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+compare.phtml:                            echo $this->escapeHtml($oldValues[$field]);
+compare.phtml:                            echo $this->AuditDateTimeFormatter($newValues[$field]);
+compare.phtml:                            echo $this->escapeHtml($newValues[$field]);
+compare.phtml:                    $this->url('audit/revisions',
+compare.phtml:                    <?= $this->escapeHtml($revisionEntity_old->getRevision()->getId());?>
+compare.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
+compare.phtml:                <?= $this->auditRevisionEntityLink($revisionEntity_old); ?>
+compare.phtml:        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_old)) as $field => $value): ?>
+compare.phtml:                <td><?php  echo $this->escapeHtml($field); ?></td>
+compare.phtml:                        <?php echo  $this->AuditDateTimeFormatter($value); ?>
+compare.phtml:                        <?php  echo $this->escapeHtml($value); ?>
+compare.phtml:                    $this->url('audit/revisions',
+compare.phtml:                    <?= $this->escapeHtml($revisionEntity_old->getRevision()->getId());?>
+compare.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
+compare.phtml:                <?= $this->auditRevisionEntityLink($revisionEntity_new); ?>
+compare.phtml:        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity_new)) as $field => $value): ?>
+compare.phtml:                <td><?php  echo $this->escapeHtml($field); ?></td>
+compare.phtml:                        <?php echo  $this->AuditDateTimeFormatter($value); ?>
+compare.phtml:                        <?php  echo $this->escapeHtml($value); ?>
+entity.phtml:<?php $paginator = $this->auditRevisionEntityPaginator($page, $this->entityClass); ?>
+entity.phtml:                    $this->url(
+entity.phtml:                            'entityClass' => $this->entityClass,
+entity.phtml:        " class="btn btn-primary"><?= $this->escapeHtml($this->entityClass); ?></a>
+entity.phtml:                <?= $this->paginationControl($paginator,
+entity.phtml:                        'entityClass' => $this->entityClass,
+entity.phtml:                <?= $this->paginationControl($paginator,
+entity.phtml:                        'entityClass' => $this->entityClass,
+entity.phtml:                    $this->url('audit/revisions',
+entity.phtml:                    @ <?= $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?></a>
+entity.phtml:                <?= $this->auditRevisionEntityLink($revisionEntity); ?>
+entity.phtml:            <td><?= $this->escapeHtml($revisionEntity->getRevision()->getComment()); ?></td>
+entity.phtml:                        echo $this->url('audit/user', array('userId' => $revisionEntity->getRevision()->getUser()->getId()));
+entity.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+entity.phtml:                            echo $this->gravatar($revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+entity.phtml:                            echo $this->escapeHtml($revisionEntity->getRevision()->getUser()->getDisplayName());
+entity.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+index.phtml:<?php $paginator = $this->auditRevisionPaginator($this->page); ?>
+index.phtml:            <?php echo $this->paginationControl($paginator,
+index.phtml:            <?php echo $this->paginationControl($paginator,
+index.phtml:                    $this->url('audit/revisions',
+index.phtml:                    <?= $this->escapeHtml($revision->getId());?>
+index.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revision->getTimestamp()); ?>
+index.phtml:                    <?= $this->auditRevisionEntityLink($revisionEntity); ?>
+index.phtml:                    echo $this->url('audit/revisions',
+index.phtml:            <td><?= $this->escapeHtml($revision->getComment()); ?></td>
+index.phtml:                        echo $this->url('audit/user', array('userId' => $revision->getUser()->getId()));
+index.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+index.phtml:                            echo $this->gravatar($revision->getUser()->getEmail(), array('img_size' => 24));
+index.phtml:                            echo $this->escapeHtml($revision->getUser()->getDisplayName());
+index.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+one-to-many.phtml:                    $this->url('audit/revisions',
+one-to-many.phtml:                            'revisionId' => $this->revisionEntity->getRevision()->getId()
+one-to-many.phtml:                    <?= $this->revisionEntity->getRevision()->getId(); ?>
+one-to-many.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+one-to-many.phtml:                <?= $this->auditRevisionEntityLink($revisionEntity); ?>
+one-to-many.phtml:            <td><?= $this->escapeHtml($this->revisionEntity->getRevision()->getComment()); ?></td>
+one-to-many.phtml:                    if ($this->revisionEntity->getRevision()->getUser()) {
+one-to-many.phtml:                        echo $this->url('audit/user', array('userId' => $this->revisionEntity->getRevision()->getUser()->getId()));
+one-to-many.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+one-to-many.phtml:                        if ($this->revisionEntity->getRevision()->getUser()) {
+one-to-many.phtml:                            echo $this->gravatar($this->revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+one-to-many.phtml:                            echo $this->escapeHtml($this->revisionEntity->getRevision()->getUser()->getDisplayName());
+one-to-many.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+one-to-many.phtml:    $paginator = $this->auditOneToManyPaginator(
+one-to-many.phtml:        $this->page,
+one-to-many.phtml:        $this->revisionEntity,
+one-to-many.phtml:        $this->joinTable,
+one-to-many.phtml:        $this->mappedBy
+one-to-many.phtml:            <?php echo $this->paginationControl($paginator,
+one-to-many.phtml:            <?php echo $this->paginationControl($paginator,
+one-to-many.phtml:                    $this->url('audit/revisions',
+one-to-many.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($association->getRevision()->getTimestamp()); ?>
+one-to-many.phtml:                <?= $this->auditRevisionEntityLink($association); ?>
+one-to-many.phtml:            <td><?= $this->escapeHtml($association->getRevision()->getComment()); ?></td>
+one-to-many.phtml:                        echo $this->url('audit/user', array('userId' => $association->getRevision()->getUser()->getId()));
+one-to-many.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+one-to-many.phtml:                            echo $this->gravatar($association->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+one-to-many.phtml:                            echo $this->escapeHtml($association->getRevision()->getUser()->getDisplayName());
+one-to-many.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+revision-entity.phtml:                    $this->url('audit/revisions',
+revision-entity.phtml:                            'revisionId' => $this->revisionEntity->getRevision()->getId()
+revision-entity.phtml:                    <?= $this->revisionEntity->getRevision()->getId(); ?>
+revision-entity.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+revision-entity.phtml:                <?= $this->auditRevisionEntityLink($revisionEntity); ?>
+revision-entity.phtml:            <td><?= $this->escapeHtml($this->revisionEntity->getRevision()->getComment()); ?></td>
+revision-entity.phtml:                    if ($this->revisionEntity->getRevision()->getUser()) {
+revision-entity.phtml:                        echo $this->url('audit/user', array('userId' => $this->revisionEntity->getRevision()->getUser()->getId()));
+revision-entity.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+revision-entity.phtml:                        if ($this->revisionEntity->getRevision()->getUser()) {
+revision-entity.phtml:                            echo $this->gravatar($this->revisionEntity->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+revision-entity.phtml:                            echo $this->escapeHtml($this->revisionEntity->getRevision()->getUser()->getDisplayName());
+revision-entity.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+revision-entity.phtml:            $this->auditService()->getEntityValues($this->auditService()->getAuditEntity($this->revisionEntity)) as $field => $value) { ?>
+revision-entity.phtml:                <td><?php  echo $this->escapeHtml($field); ?></td>
+revision-entity.phtml:                    if (in_array($field, array_keys($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity))))) {
+revision-entity.phtml:                        $associationRevisionEntity = $this->auditService()->getAssociationRevisionEntity($this->auditService()->getAuditEntity($this->revisionEntity), $field, $value);
+revision-entity.phtml:                            echo $this->auditRevisionEntityLink($associationRevisionEntity);
+revision-entity.phtml:                            echo $this->AuditDateTimeFormatter($value);
+revision-entity.phtml:                            echo $this->escapeHtml($value);
+revision-entity.phtml:        if ($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity))) {
+revision-entity.phtml:                foreach($this->auditService()->getEntityAssociations($this->auditService()->getAuditEntity($this->revisionEntity)) as $field => $value) {
+revision-entity.phtml:                                <td><?php  echo $this->escapeHtml($field); ?></td>
+revision-entity.phtml:                                switch ($this->revisionEntity->getRevisionType()) {
+revision-entity.phtml:                                    $this->url(
+revision-entity.phtml:                                            'revisionEntityId' => $this->revisionEntity->getId(),
+revision-entity.phtml:                                <?= $this->escapeHtml($value['targetEntity']); ?>
+revision-entity.phtml:                                <td><?php  echo $this->escapeHtml($field); ?></td>
+revision-entity.phtml:                                switch ($this->revisionEntity->getRevisionType()) {
+revision-entity.phtml:                                    $this->url(
+revision-entity.phtml:                                            'revisionEntityId' => $this->revisionEntity->getId(),
+revision-entity.phtml:                                <?= $this->escapeHtml($join['joinTable']['name']); ?>
+revision-entity.phtml:                                (<?= $this->escapeHtml($join['sourceEntity']); ?>)
+revision-entity.phtml:                                    $this->url(
+revision-entity.phtml:                                            'revisionEntityId' => $this->revisionEntity->getId(),
+revision-entity.phtml:                                <?= $this->escapeHtml($value['joinTable']['name']); ?>
+revision-entity.phtml:                                (<?= $this->escapeHtml($value['targetEntity']); ?>)
+revision-entity.phtml:    $this->url('audit/compare',
+revision-entity.phtml:    $paginator = $this->auditRevisionEntityPaginator($page, $this->auditService()->getAuditEntity($this->revisionEntity));
+revision-entity.phtml:                $this->paginationControl($paginator,
+revision-entity.phtml:                        'revisionEntityId' => $this->revisionEntity->getId(),
+revision-entity.phtml:                $this->paginationControl($paginator,
+revision-entity.phtml:                        'revisionEntityId' => $this->revisionEntity->getId(),
+revision-entity.phtml:                        $this->url('audit/revisions',
+revision-entity.phtml:                        @ <?php echo $this->AuditDateTimeFormatter($rev->getRevision()->getTimestamp()); ?>
+revision-entity.phtml:                    <?= $this->auditRevisionEntityLink($rev); ?>
+revision-entity.phtml:                <td><?= $this->escapeHtml($rev->getRevision()->getComment()); ?></td>
+revision-entity.phtml:                            echo $this->url('audit/user', array('userId' => $rev->getRevision()->getUser()->getId()));
+revision-entity.phtml:                            echo $this->url('audit/user', array('userId' => '0'));
+revision-entity.phtml:                                echo $this->gravatar($rev->getRevision()->getUser()->getEmail(), array('img_size' => 24));
+revision-entity.phtml:                                echo $this->escapeHtml($rev->getRevision()->getUser()->getDisplayName());
+revision-entity.phtml:                                echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+revision-entity.phtml:                    <input type="radio" name="revisionEntityId_old" value="<?php  echo $this->escapeHtml($rev->getId()); ?>"
+revision-entity.phtml:                        if (sizeof($paginator) == 1 or ($rev == $this->revisionEntity and !$first) or (!$oldSet and !$first)) {
+revision-entity.phtml:                    <input type="radio" name="revisionEntityId_new" value="<?php  echo $this->escapeHtml($rev->getId()); ?>"
+revision-entity.phtml:            $this->url(
+revision-entity.phtml:                    'entityClass' => $this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass(),
+revision-entity.phtml:        $this->escapeHtml($this->auditService()->getAuditEntity($this->revisionEntity)->getAuditedEntityClass());
+revision.phtml:                <?= $this->escapeHtml($this->revision->getId());?>
+revision.phtml:                @ <?php echo $this->AuditDateTimeFormatter($this->revision->getTimestamp()); ?>
+revision.phtml:            <td><?= $this->escapeHtml($this->revision->getComment()); ?></td>
+revision.phtml:                    if ($this->revision->getUser()) {
+revision.phtml:                        echo $this->url('audit/user', array('userId' => $this->revision->getUser()->getId()));
+revision.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+revision.phtml:                        if ($this->revision->getUser()) {
+revision.phtml:                            echo $this->gravatar($this->revision->getUser()->getEmail(), array('img_size' => 24));
+revision.phtml:                            echo $this->escapeHtml($this->revision->getUser()->getDisplayName());
+revision.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));
+revision.phtml:foreach ($this->revision->getRevisionEntities() as $revisionEntity) {
+revision.phtml:<?= $this->auditRevisionEntityLink($revisionEntity); ?>
+revision.phtml:        <?php foreach ($this->auditService()->getEntityValues($this->auditService()->getAuditEntity($revisionEntity)) as $field => $value): ?>
+revision.phtml:                <td><?php  echo $this->escapeHtml($field); ?></td>
+revision.phtml:                        <?php echo  $this->AuditDateTimeFormatter($value); ?>
+revision.phtml:                        <?php  echo $this->escapeHtml($value); ?>
+user.phtml:    <h1>Audit by user <?= $this->escapeHtml($user->getDisplayName()); ?></h1>
+user.phtml:<?php $paginator = $this->auditRevisionPaginator($this->page, array('user' => $userId)); ?>
+user.phtml:            <?php echo $this->paginationControl($paginator,
+user.phtml:            <?php echo $this->paginationControl($paginator,
+user.phtml:                    $this->url('audit/revisions',
+user.phtml:                    <?= $this->escapeHtml($revision->getId());?>
+user.phtml:                    @ <?php echo $this->AuditDateTimeFormatter($revision->getTimestamp()); ?>
+user.phtml:                    <?= $this->auditRevisionEntityLink($revisionEntity); ?>
+user.phtml:            <td><?= $this->escapeHtml($revision->getComment()); ?></td>
+user.phtml:                        echo $this->url('audit/user', array('userId' => $revision->getUser()->getId()));
+user.phtml:                        echo $this->url('audit/user', array('userId' => '0'));
+user.phtml:                            echo $this->gravatar($revision->getUser()->getEmail(), array('img_size' => 24));
+user.phtml:                            echo $this->escapeHtml($revision->getUser()->getDisplayName());
+user.phtml:                            echo $this->gravatar('anonymous@unknown.net', array('img_size' => 24));

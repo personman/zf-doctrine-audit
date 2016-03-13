@@ -13,35 +13,21 @@ use ZF\Doctrine\Audit\Persistence;
  * instead created by this abstract factory.
  */
 
-class ZFDoctrineAuditAbstractFactory implements
+abstract class AbstractAbstractFactory implements
     AbstractFactoryInterface
 {
     protected $factoryClasses = [
-        'ZF\Doctrine\Audit\EventListener\LogRevision',
-        'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
-        'ZF\Doctrine\Audit\Service\AuditService',
-        'ZF\Doctrine\Audit\Loader\AuditAutoloader',
         'ZF\Doctrine\Audit\Controller\IndexController',
         'ZF\Doctrine\Audit\Controller\SchemaToolController',
         'ZF\Doctrine\Audit\Controller\EpochController',
-        'ZF\Doctrine\Audit\View\Helper\CurrentRevisionEntity',
-        'ZF\Doctrine\Audit\View\Helper\EntityOptions',
-        'ZF\Doctrine\Audit\View\Helper\RevisionEntityLink',
-        'ZF\Doctrine\Audit\View\Helper\RevisionPaginator',
-        'ZF\Doctrine\Audit\View\Helper\RevisionEntityPaginator',
-        'ZF\Doctrine\Audit\View\Helper\AssociationSourcePaginator',
-        'ZF\Doctrine\Audit\View\Helper\AssociationTargetPaginator',
-        'ZF\Doctrine\Audit\View\Helper\OneToManyPaginator',
-        'ZF\Doctrine\Audit\View\Helper\DateTimeFormatter',
-        'ZF\Doctrine\Audit\Service\AuditService',
     ];
 
     protected $initializers;
 
-    public function createInitializers()
+    public function getInitializers()
     {
         if ($this->initializers) {
-            return;
+            return $this->initializers;
         }
 
         $this->initializers[] = new Persistence\ObjectManagerInitializer();
@@ -50,6 +36,8 @@ class ZFDoctrineAuditAbstractFactory implements
         $this->initializers[] = new Persistence\AuditOptionsInitializer();
         $this->initializers[] = new Persistence\AuditEntitiesInitializer();
         $this->initializers[] = new Persistence\AuthenticationServiceInitializer();
+
+        return $this->initializers;
     }
 
     public function canCreateServiceWithName(
@@ -57,7 +45,7 @@ class ZFDoctrineAuditAbstractFactory implements
         $name,
         $requestedName)
     {
-        return in_array($requestedName, $this->factoryClasses);
+        return in_array($requestedName, array_keys($this->factoryClasses));
     }
 
     public function createServiceWithName(
@@ -65,10 +53,14 @@ class ZFDoctrineAuditAbstractFactory implements
         $name,
         $requestedName)
     {
-        $this->createInitializers();
+echo ($requestedName . "<BR>");
+        $instance = new $this->factoryClasses[$requestedName]();
 
-        $instance = new $requestedName();
-        foreach ($this->initializers as $initializer) {
+        if (method_exists($serviceLocator, 'getServiceLocator')) {
+            $serviceLocator = $serviceLocator->getServiceLocator();
+        }
+
+        foreach ($this->getInitializers() as $initializer) {
             $initializer->initialize($instance, $serviceLocator);
         }
 
