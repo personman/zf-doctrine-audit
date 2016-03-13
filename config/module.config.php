@@ -8,14 +8,15 @@ return array(
     ),
 
     'controllers' => array(
-        'invokables' => array(
- #           'ZF\Doctrine\Audit\Controller\Index' => 'ZF\Doctrine\Audit\Controller\IndexController',
- #           'ZF\\Doctrine\\Audit\\Controller\\SchemaTool' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
- #           'ZF\\Doctrine\\Audit\\Controller\\Epoch' => 'ZF\\Doctrine\\Audit\\Controller\\EpochController',
+        'abstract_factories' => array(
+            'ZF\\Doctrine\\Audit\\Factory\\ZFDoctrineAuditAbstractFactory',
         ),
     ),
 
     'view_helpers' => array(
+        'abstract_factories' => array(
+            'ZF\\Doctrine\\Audit\\Factory\\ZFDoctrineAuditAbstractFactory',
+        ),
         'invokables' => array(
             'auditCurrentRevisionEntity' => 'ZF\Doctrine\Audit\View\Helper\CurrentRevisionEntity',
             'auditEntityOptions' => 'ZF\Doctrine\Audit\View\Helper\EntityOptions',
