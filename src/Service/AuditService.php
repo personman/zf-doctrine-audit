@@ -63,8 +63,8 @@ class AuditService extends AbstractHelper implements
     public function hydrateAuditEntityFromTargetEntity($auditEntity, $entity)
     {
         $properties = array();
-        $hydrator = new DoctrineHydrator($this->getObjectManager());
-        $auditHydrator = new DoctrineHydrator($this->getAuditObjectManager());
+        $hydrator = new DoctrineHydrator($this->getObjectManager(), true);
+        $auditHydrator = new DoctrineHydrator($this->getAuditObjectManager(), false);
 
         foreach ($hydrator->extract($entity) as $key => $value) {
             if (gettype($value) == 'object' and method_exists($value, 'getId')) {
@@ -83,7 +83,7 @@ class AuditService extends AbstractHelper implements
             $properties[$key] = $value;
         }
 
-        $auditHydrator->hydrate($auditEntity, $properties);
+        $auditHydrator->hydrate($properties, $auditEntity);
     }
 
     public function getEntityAssociations(AbstractAudit $entity)

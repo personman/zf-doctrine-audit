@@ -202,7 +202,16 @@ return array(
             'routes' => array(
                 'zf-doctrine-audit-epoch' => array(
                     'options' => array(
-                        'route' => 'zf-doctrine-audit:epoch:create',
+                        'route' => 'zf-doctrine-audit:epoch:create-from-sql',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Epoch',
+                            'action' => 'sql',
+                        ),
+                    ),
+                ),
+                'zf-doctrine-audit-schema-tool-update' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:epoch:create-from-entities',
                         'defaults' => array(
                             'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Epoch',
                             'action' => 'index',

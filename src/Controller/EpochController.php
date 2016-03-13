@@ -167,5 +167,7 @@ class EpochController extends AbstractActionController implements
 
             $progressBar->finish();
         }
+
+        $console->write("\nEpoch is complete\n", Color::CYAN);
     }
 }
