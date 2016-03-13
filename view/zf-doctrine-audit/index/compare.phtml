@@ -45,7 +45,7 @@
                     <?php
                     if ($oldValues[$field] != $newValues[$field] && !$newValues[$field] && $oldValues[$field]) {
                         if ($oldValues[$field] instanceof DateTime) {
-                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+                            echo $this->auditDateTimeFormatter($oldValues[$field]);
                         } else {
                             echo $this->escapeHtml($oldValues[$field]);
                         }
@@ -56,7 +56,7 @@
                     <?php
                     if ($oldValues[$field] == $newValues[$field]) {
                         if ($oldValues[$field] instanceof DateTime) {
-                            echo $this->AuditDateTimeFormatter($oldValues[$field]);
+                            echo $this->auditDateTimeFormatter($oldValues[$field]);
                         } else {
                             echo $this->escapeHtml($oldValues[$field]);
                         }
@@ -67,7 +67,7 @@
                     <?php
                     if ($oldValues[$field] != $newValues[$field] && $newValues[$field]) {
                         if ($newValues[$field] instanceof DateTime) {
-                            echo $this->AuditDateTimeFormatter($newValues[$field]);
+                            echo $this->auditDateTimeFormatter($newValues[$field]);
                         } else {
                             echo $this->escapeHtml($newValues[$field]);
                         }
@@ -97,7 +97,7 @@
                 ?>">
 
                     <?= $this->escapeHtml($revisionEntity_old->getRevision()->getId());?>
-                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
 
                 </a>
 
@@ -121,7 +121,7 @@
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
                     <?php if ($value instanceof DateTime): ?>
-                        <?php echo  $this->AuditDateTimeFormatter($value); ?>
+                        <?php echo  $this->auditDateTimeFormatter($value); ?>
                     <?php else : ?>
                         <?php  echo $this->escapeHtml($value); ?>
                     <?php endif; ?>
@@ -148,7 +148,7 @@
                 ?>">
 
                     <?= $this->escapeHtml($revisionEntity_old->getRevision()->getId());?>
-                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($revisionEntity_old->getRevision()->getTimestamp()); ?>
 
                 </a>
 
@@ -169,7 +169,7 @@
                 <td><?php  echo $this->escapeHtml($field); ?></td>
                 <td>
                     <?php if ($value instanceof DateTime): ?>
-                        <?php echo  $this->AuditDateTimeFormatter($value); ?>
+                        <?php echo  $this->auditDateTimeFormatter($value); ?>
                     <?php else : ?>
                         <?php  echo $this->escapeHtml($value); ?>
                     <?php endif; ?>

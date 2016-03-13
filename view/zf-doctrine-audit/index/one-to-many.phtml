@@ -27,7 +27,7 @@
 
                     <?= $this->revisionEntity->getRevision()->getId(); ?>
 
-                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
                 </a>
 
             </td>
@@ -114,7 +114,7 @@
 
                     <?= $association->getRevision()->getId(); ?>
 
-                    @ <?php echo $this->AuditDateTimeFormatter($association->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($association->getRevision()->getTimestamp()); ?>
                 </a>
 
             </td>

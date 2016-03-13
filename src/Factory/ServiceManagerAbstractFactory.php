@@ -2,7 +2,7 @@
 
 namespace ZF\Doctrine\Audit\Factory;
 
-class ServiceManagerAbstractFactory extends AbstractAbstractFactory 
+class ServiceManagerAbstractFactory extends AbstractAbstractFactory
 {
     protected $factoryClasses = [
         'ZF\Doctrine\Audit\EventListener\LogRevision' =>

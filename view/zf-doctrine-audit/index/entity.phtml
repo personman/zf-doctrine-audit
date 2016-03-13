@@ -65,7 +65,7 @@ foreach ($paginator as $revisionEntity) {
                 ?>">
 
                     <?= $revisionEntity->getRevision()->getId(); ?>
-                    @ <?= $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?></a>
+                    @ <?= $this->auditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?></a>
             </td>
             <td>
                 <?= $this->auditRevisionEntityLink($revisionEntity); ?>

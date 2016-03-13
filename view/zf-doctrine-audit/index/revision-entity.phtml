@@ -27,7 +27,7 @@
 
                     <?= $this->revisionEntity->getRevision()->getId(); ?>
 
-                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
                 </a>
 
             </td>
@@ -88,7 +88,7 @@
                         }
                     } else {
                         if ($value instanceof DateTime) {
-                            echo $this->AuditDateTimeFormatter($value);
+                            echo $this->auditDateTimeFormatter($value);
                         } else {
                             echo $this->escapeHtml($value);
                         }
@@ -344,7 +344,7 @@
                     ?>">
 
                         <?= $rev->getRevision()->getId(); ?>
-                        @ <?php echo $this->AuditDateTimeFormatter($rev->getRevision()->getTimestamp()); ?>
+                        @ <?php echo $this->auditDateTimeFormatter($rev->getRevision()->getTimestamp()); ?>
 
                     </a>
                 </td>

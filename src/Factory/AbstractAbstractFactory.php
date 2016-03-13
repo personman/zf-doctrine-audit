@@ -10,18 +10,13 @@ use ZF\Doctrine\Audit\Persistence;
  * This module uses many classes which implement the same interfaces.
  * Instead of assigning instantiators for Controllers, View Plugins,
  * and the Global Service Manager, all classes in this module are
- * instead created by this abstract factory.
+ * instead created through this abstract factory.
  */
 
 abstract class AbstractAbstractFactory implements
     AbstractFactoryInterface
 {
-    protected $factoryClasses = [
-        'ZF\Doctrine\Audit\Controller\IndexController',
-        'ZF\Doctrine\Audit\Controller\SchemaToolController',
-        'ZF\Doctrine\Audit\Controller\EpochController',
-    ];
-
+    protected $factoryClasses;
     protected $initializers;
 
     public function getInitializers()
@@ -43,17 +38,18 @@ abstract class AbstractAbstractFactory implements
     public function canCreateServiceWithName(
         ServiceLocatorInterface $serviceLocator,
         $name,
-        $requestedName)
-    {
+        $requestedName
+    ) {
+    
         return in_array($requestedName, array_keys($this->factoryClasses));
     }
 
     public function createServiceWithName(
         ServiceLocatorInterface $serviceLocator,
         $name,
-        $requestedName)
-    {
-echo ($requestedName . "<BR>");
+        $requestedName
+    ) {
+    
         $instance = new $this->factoryClasses[$requestedName]();
 
         if (method_exists($serviceLocator, 'getServiceLocator')) {

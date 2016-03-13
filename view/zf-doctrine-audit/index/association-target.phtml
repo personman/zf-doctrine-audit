@@ -50,7 +50,7 @@
                 ?>">
 
                     <?= $this->escapeHtml($revisionEntity->getRevision()->getId());?>
-                    @ <?php echo $this->AuditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
+                    @ <?php echo $this->auditDateTimeFormatter($revisionEntity->getRevision()->getTimestamp()); ?>
 
                 </a>
             </td>
