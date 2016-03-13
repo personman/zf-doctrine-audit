@@ -105,6 +105,7 @@ class AuditDriver implements
                 $fieldName,
                 $auditedClassMetadata->getTypeOfField($fieldName),
                 array(
+                    'columnName' => $auditedClassMetadata->getColumnName($fieldName),
                     'nullable' => true,
                     'quoted' => true
                 )
