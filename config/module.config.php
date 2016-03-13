@@ -1,39 +1,22 @@
 <?php
 
 return array(
-    'service_manager' => array(
-        'invokables' => array(
-            'ZF\Doctrine\Audit\EventListener\LogRevision' => 'ZF\Doctrine\Audit\EventListener\LogRevision',
-            'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
-            'ZF\Doctrine\Audit\Service\AuditService' => 'ZF\Doctrine\Audit\Service\AuditService',
-            'ZF\Doctrine\Audit\Loader\AuditAutoloader' => 'ZF\Doctrine\Audit\Loader\AuditAutoloader',
-        ),
-        'initializers' => array(
-            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuthenticationServiceInitializer',
+    'servcie_manager' => array(
+        'abstract_factories' => array(
+            'ZF\\Doctrine\\Audit\\Factory\\ZFDoctrineAuditAbstractFactory',
         ),
     ),
 
     'controllers' => array(
-        'invokables' => array(
-            'ZF\Doctrine\Audit\Controller\Index' => 'ZF\Doctrine\Audit\Controller\IndexController',
-            'ZF\\Doctrine\\Audit\\Controller\\SchemaTool' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
-            'ZF\\Doctrine\\Audit\\Controller\\Epoch' => 'ZF\\Doctrine\\Audit\\Controller\\EpochController',
-        ),
-        'initializers' => array(
-            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
+        'abstract_factories' => array(
+            'ZF\\Doctrine\\Audit\\Factory\\ZFDoctrineAuditAbstractFactory',
         ),
     ),
 
     'view_helpers' => array(
+        'abstract_factories' => array(
+            'ZF\\Doctrine\\Audit\\Factory\\ZFDoctrineAuditAbstractFactory',
+        ),
         'invokables' => array(
             'auditCurrentRevisionEntity' => 'ZF\Doctrine\Audit\View\Helper\CurrentRevisionEntity',
             'auditEntityOptions' => 'ZF\Doctrine\Audit\View\Helper\EntityOptions',
@@ -45,13 +28,6 @@ return array(
             'auditOneToManyPaginator' => 'ZF\Doctrine\Audit\View\Helper\OneToManyPaginator',
             'auditDateTimeFormatter' => 'ZF\Doctrine\Audit\View\Helper\DateTimeFormatter',
             'auditService' => 'ZF\Doctrine\Audit\Service\AuditService',
-        ),
-        'initializers' => array(
-            'ZF\Doctrine\Audit\Persistence\ObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditObjectManagerInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditServiceInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditOptionsInitializer',
-            'ZF\Doctrine\Audit\Persistence\AuditEntitiesInitializer',
         ),
     ),
 
