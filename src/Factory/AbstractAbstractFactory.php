@@ -33,17 +33,17 @@ abstract class AbstractAbstractFactory implements
 
     public function canCreateServiceWithName(
         ServiceLocatorInterface $serviceLocator,
-        string $name,
-        string $requestedName
-    ): boolean {
+        $name,
+        $requestedName
+    ) {
 
         return in_array($requestedName, array_keys($this->factoryClasses));
     }
 
     public function createServiceWithName(
         ServiceLocatorInterface $serviceLocator,
-        string $name,
-        string $requestedName
+        $name,
+        $requestedName
     ) {
 
         $instance = new $this->factoryClasses[$requestedName]();

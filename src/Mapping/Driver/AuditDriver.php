@@ -34,7 +34,7 @@ class AuditDriver implements
      * @param string        $className
      * @param ClassMetadata $metadata
      */
-    public function loadMetadataForClass(string $className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
@@ -185,7 +185,7 @@ class AuditDriver implements
      * @param  string $className
      * @return boolean
      */
-    public function isTransient(string $className): boolean
+    public function isTransient($className): bool
     {
         return true;
     }

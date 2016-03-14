@@ -18,7 +18,7 @@ class AuditService extends AbstractHelper implements
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
 
-    protected $comment;
+    protected $comment = '';
 
     /**
      * To add a comment to a revision fetch this object before flushing
