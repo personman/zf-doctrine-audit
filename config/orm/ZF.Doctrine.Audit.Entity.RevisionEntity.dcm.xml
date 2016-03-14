@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="ZF\Doctrine\Audit\Entity\RevisionEntity" repository-class="ZF\Doctrine\Audit\Repository\RevisionEntityRepository" table="RevisionEntity_Audit">
+    <id name="id" type="bigint">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="title" type="string" nullable="true"/>
+    <many-to-one field="revision" target-entity="ZF\Doctrine\Audit\Entity\Revision" inversed-by="revisionEntity">
+      <join-columns>
+        <join-column name="revision_id" referenced-column-name="id" nullable="false"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="targetEntity" target-entity="ZF\Doctrine\Audit\Entity\TargetEntity" inversed-by="revisionEntity">
+      <join-columns>
+        <join-column name="target_entity_id" referenced-column-name="id" nullable="false"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="revisionType" target-entity="ZF\Doctrine\Audit\Entity\RevisionType" inversed-by="revisionEntity">
+      <join-columns>
+        <join-column name="revision_type_id" referenced-column-name="id" nullable="false"/>
+      </join-columns>
+    </many-to-one>
+    <one-to-many field="revisionEntityIdentifierValue" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue" mapped-by="revisionEntity"/>
+  </entity>
+</doctrine-mapping>

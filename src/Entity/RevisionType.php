@@ -3,19 +3,14 @@
 namespace ZF\Doctrine\Audit\Entity;
 
 /**
- * Revision
+ * RevisionType
  */
-class Revision
+class RevisionType
 {
     /**
      * @var string
      */
-    private $comment;
-
-    /**
-     * @var \DateTime
-     */
-    private $createdAt;
+    private $revisionType;
 
     /**
      * @var integer
@@ -36,51 +31,27 @@ class Revision
     }
 
     /**
-     * Set comment
+     * Set revisionType
      *
-     * @param string $comment
+     * @param string $revisionType
      *
-     * @return Revision
+     * @return RevisionType
      */
-    public function setComment($comment)
+    public function setRevisionType($revisionType)
     {
-        $this->comment = $comment;
+        $this->revisionType = $revisionType;
 
         return $this;
     }
 
     /**
-     * Get comment
+     * Get revisionType
      *
      * @return string
      */
-    public function getComment()
+    public function getRevisionType()
     {
-        return $this->comment;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Revision
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
+        return $this->revisionType;
     }
 
     /**
@@ -98,7 +69,7 @@ class Revision
      *
      * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
      *
-     * @return Revision
+     * @return RevisionType
      */
     public function addRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
     {

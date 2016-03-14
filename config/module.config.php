@@ -173,12 +173,21 @@ return array(
                         ),
                     ),
                 ),
-                'zf-doctrine-audit-schema-tool-update' => array(
+                'zf-doctrine-audit-epoch' => array(
                     'options' => array(
                         'route' => 'zf-doctrine-audit:epoch:create-from-entities',
                         'defaults' => array(
                             'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Epoch',
                             'action' => 'index',
+                        ),
+                    ),
+                ),
+                'zf-doctrine-audit-data-fixture-import' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:data-fixture:import',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\DataFixture',
+                            'action' => 'import',
                         ),
                     ),
                 ),

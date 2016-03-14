@@ -14,13 +14,17 @@ use ZF\Doctrine\Audit\Persistence;
 class AuditAutoloader extends StandardAutoloader implements
     Persistence\AuditEntitiesAwareInterface,
     Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditObjectManagerAwareInterface,
     Persistence\AuditOptionsAwareInterface,
     Persistence\AuditServiceAwareInterface
 {
     use Persistence\AuditEntitiesAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
     use Persistence\AuditServiceAwareTrait;
+
+    protected $auditEntityNames;
 
     /**
      * Dynamically scope an audit class
@@ -28,9 +32,33 @@ class AuditAutoloader extends StandardAutoloader implements
      * @param  string $className
      * @return false|string
      */
-    public function loadClass($className, $type)
+    public function loadClass($auditClassName, $type)
     {
+        $foundClassName = false;
+        foreach ($this->getAuditEntities() as $className => $classOptions) {
+            if ($this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->generateClassName($className) == $auditClassName) {
+
+                $foundClassName = true;
+                break;
+            }
+        }
+
+        if (! $foundClassName) {
+            return false;
+        }
+
+        // Get fields from target entity
+        $metadataFactory = $this->getObjectManager()->getMetadataFactory();
+        $auditedClassMetadata = $metadataFactory->getMetadataFor($className);
+        $fields = $auditedClassMetadata->getFieldNames();
+        $identifiers = $auditedClassMetadata->getFieldNames();
+
         $auditClass = new ClassGenerator();
+        $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\RevisionEntity");
+        $auditClass->setName(str_replace('\\', '_', $className));
+        $auditClass->setExtendedClass('AbstractAudit');
 
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
@@ -45,28 +73,9 @@ class AuditAutoloader extends StandardAutoloader implements
             'setRevisionEntity',
             array('value'),
             MethodGenerator::FLAG_PUBLIC,
-            " \$this->revisionEntity = \$value;\nreturn \$this;
+            " \$this->revisionEntity = \$value;\n\nreturn \$this;
             "
         );
-
-        // Verify this autoloader is used for target class
-        foreach ($this->getAuditEntities() as $targetClass => $targetClassOptions) {
-             $auditClassName = 'ZF\Doctrine\Audit\\Entity\\' . str_replace('\\', '_', $targetClass);
-
-            if ($auditClassName == $className) {
-                $currentClass = $targetClass;
-            }
-             $autoloadClasses[] = $auditClassName;
-        }
-        if (!in_array($className, $autoloadClasses)) {
-            return;
-        }
-
-        // Get fields from target entity
-        $metadataFactory = $this->getObjectManager()->getMetadataFactory();
-        $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
-        $fields = $auditedClassMetadata->getFieldNames();
-        $identifiers = $auditedClassMetadata->getFieldNames();
 
         // Generate audit entity
         foreach ($fields as $field) {
@@ -112,25 +121,11 @@ class AuditAutoloader extends StandardAutoloader implements
             'getAuditedEntityClass',
             array(),
             MethodGenerator::FLAG_PUBLIC,
-            " return '" .  addslashes($currentClass) . "';"
+            " return '" .  addslashes($className) . "';"
         );
 
-        $auditClass->setNamespaceName("ZF\Doctrine\Audit\\Entity");
-        $auditClass->setName(str_replace('\\', '_', $currentClass));
-        $auditClass->setExtendedClass('AbstractAudit');
+        return eval($auditClass->generate());
 
-        $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
-
-        foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
-            if (isset($mapping['joinTable']['name'])) {
-                $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\"
-                    . str_replace('\\', '_', $mapping['joinTable']['name']);
-                $auditEntities[] = $auditJoinTableClassName;
-            }
-        }
-
-        eval($auditClass->generate());
-
-        return true;
+#        return true;
     }
 }

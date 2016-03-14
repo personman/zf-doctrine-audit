@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use ZF\Doctrine\Audit\Persistence;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Exception;
 
 class AuditDriver implements
@@ -22,8 +23,14 @@ class AuditDriver implements
 
     public function register()
     {
-        $this->getAuditObjectManager()->getConfiguration()->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\Entity');
+        $xmlDriver = new XmlDriver(__DIR__ . '/../../../config/orm');
+        $this->getAuditObjectManager()->getConfiguration()
+            ->getMetadataDriverImpl()
+            ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity');
+
+        $this->getAuditObjectManager()->getConfiguration()
+            ->getMetadataDriverImpl()
+            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
 
         return $this;
     }
@@ -38,42 +45,6 @@ class AuditDriver implements
     {
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
-
-        if ($className == 'ZF\\Doctrine\\Audit\\Entity\RevisionEntity') {
-            $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
-            $builder->addManyToOne('revision', 'ZF\Doctrine\Audit\\Entity\\Revision', 'revisionEntities');
-            $builder->addField('entityKeys', 'string');
-            $builder->addField('auditEntityClass', 'string');
-            $builder->addField('targetEntityClass', 'string');
-            $builder->addField('revisionType', 'string');
-            $builder->addField('title', 'string', array('nullable' => true));
-
-            $metadata->setTableName($this->getAuditOptions()['revision_entity_table_name']);
-
-            return;
-        }
-
-        // Revision is managed here rather than a separate namespace and driver
-        if ($className == 'ZF\\Doctrine\\Audit\\Entity\\Revision') {
-            $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
-            $builder->addField('comment', 'text', array('nullable' => true));
-            $builder->addField('timestamp', 'datetime');
-
-            // Add association between RevisionEntity and Revision
-            $builder->addOneToMany('revisionEntities', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity', 'revision');
-
-# FIXME:  use ids, not entities
-// Add assoication between User and Revision
-// $userMetadata = $metadataFactory->getMetadataFor($moduleOptions->getUserEntityClassName());
-// $builder
-// ->createManyToOne('user', $userMetadata->getName())
-// ->addJoinColumn('user_id', $userMetadata->getSingleIdentifierColumnName())
-// ->build();
-
-            $metadata->setTableName($this->getAuditOptions()['revision_table_name']);
-
-            return;
-        }
 
         $identifiers = array();
 
@@ -148,31 +119,14 @@ class AuditDriver implements
      */
     public function getAllClassNames(): array
     {
-        $objectManager = $this->getObjectManager();
-        $metadataFactory = $objectManager->getMetadataFactory();
-
-        $auditEntities = array();
-        foreach ($this->getAuditEntities() as $name => $auditEntityOptions) {
-            $auditClassName = "ZF\\Doctrine\\Audit\\Entity\\" . str_replace('\\', '_', $name);
-            $auditEntities[] = $auditClassName;
-            $auditedClassMetadata = $metadataFactory->getMetadataFor($name);
-
-            // FIXME:  done in autoloader
-            foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
-                if (isset($mapping['joinTable']['name'])) {
-                    $auditJoinTableClassName = "ZF\\Doctrine\\Audit\\Entity\\"
-                        . str_replace('\\', '_', $mapping['joinTable']['name']);
-                    $auditEntities[] = $auditJoinTableClassName;
-                    // $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
-                }
-            }
+        $classNames = [];
+        foreach ($this->getAuditEntities() as $className => $options) {
+            $classNames[] = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->generateClassName($className);
         }
 
-        // Add revision (manage here rather than separate namespace)
-        $auditEntities[] = 'ZF\\Doctrine\\Audit\\Entity\\Revision';
-        $auditEntities[] = 'ZF\\Doctrine\\Audit\\Entity\\RevisionEntity';
-
-        return $auditEntities;
+        return $classNames;
     }
 
     /**

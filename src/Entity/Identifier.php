@@ -3,14 +3,14 @@
 namespace ZF\Doctrine\Audit\Entity;
 
 /**
- * RevisionEntity
+ * Identifier
  */
-class RevisionEntity
+class Identifier
 {
     /**
      * @var string
      */
-    private $title;
+    private $fieldName;
 
     /**
      * @var integer
@@ -23,19 +23,9 @@ class RevisionEntity
     private $revisionEntityIdentifierValue;
 
     /**
-     * @var \ZF\Doctrine\Audit\Entity\Revision
-     */
-    private $revision;
-
-    /**
      * @var \ZF\Doctrine\Audit\Entity\TargetEntity
      */
     private $targetEntity;
-
-    /**
-     * @var \ZF\Doctrine\Audit\Entity\RevisionType
-     */
-    private $revisionType;
 
     /**
      * Constructor
@@ -46,27 +36,27 @@ class RevisionEntity
     }
 
     /**
-     * Set title
+     * Set fieldName
      *
-     * @param string $title
+     * @param string $fieldName
      *
-     * @return RevisionEntity
+     * @return Identifier
      */
-    public function setTitle($title)
+    public function setFieldName($fieldName)
     {
-        $this->title = $title;
+        $this->fieldName = $fieldName;
 
         return $this;
     }
 
     /**
-     * Get title
+     * Get fieldName
      *
      * @return string
      */
-    public function getTitle()
+    public function getFieldName()
     {
-        return $this->title;
+        return $this->fieldName;
     }
 
     /**
@@ -84,7 +74,7 @@ class RevisionEntity
      *
      * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
      *
-     * @return RevisionEntity
+     * @return Identifier
      */
     public function addRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
     {
@@ -114,35 +104,11 @@ class RevisionEntity
     }
 
     /**
-     * Set revision
-     *
-     * @param \ZF\Doctrine\Audit\Entity\Revision $revision
-     *
-     * @return RevisionEntity
-     */
-    public function setRevision(\ZF\Doctrine\Audit\Entity\Revision $revision)
-    {
-        $this->revision = $revision;
-
-        return $this;
-    }
-
-    /**
-     * Get revision
-     *
-     * @return \ZF\Doctrine\Audit\Entity\Revision
-     */
-    public function getRevision()
-    {
-        return $this->revision;
-    }
-
-    /**
      * Set targetEntity
      *
      * @param \ZF\Doctrine\Audit\Entity\TargetEntity $targetEntity
      *
-     * @return RevisionEntity
+     * @return Identifier
      */
     public function setTargetEntity(\ZF\Doctrine\Audit\Entity\TargetEntity $targetEntity)
     {
@@ -159,30 +125,6 @@ class RevisionEntity
     public function getTargetEntity()
     {
         return $this->targetEntity;
-    }
-
-    /**
-     * Set revisionType
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionType $revisionType
-     *
-     * @return RevisionEntity
-     */
-    public function setRevisionType(\ZF\Doctrine\Audit\Entity\RevisionType $revisionType)
-    {
-        $this->revisionType = $revisionType;
-
-        return $this;
-    }
-
-    /**
-     * Get revisionType
-     *
-     * @return \ZF\Doctrine\Audit\Entity\RevisionType
-     */
-    public function getRevisionType()
-    {
-        return $this->revisionType;
     }
 }
 

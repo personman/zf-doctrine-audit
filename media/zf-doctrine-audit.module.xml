@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<skipper version="3.2.5.1283" mvc="Without MVC" orm="Doctrine2">
+  <module name="\zf-doctrine-audit" local-name="zf-doctrine-audit" namespace="\ZF\Doctrine\Audit\Entity\" local-namespace="ZF\Doctrine\Audit\Entity\" export-format="Doctrine2Xml" export-path="../config/orm" uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5">
+    <entity name="\ZF\Doctrine\Audit\Entity\Revision" local-name="Revision" namespace="\ZF\Doctrine\Audit\Entity\" uuid="29489e46-8c0a-40c0-86c2-1630dca4471c">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="a1f8cbb8-0385-4b4d-955b-dcfdb1c01130"/>
+      <field name="comment" type="text" uuid="b8fd392e-4f36-4a7a-a8a1-530db0f03e8a"/>
+      <field name="createdAt" type="datetime" required="true" uuid="cc7f69b1-6399-49bc-ad01-5ee20d8e5b96"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\RevisionRepository</attribute>
+        <attribute name="table">Revision_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="\ZF\Doctrine\Audit\Entity\RevisionEntity" local-name="RevisionEntity" namespace="\ZF\Doctrine\Audit\Entity\" uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="75596bcf-2718-4ebd-ac51-905010451d56"/>
+      <field name="title" type="string" uuid="b88472b5-0df8-49af-9680-a6bf71344e3f"/>
+      <field name="revision_id" type="bigint" required="true" uuid="ed15e1b7-0717-409e-9009-5caf5d5aa394"/>
+      <field name="target_entity_id" type="bigint" required="true" uuid="d0e53f12-ff1c-4155-8aa3-ab0ade905712"/>
+      <field name="revision_type_id" type="integer" required="true" uuid="539f9adc-ef65-4c9f-ab46-774dc755a041"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\RevisionEntityRepository</attribute>
+        <attribute name="table">RevisionEntity_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="\ZF\Doctrine\Audit\Entity\RevisionEntity" to="\ZF\Doctrine\Audit\Entity\Revision" owner-alias="revisionEntity" inverse-alias="revision" many-owner="true" many-inverse="false" parent-required="true" uuid="60d00cee-54a7-45f5-8473-48107268b071">
+      <association-field from="revision_id" to="id"/>
+    </association>
+    <association from="\ZF\Doctrine\Audit\Entity\RevisionEntity" to="\ZF\Doctrine\Audit\Entity\TargetEntity" owner-alias="revisionEntity" inverse-alias="targetEntity" many-owner="true" many-inverse="false" parent-required="true" uuid="be36f821-e64b-4b6f-a34b-81718eb88df0">
+      <association-field from="target_entity_id" to="id"/>
+    </association>
+    <association from="\ZF\Doctrine\Audit\Entity\RevisionEntity" to="\ZF\Doctrine\Audit\Entity\RevisionType" owner-alias="revisionEntity" inverse-alias="revisionType" many-owner="true" many-inverse="false" parent-required="true" uuid="baa24748-5afa-4745-8085-dec528a8e291">
+      <association-field from="revision_type_id" to="id"/>
+    </association>
+    <entity name="\ZF\Doctrine\Audit\Entity\Identifier" local-name="Identifier" namespace="\ZF\Doctrine\Audit\Entity\" uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="2bb2192e-a294-41ff-9ef2-1530c5ea9095"/>
+      <field name="fieldName" type="string" required="true" uuid="75f03b3d-55e7-4570-b9d3-5dbddf2d6a8e"/>
+      <field name="target_entity_id" type="integer" required="true" uuid="24f34bee-5bb6-4283-95cd-af67e6be8ab9"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\IdentifierRepository</attribute>
+        <attribute name="table">Identifier_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="\ZF\Doctrine\Audit\Entity\Identifier" to="\ZF\Doctrine\Audit\Entity\TargetEntity" owner-alias="identifier" inverse-alias="targetEntity" many-owner="true" many-inverse="false" parent-required="true" uuid="1cc80863-be88-4589-b7de-c7cae5ed2930">
+      <association-field from="target_entity_id" to="id"/>
+    </association>
+    <entity name="\ZF\Doctrine\Audit\Entity\TargetEntity" local-name="TargetEntity" namespace="\ZF\Doctrine\Audit\Entity\" uuid="01aab066-93a9-4361-8250-f0e9825c27ab">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="6a209ba9-090f-4e00-a100-1c786b5239e4"/>
+      <field name="name" type="string" required="true" uuid="0f2a4849-d4fe-4659-b17f-bb9ee1e8467b"/>
+      <field name="tableName" type="string" required="true" uuid="444752af-dc4d-4517-8731-74eb44fefc21"/>
+      <field name="entity_id" type="bigint" required="true" unique="true" uuid="0a15ed15-109f-4fce-890f-910921d1db2d"/>
+      <orm-attributes>
+        <attribute name="table">TargetEntity_Audit</attribute>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\TargetEntityRepository</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="\ZF\Doctrine\Audit\Entity\TargetEntity" to="\ZF\Doctrine\Audit\Entity\AuditEntity" owner-alias="targetEntity" inverse-alias="auditEntity" many-owner="false" many-inverse="false" parent-required="true" uuid="0a592691-5655-4669-9c9b-6161d9e81ccb">
+      <association-field from="entity_id" to="id"/>
+    </association>
+    <entity name="\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue" local-name="RevisionEntityIdentifierValue" namespace="\ZF\Doctrine\Audit\Entity\" uuid="4508ceac-2636-46ae-8253-5af37e60b9ba">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="02f8dfee-cb15-4db1-853b-daf7da9ee746"/>
+      <field name="value" type="string" required="true" uuid="9e15306d-6b24-4c2e-90d7-ccb850de92ea"/>
+      <field name="identifier_id" type="bigint" required="true" uuid="d8aee348-d54e-4c4c-a174-213457efe043"/>
+      <field name="revision_entity_id" type="bigint" required="true" uuid="7d79071d-bdad-4f70-9e8c-51bb4d8fb272"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\RevisionEntityIdentifierValueRepository</attribute>
+        <attribute name="table">RevisionEntityIdentifierValue_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue" to="\ZF\Doctrine\Audit\Entity\Identifier" owner-alias="revisionEntityIdentifierValue" inverse-alias="identifier" many-owner="true" many-inverse="false" parent-required="true" uuid="b4089525-ba24-4f94-9597-7c4666e3e404">
+      <association-field from="identifier_id" to="id"/>
+    </association>
+    <association from="\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue" to="\ZF\Doctrine\Audit\Entity\RevisionEntity" owner-alias="revisionEntityIdentifierValue" inverse-alias="revisionEntity" many-owner="true" many-inverse="false" parent-required="true" uuid="b2603a9d-3771-40b2-b335-8aaf15c8ccb0">
+      <association-field from="revision_entity_id" to="id"/>
+    </association>
+    <entity name="\ZF\Doctrine\Audit\Entity\AuditEntity" local-name="AuditEntity" namespace="\ZF\Doctrine\Audit\Entity\" uuid="bc795385-090b-48bb-8198-f1ae5bb83799">
+      <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="43e1722f-2898-44fe-a239-47f6b586018c"/>
+      <field name="name" type="string" required="true" uuid="e4da9069-0c57-4791-ace3-c83485a09757"/>
+      <field name="tableName" type="string" required="true" uuid="d8caad15-e5bf-4662-9161-8385b53a9101"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\AuditEntityRepository</attribute>
+        <attribute name="table">AuditEntity_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="\ZF\Doctrine\Audit\Entity\RevisionType" local-name="RevisionType" namespace="\ZF\Doctrine\Audit\Entity\" uuid="9275ce9d-a97a-43f1-a885-ac228111c3ad">
+      <field name="id" type="integer" required="true" unique="true" primary="true" auto-increment="true" uuid="85cf09df-a9ab-4901-bfb6-0a09072771c6"/>
+      <field name="revisionType" type="string" required="true" uuid="7a4c7858-575d-4f6b-b267-e9a8b5dd6c20"/>
+      <orm-attributes>
+        <attribute name="repository-class">ZF\Doctrine\Audit\Repository\RevisionTypeRepository</attribute>
+        <attribute name="table">RevisionType_Audit</attribute>
+      </orm-attributes>
+    </entity>
+    <comment caption="AuditEntity" description="Each entity which audits a target entity will have a reference to the revision entity." uuid="cbc63fce-9cf6-4c9d-b515-4ed60773d998"/>
+  </module>
+  <visual-data>
+    <comment uuid="cbc63fce-9cf6-4c9d-b515-4ed60773d998" bg-color="#FFFFE0" position-x="-19" position-y="13" size-x="0" size-x2="176" size-y="-3" size-y2="88" txt-color="#000000"/>
+    <entity uuid="01aab066-93a9-4361-8250-f0e9825c27ab" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="210" position-y="301" size-x="0" size-x2="98" size-y="0" size-y2="73"/>
+    <entity uuid="29489e46-8c0a-40c0-86c2-1630dca4471c" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="207" position-y="8" size-x="0" size-x2="105" size-y="0" size-y2="59"/>
+    <entity uuid="4508ceac-2636-46ae-8253-5af37e60b9ba" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="384" position-y="128" size-x="0" size-x2="148" size-y="0" size-y2="73"/>
+    <entity uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="197" position-y="121" size-x="0" size-x2="125" size-y="0" size-y2="87"/>
+    <entity uuid="9275ce9d-a97a-43f1-a885-ac228111c3ad" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="35" position-y="142" size-x="0" size-x2="105" size-y="0" size-y2="45"/>
+    <entity uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="390" position-y="308" size-x="0" size-x2="121" size-y="0" size-y2="59"/>
+    <entity uuid="bc795385-090b-48bb-8198-f1ae5bb83799" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="35" position-y="308" size-x="0" size-x2="98" size-y="0" size-y2="59"/>
+    <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" bg-color="#FF8061" size-x="46" size-x2="578" size-y="22" size-y2="404"/>
+  </visual-data>
+</skipper>
