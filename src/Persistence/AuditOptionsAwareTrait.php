@@ -19,7 +19,7 @@ trait AuditOptionsAwareTrait
     /**
      * @return Doctrine\ORM\EntityManager
      */
-    public function getAuditOptions()
+    public function getAuditOptions(): array
     {
         return $this->auditOptions;
     }

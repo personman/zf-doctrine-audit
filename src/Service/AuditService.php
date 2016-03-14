@@ -18,22 +18,22 @@ class AuditService extends AbstractHelper implements
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
 
-    protected $comment;
+    protected $comment = '';
 
     /**
      * To add a comment to a revision fetch this object before flushing
      * and set the comment.  The comment will be fetched by the revision
      * and reset after reading
      */
-    public function getComment()
+    public function getComment(): string
     {
         $comment = $this->comment;
-        $this->comment = null;
+        $this->comment = '';
 
         return $comment;
     }
 
-    public function setComment($comment)
+    public function setComment(string $comment)
     {
         $this->comment = $comment;
 
@@ -99,7 +99,7 @@ class AuditService extends AbstractHelper implements
     /**
      * Find a mapping to the given field for 1:many
      */
-    public function getAssociationRevisionEntity(AbstractAudit $entity, $field, $value)
+    public function getAssociationRevisionEntity(AbstractAudit $entity, string $field, $value)
     {
         foreach ($entity->getAssociationMappings() as $mapping) {
 

@@ -15,7 +15,7 @@ trait AuditServiceAwareTrait
         return $this;
     }
 
-    public function getAuditService()
+    public function getAuditService(): AuditService
     {
         return $this->auditService;
     }

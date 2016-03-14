@@ -9,25 +9,25 @@ use Exception;
 
 class RevisionEntity
 {
-    private $id;
+    protected $id;
 
     // Foreign key to the revision
-    private $revision;
+    protected $revision;
 
     // An array of primary keys
-    private $entityKeys;
+    protected $entityKeys;
 
     // The name of the audit entity
-    private $auditEntityClass;
+    protected $auditEntityClass;
 
     // The name of the entity which is audited
-    private $targetEntityClass;
+    protected $targetEntityClass;
 
     // The type of action, INS, UPD, DEL
-    private $revisionType;
+    protected $revisionType;
 
     // Fetched from entity::getAuditTitle() if exists
-    private $title;
+    protected $title;
 
     public function getId()
     {
@@ -37,6 +37,7 @@ class RevisionEntity
     public function setRevision(Revision $revision)
     {
         $this->revision = $revision;
+
         return $this;
     }
 
@@ -45,9 +46,10 @@ class RevisionEntity
         return $this->auditEntityClass;
     }
 
-    public function setAuditEntityClass($value)
+    public function setAuditEntityClass(string $value)
     {
         $this->auditEntityClass = $value;
+
         return $this;
     }
 
@@ -56,9 +58,10 @@ class RevisionEntity
         return $this->revision;
     }
 
-    public function setTargetEntityClass($value)
+    public function setTargetEntityClass(string $value)
     {
         $this->targetEntityClass = $value;
+
         return $this;
     }
 
@@ -72,7 +75,7 @@ class RevisionEntity
         return json_decode($this->entityKeys, true);
     }
 
-    public function setEntityKeys($value)
+    public function setEntityKeys(array $value)
     {
         unset($value['revisionEntity']);
 
@@ -81,6 +84,8 @@ class RevisionEntity
         }
 
         $this->entityKeys = json_encode($value, JSON_NUMERIC_CHECK);
+
+        return $this;
     }
 
     public function getRevisionType()
@@ -91,6 +96,7 @@ class RevisionEntity
     public function setRevisionType($value)
     {
         $this->revisionType = $value;
+
         return $this;
     }
 
@@ -99,7 +105,7 @@ class RevisionEntity
         return $this->title;
     }
 
-    public function setTitle($value)
+    public function setTitle(string $value)
     {
         $this->title = substr($value, 0, 255);
 

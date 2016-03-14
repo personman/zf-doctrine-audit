@@ -31,11 +31,11 @@ class LogRevision implements
     protected $revision;
     protected $entities;
     protected $reexchangeEntities;
-    protected $collections;
+    protected $collections = [];
     protected $inAuditTransaction;
     protected $many2many;
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return array(
             Events::onFlush,
@@ -46,6 +46,8 @@ class LogRevision implements
     public function register()
     {
         $this->getObjectManager()->getEventManager()->addEventSubscriber($this);
+
+        return $this;
     }
 
     public function setAuthenticationService($service)
@@ -60,33 +62,29 @@ class LogRevision implements
         return $this->authenticationService;
     }
 
-    private function setEntities($entities)
+    private function setEntities(array $entities)
     {
-        if ($this->entities) {
-            return $this;
-        }
-
-        $this->entities = $entities;
+        $this->entities ?? $this->entities = $entities;
 
         return $this;
     }
 
     private function resetEntities()
     {
-        $this->entities = array();
+        $this->entities = [];
 
         return $this;
     }
 
-    private function getEntities()
+    private function getEntities(): array
     {
         return $this->entities;
     }
 
     private function getReexchangeEntities()
     {
-        if (!$this->reexchangeEntities) {
-            $this->reexchangeEntities = array();
+        if (! $this->reexchangeEntities) {
+            $this->reexchangeEntities = [];
         }
 
         return $this->reexchangeEntities;
@@ -94,7 +92,7 @@ class LogRevision implements
 
     private function resetReexchangeEntities()
     {
-        $this->reexchangeEntities = array();
+        $this->reexchangeEntities = [];
     }
 
     private function addReexchangeEntity($entityMap)
@@ -109,7 +107,7 @@ class LogRevision implements
 
     private function resetRevisionEntities()
     {
-        $this->revisionEntities = array();
+        $this->revisionEntities = [];
     }
 
     private function getRevisionEntities()
@@ -119,23 +117,17 @@ class LogRevision implements
 
     public function addCollection($collection)
     {
-        if (!$this->collections) {
-            $this->collections = array();
-        }
-
         if (in_array($collection, $this->collections, true)) {
-            return;
+            return $this;
         }
 
         $this->collections[] = $collection;
+
+        return $this;
     }
 
     public function getCollections()
     {
-        if (!$this->collections) {
-            $this->collections = array();
-        }
-
         return $this->collections;
     }
 
@@ -159,8 +151,6 @@ class LogRevision implements
     private function resetRevision()
     {
         $this->revision = null;
-
-        return $this;
     }
 
     // You must flush the revision for the compound audit key to work
