@@ -7,5 +7,5 @@ use ZF\Doctrine\Audit\Service\AuditService;
 interface AuditServiceAwareInterface
 {
     public function setAuditService(AuditService $auditService);
-    public function getAuditService();
+    public function getAuditService(): AuditService;
 }

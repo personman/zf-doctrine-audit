@@ -3,6 +3,7 @@
 namespace ZF\Doctrine\Audit\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 class Revision
 {
@@ -20,22 +21,24 @@ class Revision
         return $this->comment;
     }
 
-    public function setComment($value)
+    public function setComment(string $value)
     {
         $this->comment = $value;
+
         return $this;
     }
 
     protected $timestamp;
 
-    public function getTimestamp()
+    public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }
 
-    public function setTimestamp(\DateTime $value)
+    public function setTimestamp(DateTime $value)
     {
         $this->timestamp = $value;
+
         return $this;
     }
 
@@ -54,9 +57,9 @@ class Revision
 
     private $revisionEntities;
 
-    public function getRevisionEntities()
+    public function getRevisionEntities(): ArrayCollection
     {
-        if (!$this->revisionEntities) {
+        if (! $this->revisionEntities) {
             $this->revisionEntities = new ArrayCollection();
         }
 
@@ -65,6 +68,6 @@ class Revision
 
     public function __construct()
     {
-        $this->setTimestamp(new \DateTime());
+        $this->setTimestamp(new DateTime());
     }
 }

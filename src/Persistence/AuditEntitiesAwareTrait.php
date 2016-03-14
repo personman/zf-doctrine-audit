@@ -6,7 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 trait AuditEntitiesAwareTrait
 {
-    protected $auditEntities;
+    protected $auditEntities = [];
 
     public function setAuditEntities(array $entities)
     {
@@ -15,7 +15,7 @@ trait AuditEntitiesAwareTrait
         return $this;
     }
 
-    public function getAuditEntities()
+    public function getAuditEntities(): array
     {
         return $this->auditEntities;
     }

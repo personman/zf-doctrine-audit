@@ -19,7 +19,7 @@ trait AuditObjectManagerAwareTrait
     /**
      * @return Doctrine\ORM\EntityManager
      */
-    public function getAuditObjectManager()
+    public function getAuditObjectManager(): ObjectManager
     {
         return $this->auditObjectManager;
     }

@@ -30,66 +30,8 @@ class AuditAutoloader extends StandardAutoloader implements
      */
     public function loadClass($className, $type)
     {
-        // $moduleOptions = \ZF\Doctrine\Audit\Module::getModuleOptions();
-        // if (!$moduleOptions) return;
-
         $auditClass = new ClassGenerator();
 
-        //  Build a discovered many to many join class
-        /*
-        $joinClasses = $moduleOptions->getJoinClasses();
-
-        if (in_array($className, array_keys($joinClasses))) {
-
-            $auditClass->setNamespaceName("ZF\Doctrine\Audit\\Entity");
-            $auditClass->setName($className);
-            $auditClass->setExtendedClass('AbstractAudit');
-
-            $auditClass->addProperty('id', null, PropertyGenerator::FLAG_PROTECTED);
-
-            $auditClass->addProperty('targetRevisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
-            $auditClass->addProperty('sourceRevisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
-
-            $auditClass->addMethod(
-                'getTargetRevisionEntity', array(),
-                MethodGenerator::FLAG_PUBLIC,
-                'return $this->targetRevisionEntity;'
-            );
-
-            $auditClass->addMethod(
-                'getSourceRevisionEntity', array(),
-                MethodGenerator::FLAG_PUBLIC,
-                'return $this->sourceRevisionEntity;'
-            );
-
-            $auditClass->addMethod(
-                'getId', array(),
-                MethodGenerator::FLAG_PUBLIC,
-                'return $this->id;'
-            );
-
-            $auditClass->addMethod(
-                'setTargetRevisionEntity', array(ParameterGenerator::fromArray(
-                    array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
-                MethodGenerator::FLAG_PUBLIC,
-                '$this->targetRevisionEntity = $value;' . "\n" .
-                    'return $this;'
-            );
-
-            $auditClass->addMethod(
-                'setSourceRevisionEntity', array(ParameterGenerator::fromArray(
-                    array('name' => 'value', 'type' => '\ZF\Doctrine\Audit\Entity\RevisionEntity'))),
-                MethodGenerator::FLAG_PUBLIC,
-                '$this->sourceRevisionEntity = $value;' . "\n" .
-                    'return $this;'
-            );
-
-        #            print_r($auditClass->generate());
-        #            die();
-            eval($auditClass->generate());
-            return;
-        }
-        */
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
         $auditClass->addMethod(
@@ -179,7 +121,6 @@ class AuditAutoloader extends StandardAutoloader implements
         $auditClass->setName(str_replace('\\', '_', $currentClass));
         $auditClass->setExtendedClass('AbstractAudit');
 
-        // $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
         $auditedClassMetadata = $metadataFactory->getMetadataFor($currentClass);
 
         foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
@@ -187,19 +128,10 @@ class AuditAutoloader extends StandardAutoloader implements
                 $auditJoinTableClassName = "ZF\Doctrine\Audit\\Entity\\"
                     . str_replace('\\', '_', $mapping['joinTable']['name']);
                 $auditEntities[] = $auditJoinTableClassName;
-                // $moduleOptions->addJoinClass($auditJoinTableClassName, $mapping);
             }
         }
 
-        // if ($auditClass->getName() == 'AppleConnect_Entity_UserAuthenticationLog') {
-        // echo '<pre>';
-        // echo($auditClass->generate());
-        // die();
-        // }
-
         eval($auditClass->generate());
-
-        // die();
 
         return true;
     }

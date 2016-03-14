@@ -19,37 +19,33 @@ abstract class AbstractAbstractFactory implements
     protected $factoryClasses;
     protected $initializers;
 
-    public function getInitializers()
+    public function getInitializers(): array
     {
-        if ($this->initializers) {
-            return $this->initializers;
-        }
-
-        $this->initializers[] = new Persistence\ObjectManagerInitializer();
-        $this->initializers[] = new Persistence\AuditObjectManagerInitializer();
-        $this->initializers[] = new Persistence\AuditServiceInitializer();
-        $this->initializers[] = new Persistence\AuditOptionsInitializer();
-        $this->initializers[] = new Persistence\AuditEntitiesInitializer();
-        $this->initializers[] = new Persistence\AuthenticationServiceInitializer();
-
-        return $this->initializers;
+        return $this->initializers ?? $this->initializers = [
+            new Persistence\ObjectManagerInitializer(),
+            new Persistence\AuditObjectManagerInitializer(),
+            new Persistence\AuditServiceInitializer(),
+            new Persistence\AuditOptionsInitializer(),
+            new Persistence\AuditEntitiesInitializer(),
+            new Persistence\AuthenticationServiceInitializer(),
+        ];
     }
 
     public function canCreateServiceWithName(
         ServiceLocatorInterface $serviceLocator,
-        $name,
-        $requestedName
-    ) {
-    
+        string $name,
+        string $requestedName
+    ): boolean {
+
         return in_array($requestedName, array_keys($this->factoryClasses));
     }
 
     public function createServiceWithName(
         ServiceLocatorInterface $serviceLocator,
-        $name,
-        $requestedName
+        string $name,
+        string $requestedName
     ) {
-    
+
         $instance = new $this->factoryClasses[$requestedName]();
 
         if (method_exists($serviceLocator, 'getServiceLocator')) {

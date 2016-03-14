@@ -19,7 +19,7 @@ trait ObjectManagerAwareTrait
     /**
      * @return Doctrine\ORM\EntityManager
      */
-    public function getObjectManager()
+    public function getObjectManager(): ObjectManager
     {
         return $this->objectManager;
     }
