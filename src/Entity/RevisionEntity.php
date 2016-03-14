@@ -69,7 +69,7 @@ class RevisionEntity
 
     public function getEntityKeys()
     {
-        return unserialize($this->entityKeys);
+        return json_decode($this->entityKeys, true);
     }
 
     public function setEntityKeys($value)
@@ -77,10 +77,10 @@ class RevisionEntity
         unset($value['revisionEntity']);
 
         foreach ($value as $key => $val) {
-            $value[$key] = (string) $val;
+            $value[$key] = $val;
         }
 
-        $this->entityKeys = serialize($value);
+        $this->entityKeys = json_encode($value, JSON_NUMERIC_CHECK);
     }
 
     public function getRevisionType()

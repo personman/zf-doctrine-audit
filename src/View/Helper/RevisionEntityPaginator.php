@@ -34,7 +34,7 @@ final class RevisionEntityPaginator extends AbstractHelper implements
 
         $search = array('auditEntityClass' => $auditEntityClass);
         if (isset($identifiers)) {
-            $search['entityKeys'] = serialize($identifiers);
+            $search['entityKeys'] = json_encode($identifiers, JSON_NUMERIC_CHECK);
         }
 
         $queryBuilder = $this->getAuditObjectManager()

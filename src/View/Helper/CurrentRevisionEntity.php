@@ -20,7 +20,7 @@ final class CurrentRevisionEntity extends AbstractHelper implements
             ->findBy(
                 array(
                 'targetEntityClass' => get_class($entity),
-                'entityKeys' => serialize($this->getAuditService()->getEntityIdentifierValues($entity)),
+                'entityKeys' => json_encode($this->getAuditService()->getEntityIdentifierValues($entity), JSON_NUMERIC_CHECK),
                 ),
                 array('id' => 'DESC'),
                 1

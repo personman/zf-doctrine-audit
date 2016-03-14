@@ -71,25 +71,8 @@ class AuditDriver implements
             return;
         }
 
-        // $builder->createField('audit_id', 'integer')->isPrimaryKey()->generatedValue()->build();
         $identifiers = array();
-        // $metadata->setIdentifier(array('audit_id'));
 
-        /*
-        //  Build a discovered many to many join class
-        $joinClasses = $moduleOptions->getJoinClasses();
-        if (in_array($className, array_keys($joinClasses))) {
-
-            $builder->createField('id', 'bigint')->isPrimaryKey()->generatedValue()->build();
-            $builder->addManyToOne('targetRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
-            $builder->addManyToOne('sourceRevisionEntity', 'ZF\Doctrine\Audit\\Entity\\RevisionEntity');
-
-            $metadata->setTableName($moduleOptions->getTableNamePrefix()
-                . $joinClasses[$className]['joinTable']['name'] . $moduleOptions->getTableNameSuffix());
-        //            $metadata->setIdentifier($identifiers);
-            return;
-        }
-        */
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
         $metadataClass = new $metadataClassName();

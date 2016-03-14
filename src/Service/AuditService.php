@@ -112,7 +112,7 @@ class AuditService extends AbstractHelper implements
                     ->andWhere('revisionEntity.entityKeys = ?2')
                     ->andWhere('revision.timestamp <= ?3')
                     ->setParameter(1, $mapping['targetEntity'])
-                    ->setParameter(2, serialize(array('id' => $value)))
+                    ->setParameter(2, json_encode(array('id' => $value), JSON_NUMERIC_CHECK))
                     ->setParameter(3, $entity->getRevisionEntity()->getRevision()->getTimestamp())
                     ->orderBy('revision.timestamp', 'DESC')
                     ->setMaxResults(1);
@@ -154,7 +154,7 @@ class AuditService extends AbstractHelper implements
 
         // All keys are handled as strings for array serialization
         foreach ($values as $key => $val) {
-            $values[$key] = (string) $val;
+            $values[$key] = $val;
         }
 
         return $values;
@@ -179,7 +179,7 @@ class AuditService extends AbstractHelper implements
 
         $search = array('auditEntityClass' => $auditEntityClass);
         if (isset($identifiers)) {
-            $search['entityKeys'] = serialize($identifiers);
+            $search['entityKeys'] = json_encode($identifiers, JSON_NUMERIC_CHECK);
         }
 
         return $this->getAuditObjectManager()

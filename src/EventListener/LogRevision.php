@@ -265,20 +265,6 @@ class LogRevision implements
 
         $auditEntities[] = $auditEntity;
 
-        // Map many to many
-        foreach ($this->getClassProperties($entity) as $key => $value) {
-
-            if ($value instanceof PersistentCollection) {
-                if (!$this->many2many) {
-                    $this->many2many = array();
-                }
-                $this->many2many[] = array(
-                    'revisionEntity' => $revisionEntity,
-                    'collection' => $value,
-                );
-            }
-        }
-
         return $auditEntities;
     }
 
@@ -349,53 +335,6 @@ class LogRevision implements
 
             foreach ($this->getEntities() as $entity) {
                 $this->getAuditObjectManager()->persist($entity);
-            }
-
-            // Persist many to many collections
-            foreach ($this->getCollections() as $value) {
-                $mapping = $value->getMapping();
-
-                if (!$mapping['isOwningSide']) {
-                    continue;
-                }
-
-                $joinClassName = "ZF\Doctrine\Audit\\Entity\\" . str_replace('\\', '_', $mapping['joinTable']['name']);
-                // FIXME:  redo many to many mappings
-                // use ZF\Doctrine\Audit\Options\ModuleOptions;
-                // $moduleOptions->addJoinClass($joinClassName, $mapping);
-
-                foreach ($this->many2many as $map) {
-                    if ($map['collection'] == $value) {
-                        $revisionEntity = $map['revisionEntity'];
-                    }
-                }
-
-                foreach ($value->getSnapshot() as $element) {
-                    $audit = new $joinClassName();
-
-                    // Get current inverse revision entity
-                    $revisionEntities = $this->getAuditObjectManager()
-                        ->getRepository('ZF\Doctrine\Audit\\Entity\\RevisionEntity')->findBy(
-                            array(
-                            'targetEntityClass' => get_class($element),
-                            'entityKeys' => serialize(array('id' => (string) $element->getId())),
-                            ),
-                            array('id' => 'DESC'),
-                            1
-                        );
-
-                    $inverseRevisionEntity = reset($revisionEntities);
-
-                    if (!$inverseRevisionEntity) {
-                        // No inverse revision entity found
-                        continue;
-                    }
-
-                    $audit->setTargetRevisionEntity($revisionEntity);
-                    $audit->setSourceRevisionEntity($inverseRevisionEntity);
-
-                    $this->getAuditObjectManager()->persist($audit);
-                }
             }
 
             $this->getAuditObjectManager()->flush();
