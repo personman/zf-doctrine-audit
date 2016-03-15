@@ -40,6 +40,15 @@ return array(
                         ),
                     ),
                 ),
+                'zf-doctrine-audit-epoch-mysql' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:epoch:import --mysql',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\EpochMySQL',
+                            'action' => 'import',
+                        ),
+                    ),
+                ),
             ),
         ),
     ),
