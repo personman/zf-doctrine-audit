@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
   <entity name="ZF\Doctrine\Audit\Entity\RevisionType" repository-class="ZF\Doctrine\Audit\Repository\RevisionTypeRepository" table="RevisionType_Audit">
-    <id name="id" type="integer">
+    <id name="id" type="bigint">
       <generator strategy="AUTO"/>
     </id>
     <field name="revisionType" type="string" nullable="false"/>

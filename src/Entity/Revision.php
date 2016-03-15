@@ -8,14 +8,19 @@ namespace ZF\Doctrine\Audit\Entity;
 class Revision
 {
     /**
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
      * @var string
      */
     private $comment;
 
     /**
-     * @var \DateTime
+     * @var integer
      */
-    private $createdAt;
+    private $userId;
 
     /**
      * @var integer
@@ -33,6 +38,30 @@ class Revision
     public function __construct()
     {
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Revision
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
     /**
@@ -60,27 +89,27 @@ class Revision
     }
 
     /**
-     * Set createdAt
+     * Set userId
      *
-     * @param \DateTime $createdAt
+     * @param integer $userId
      *
      * @return Revision
      */
-    public function setCreatedAt($createdAt)
+    public function setUserId($userId)
     {
-        $this->createdAt = $createdAt;
+        $this->userId = $userId;
 
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get userId
      *
-     * @return \DateTime
+     * @return integer
      */
-    public function getCreatedAt()
+    public function getUserId()
     {
-        return $this->createdAt;
+        return $this->userId;
     }
 
     /**
