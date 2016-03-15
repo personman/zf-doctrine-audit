@@ -71,6 +71,11 @@ class DataFixtureController extends AbstractActionController implements
                     $identifier = new Entity\Identifier();
                     $identifier->setTargetEntity($targetEntity);
                     $identifier->setFieldName($fieldName);
+                    $identifier->setColumnName(
+                        $this->getObjectManager()
+                            ->getClassMetadata($className)
+                            ->getColumnName($fieldName)
+                    );
 
                     $this->getAuditObjectManager()->persist($identifier);
                 }

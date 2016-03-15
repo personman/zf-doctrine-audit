@@ -33,6 +33,7 @@
     <entity name="\ZF\Doctrine\Audit\Entity\Identifier" local-name="Identifier" namespace="\ZF\Doctrine\Audit\Entity\" uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988">
       <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="2bb2192e-a294-41ff-9ef2-1530c5ea9095"/>
       <field name="fieldName" type="string" required="true" uuid="75f03b3d-55e7-4570-b9d3-5dbddf2d6a8e"/>
+      <field name="columnName" type="string" required="true" uuid="1b07509c-d730-43bf-86a7-e10b07f4ddf0"/>
       <field name="target_entity_id" type="integer" required="true" uuid="24f34bee-5bb6-4283-95cd-af67e6be8ab9"/>
       <orm-attributes>
         <attribute name="repository-class">ZF\Doctrine\Audit\Repository\IdentifierRepository</attribute>
@@ -97,7 +98,7 @@
     <entity uuid="4508ceac-2636-46ae-8253-5af37e60b9ba" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="384" position-y="128" size-x="0" size-x2="148" size-y="0" size-y2="73"/>
     <entity uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="197" position-y="121" size-x="0" size-x2="125" size-y="0" size-y2="87"/>
     <entity uuid="9275ce9d-a97a-43f1-a885-ac228111c3ad" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="35" position-y="142" size-x="0" size-x2="105" size-y="0" size-y2="45"/>
-    <entity uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="390" position-y="308" size-x="0" size-x2="121" size-y="0" size-y2="59"/>
+    <entity uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="389" position-y="301" size-x="0" size-x2="121" size-y="0" size-y2="73"/>
     <entity uuid="bc795385-090b-48bb-8198-f1ae5bb83799" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="35" position-y="308" size-x="0" size-x2="98" size-y="0" size-y2="59"/>
     <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" bg-color="#FF8061" size-x="46" size-x2="578" size-y="22" size-y2="404"/>
   </visual-data>

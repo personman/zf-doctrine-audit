@@ -13,6 +13,11 @@ class Identifier
     private $fieldName;
 
     /**
+     * @var string
+     */
+    private $columnName;
+
+    /**
      * @var integer
      */
     private $id;
@@ -57,6 +62,30 @@ class Identifier
     public function getFieldName()
     {
         return $this->fieldName;
+    }
+
+    /**
+     * Set columnName
+     *
+     * @param string $columnName
+     *
+     * @return Identifier
+     */
+    public function setColumnName($columnName)
+    {
+        $this->columnName = $columnName;
+
+        return $this;
+    }
+
+    /**
+     * Get columnName
+     *
+     * @return string
+     */
+    public function getColumnName()
+    {
+        return $this->columnName;
     }
 
     /**

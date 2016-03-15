@@ -147,9 +147,10 @@ class AuditService extends AbstractHelper implements
                     ->setParameter('timestamp', 
                         $entity->getRevisionEntity()->getRevision()->getTimestamp())
                     ->innerJoin('revisionEntity.revisionEntityIdentifierValue', 'revisionEntityIdentifierValue')
-                    ->andWhere($queryBuildere->expr()->in('revisionEntityIdentifierValue.value', $identifiers)
+                    ->andWhere($queryBuildere->expr()->in('revisionEntityIdentifierValue.value', $identifiers))
                  ;
 
+/*
 
 
                     ->andWhere('revisionEntity.targetEntityClass = ?1')
@@ -160,6 +161,7 @@ class AuditService extends AbstractHelper implements
                     ->setParameter(3, $entity->getRevisionEntity()->getRevision()->getTimestamp())
                     ->orderBy('revision.timestamp', 'DESC')
                     ->setMaxResults(1);
+*/
 
                 $result = $queryBuilder->getQuery()->getResult();
 
