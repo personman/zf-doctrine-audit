@@ -59,23 +59,6 @@ index.php zf-doctrine-audit:data-fixture:import
 ```
 
 
-Terminology
------------
-
-Revision - An entity which stores the timestamp, comment, an user for a single entity manager 
-flush which contains auditable entities.
-
-RevisionType - one of insert, update, delete, epoch
-
-AuditEntity - A generated entity which maps to the Target auditable entity.  
-This stores the values for the Target entity at the time a Revision is created.
-
-RevisionEntity - A mapping entity which maps an AuditEntity to a Revision, a Revision Type,
-IdentifierValues and TargetEntity
-
-TargetEntity - An auditable entity.  
-
-
 RevisionEntity Titles
 ---------------
 
