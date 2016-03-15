@@ -5,6 +5,9 @@
       <generator strategy="AUTO"/>
     </id>
     <field name="value" type="string" nullable="false"/>
+    <indexes>
+      <index name="idx_unique_identifer_revision_entity" columns="identifier_id,revision_entity_id"/>
+    </indexes>
     <many-to-one field="identifier" target-entity="ZF\Doctrine\Audit\Entity\Identifier" inversed-by="revisionEntityIdentifierValue">
       <join-columns>
         <join-column name="identifier_id" referenced-column-name="id" nullable="false"/>
