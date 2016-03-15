@@ -9,6 +9,8 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\PersistentCollection;
 use ZF\Doctrine\Audit\Entity;
 use ZF\Doctrine\Audit\Persistence;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use DateTime;
 
 class LogRevision implements
     EventSubscriber,
@@ -58,7 +60,6 @@ class LogRevision implements
         return $this;
     }
 
-    // You must flush the revision for the compound audit key to work
     private function getRevision(): Entity\Revision
     {
         if ($this->revision) {
@@ -66,7 +67,7 @@ class LogRevision implements
         }
 
         $this->revision = new Entity\Revision();
-        $this->revision->setTimestamp(new DateTime());
+        $this->revision->setCreatedAt(new DateTime());
         $this->revision->setComment($this->getRevisionComment()->getComment());
         $this->getRevisionComment()->setComment(null);  // Reset comment afer use
 
@@ -114,7 +115,7 @@ class LogRevision implements
     }
 
     /**
-     * Create an audit record for the entity
+     * Create a set of audit entities for the entity
      */
     public function createAudit($entity, Entity\RevisionType $revisionType)
     {
@@ -145,12 +146,10 @@ class LogRevision implements
         if (method_exists($entity, '__toString')) {
             $revisionEntity->setTitle((string) $entity);
         }
-        $this->getAuditObjectManager()->persist($revisionEntity);
 
         $auditEntityClass = $targetEntity->getAuditEntity()->getName();
         $auditEntity = new $auditEntityClass();
         $auditEntity->setRevisionEntity($revisionEntity);
-        $this->getAuditObjectManager()->persist($auditEntity);
 
         $entityProperties = $this->hydrateAuditEntityFromTargetEntity($auditEntity, $entity);
 
@@ -165,9 +164,15 @@ class LogRevision implements
            $this->getAuditObjectManager()->persist($revisionEntityIdentifierValue);
        }
 
+        $this->getAuditObjectManager()->persist($revisionEntity);
+        $this->getAuditObjectManager()->persist($auditEntity);
+
         return $auditEntity;
     }
 
+    /**
+     * Catch all entities and enqueue for postFlush processing or audit for deleted entities
+     */
     public function onFlush(OnFlushEventArgs $eventArgs)
     {
         foreach ($eventArgs->getEntityManager()->getUnitOfWork()->getScheduledEntityInsertions() as $entity) {
@@ -208,6 +213,10 @@ class LogRevision implements
         }
     }
 
+    /**
+     * After a successful flush finish auditing enqueud entities
+     * and flush the audit.
+     */
     public function postFlush(PostFlushEventArgs $args)
     {
         // insert | update entites will trigger key generation and must be audited after the flush

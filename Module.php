@@ -16,6 +16,8 @@ class Module implements
     {
         return array(
             'zf-doctrine-audit:schema-tool:update' => 'Get Update SQL for Audit',
+            'zf-doctrine-audit:data-fixture:import' => 'Create audit entity fixtures. '
+                . 'Run before target entity fixtures.',
         );
     }
 
@@ -40,7 +42,7 @@ class Module implements
         $serviceManager = $e->getParam('application')->getServiceManager();
 
         $serviceManager->get('ZF\Doctrine\Audit\Loader\AuditAutoloader')->register();
-        $serviceManager->get('ZF\Doctrine\Audit\EventListener\LogRevision')->register();
         $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
+        $serviceManager->get('ZF\Doctrine\Audit\EventListener\LogRevision')->register();
     }
 }
