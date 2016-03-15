@@ -59,6 +59,13 @@ index.php zf-doctrine-audit:data-fixture:import
 ```
 
 
+Revision Comment
+----------------
+
+To add a comment to a revision get `ZF\Doctrine\Audit\Service\RevisionComment` from the service manager
+and call `->setMessage(string)` before flushing.
+
+
 RevisionEntity Titles
 ---------------
 
