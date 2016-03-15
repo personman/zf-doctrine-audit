@@ -5,8 +5,8 @@ namespace ZF\Doctrine\Audit\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
-use ZF\Doctrine\Audit\Persistence;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use ZF\Doctrine\Audit\Persistence;
 use Exception;
 
 class AuditDriver implements
@@ -23,12 +23,16 @@ class AuditDriver implements
 
     public function register()
     {
+        // Driver for zf-doctrine-audit entites
         $xmlDriver = new XmlDriver(__DIR__ . '/../../../config/orm');
-        $this->getAuditObjectManager()->getConfiguration()
+        $this->getAuditObjectManager()
+            ->getConfiguration()
             ->getMetadataDriverImpl()
             ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity');
 
-        $this->getAuditObjectManager()->getConfiguration()
+        // Driver for audited entities
+        $this->getAuditObjectManager()
+            ->getConfiguration()
             ->getMetadataDriverImpl()
             ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
 

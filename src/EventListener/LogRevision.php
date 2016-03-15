@@ -27,7 +27,6 @@ class LogRevision implements
     use Persistence\AuditServiceAwareTrait;
     use Persistence\AuthenticationServiceAwareTrait;
 
-    protected $authenticationService;
     protected $revision;
     protected $entities;
     protected $reexchangeEntities;

@@ -3,34 +3,22 @@
 namespace ZF\Doctrine\Audit\Loader;
 
 use Zend\Loader\StandardAutoloader;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Code\Reflection\ClassReflection;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\MethodGenerator;
-use Zend\Code\Generator\ParameterGenerator;
 use Zend\Code\Generator\PropertyGenerator;
 use ZF\Doctrine\Audit\Persistence;
 
 class AuditAutoloader extends StandardAutoloader implements
     Persistence\AuditEntitiesAwareInterface,
     Persistence\ObjectManagerAwareInterface,
-    Persistence\AuditObjectManagerAwareInterface,
-    Persistence\AuditOptionsAwareInterface,
-    Persistence\AuditServiceAwareInterface
+    Persistence\AuditObjectManagerAwareInterface
 {
     use Persistence\AuditEntitiesAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
-    use Persistence\AuditOptionsAwareTrait;
-    use Persistence\AuditServiceAwareTrait;
-
-    protected $auditEntityNames;
 
     /**
      * Dynamically scope an audit class
-     *
-     * @param  string $className
-     * @return false|string
      */
     public function loadClass($auditClassName, $type)
     {
@@ -124,8 +112,8 @@ class AuditAutoloader extends StandardAutoloader implements
             " return '" .  addslashes($className) . "';"
         );
 
-        return eval($auditClass->generate());
+        eval($auditClass->generate());
 
-#        return true;
+        return true;
     }
 }

@@ -80,6 +80,22 @@ class DataFixtureController extends AbstractActionController implements
             }
         }
 
+        // Add revision types
+        foreach (array('insert', 'update', 'delete', 'epoch') as $type) {
+            $revisionType = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
+                ->findOneBy([
+                    'revisionType' => $type,
+                ]);
+
+            if (! $revisionType) {
+                $revisionType = new Entity\RevisionType();
+                $revisionType->setRevisionType($type);
+
+                $this->getAuditObjectManager()->persist($revisionType);
+            }
+        }
+
         $this->getAuditObjectManager()->flush();
 
         $console->write("Audit data fixture import complete");

@@ -42,6 +42,14 @@ class AuditService extends AbstractHelper implements
 
     public function getEntityValues($entity)
     {
+        $hydrator = new DoctrineHydrator($this->getObjectManager(), true);
+
+        return $hydrator->extract($entity);
+
+        /**
+        *
+        * This looks  like a standard hydrator below
+
         $return = [];
 
         $metadata = $this->getObjectManager()->getClassMetadata(get_class($entity));
@@ -54,6 +62,7 @@ class AuditService extends AbstractHelper implements
         ksort($return);
 
         return $return;
+        */
     }
 
     /**
@@ -96,18 +105,53 @@ class AuditService extends AbstractHelper implements
         return $associations;
     }
 
+    public function getKeysForRevision(Entity\RevisionEntity $revisionEntity)
+    {
+        $keys = $this->getAuditObjectManager()
+            ->getRepository('ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue')
+            ->findBy([
+                'revisionEntity' => $revisionEntity
+            ]);
+    }
+
     /**
      * Find a mapping to the given field for 1:many
+     * This will be the most recent at or before the timestamp of the
+     * revision
      */
-    public function getAssociationRevisionEntity(AbstractAudit $entity, string $field, $value)
+
+    public function getAssociationRevisionEntity(
+	AbstractAudit $entity, string $field, $value
+    )
     {
         foreach ($entity->getAssociationMappings() as $mapping) {
-
             if ($mapping['fieldName'] == $field) {
                 $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
+
+                $identifierValues = $entity->getRevisionEntity()  
+                    ->getRevisionEntityIdentifierValue();
+                $identifiers = [];
+                foreach ($identifierValues as $identifier) {
+                    $identifiers[$identifier->getIdentifier()->getFieldName()] 
+                        = $identifier->getValue();
+                }
+
                 $queryBuilder->select('revisionEntity')
                     ->from('ZF\Doctrine\Audit\\Entity\\RevisionEntity', 'revisionEntity')
                     ->innerJoin('revisionEntity.revision', 'revision')
+                    ->innerJoin('revisionEntity.targetEntity', 'targetEntity')
+                    ->andWhere('targetEntity = :targetEntity')
+                    ->setParameter('targetEntity', 
+                        $entity->getRevisionEntity()->getTargetEntity())
+                    ->andWhere('revision.timestamp <= :timestamp')
+                    ->setParameter('timestamp', 
+                        $entity->getRevisionEntity()->getRevision()->getTimestamp())
+                    ->innerJoin('revisionEntity.revisionEntityIdentifierValue', 'revisionEntityIdentifierValue')
+                    ->andWhere($queryBuildere->expr()->in('revisionEntityIdentifierValue.value', $identifiers)
+                 ;
+
+
+
                     ->andWhere('revisionEntity.targetEntityClass = ?1')
                     ->andWhere('revisionEntity.entityKeys = ?2')
                     ->andWhere('revision.timestamp <= ?3')
