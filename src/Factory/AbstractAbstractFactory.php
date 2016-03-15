@@ -28,6 +28,7 @@ abstract class AbstractAbstractFactory implements
             new Persistence\AuditOptionsInitializer(),
             new Persistence\AuditEntitiesInitializer(),
             new Persistence\AuthenticationServiceInitializer(),
+            new Persistence\RevisionCommentInitializer(),
         ];
     }
 

@@ -65,35 +65,6 @@ class AuditService extends AbstractHelper implements
         */
     }
 
-    /**
-     * Extract entity into a flat array where references become getId()
-     * then hydrate the auditEntity with those values
-     */
-    public function hydrateAuditEntityFromTargetEntity($auditEntity, $entity)
-    {
-        $properties = array();
-        $hydrator = new DoctrineHydrator($this->getObjectManager(), true);
-        $auditHydrator = new DoctrineHydrator($this->getAuditObjectManager(), false);
-
-        foreach ($hydrator->extract($entity) as $key => $value) {
-            if (gettype($value) == 'object' and method_exists($value, 'getId')) {
-                // Set values to getId for classes
-                $value = $value->getId();
-            } elseif ($value instanceof \Doctrine\ORM\PersistentCollection) {
-                // If a property is an object we probably are not mapping that to
-                // a field.  Do no special handing...
-                continue;
-            } elseif ($value instanceof \DateTime) {
-                // DateTime is special and ok as-is
-            } elseif (gettype($value) == 'object' and ! method_exists($value, 'getId')) {
-                throw new Exception(get_class($value) . " does not have a getId function");
-            }
-
-            $properties[$key] = $value;
-        }
-
-        $auditHydrator->hydrate($properties, $auditEntity);
-    }
 
     public function getEntityAssociations(AbstractAudit $entity)
     {
@@ -121,18 +92,18 @@ class AuditService extends AbstractHelper implements
      */
 
     public function getAssociationRevisionEntity(
-	AbstractAudit $entity, string $field, $value
+    AbstractAudit $entity, string $field, $value
     )
     {
         foreach ($entity->getAssociationMappings() as $mapping) {
             if ($mapping['fieldName'] == $field) {
                 $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
 
-                $identifierValues = $entity->getRevisionEntity()  
+                $identifierValues = $entity->getRevisionEntity()
                     ->getRevisionEntityIdentifierValue();
                 $identifiers = [];
                 foreach ($identifierValues as $identifier) {
-                    $identifiers[$identifier->getIdentifier()->getFieldName()] 
+                    $identifiers[$identifier->getIdentifier()->getFieldName()]
                         = $identifier->getValue();
                 }
 
@@ -141,10 +112,10 @@ class AuditService extends AbstractHelper implements
                     ->innerJoin('revisionEntity.revision', 'revision')
                     ->innerJoin('revisionEntity.targetEntity', 'targetEntity')
                     ->andWhere('targetEntity = :targetEntity')
-                    ->setParameter('targetEntity', 
+                    ->setParameter('targetEntity',
                         $entity->getRevisionEntity()->getTargetEntity())
                     ->andWhere('revision.timestamp <= :timestamp')
-                    ->setParameter('timestamp', 
+                    ->setParameter('timestamp',
                         $entity->getRevisionEntity()->getRevision()->getTimestamp())
                     ->innerJoin('revisionEntity.revisionEntityIdentifierValue', 'revisionEntityIdentifierValue')
                     ->andWhere($queryBuildere->expr()->in('revisionEntityIdentifierValue.value', $identifiers))

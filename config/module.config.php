@@ -5,6 +5,12 @@ return array(
         'abstract_factories' => array(
             'ZF\\Doctrine\\Audit\\Factory\\ServiceManagerAbstractFactory',
         ),
+        'invokables' => array(
+            'ZF\\Doctrine\\Audit\\Service\\RevisionComment' => 'ZF\\Doctrine\\Audit\\Service\\RevisionComment',
+        ),
+        'initializers' => array(
+            'ZF\\Doctrine\\Audit\\Persistence\\RevisionCommentInitializer',
+        ),
     ),
 
     'controllers' => array(
