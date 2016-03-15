@@ -1,9 +1,14 @@
 ORM Audit for Doctrine
-==============
+======================
 
 [![Build Status](https://travis-ci.org/API-Skeletons/zf-doctrine-audit.png)](https://travis-ci.org/API-Skeletons/zf-doctrine-audit)
 
-Auditing for Doctrine 2.  This module creates an entity to audit a specified target entity and tracks revisions to that target.  Includes tagging of authenticated users and per-revision comments.
+This module implements auditing against a target object manager and list of entities.  
+Using an object manager configured independently of the target object manager the audit tables may
+share the same database or use a different database for auditing.  
+
+![Entity Relationship Diagram](https://raw.githubusercontent.com/API-Skeletons/zf-doctrine-audit/master/media/zf-doctrine-audit-erd.png)
+Entity Relationship Diagram created with [Skipper](https://skipper18.com)
 
 
 About
@@ -14,14 +19,12 @@ them and revision tracking entities.  Included is a view layer to browse the aud
 records.  Routing back to live application data is supported and view helpers allow
 you to find and browse to the latest audit record from a given audited entity.
 
-Revisions pool all audited entities into revision buckets.  Each bucket contains 
-the revision entity for each audited record in a flush.
+Auditing is grouped by flush() events into a Revision.  You may create a comment for each revision.  
+The single flush() for auditing is done independent and after the flush() from the target object manager.
 
-Auditing is done in it's own transaction after a flush has been performed.  
-Auditing takes two flushes in one transaction to complete.
+The original concept was inspired by [SimpleThings](https://packagist.org/packages/simplethings/entity-audit-bundle)
+in Jan 2013
 
-The basic concept was inspired by 
-[SimpleThings](https://packagist.org/packages/simplethings/entity-audit-bundle)
 
 
 Install
