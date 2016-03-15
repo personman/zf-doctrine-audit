@@ -21,13 +21,11 @@ class EpochController extends AbstractActionController implements
     Persistence\AuditObjectManagerAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditOptionsAwareInterface,
-    Persistence\AuditServiceAwareInterface
 {
     use Persistence\AuditEntitiesAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
-    use Persistence\AuditServiceAwareTrait;
 
     public function indexAction()
     {

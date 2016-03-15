@@ -14,7 +14,7 @@ class RevisionCommentInitializer implements InitializerInterface
                 $serviceLocator = $serviceLocator->getServiceLocator();
             }
 
-            $instance->setAuditService(
+            $instance->setRevisionComment(
                 $serviceLocator->get('ZF\Doctrine\Audit\Service\RevisionComment')
             );
         }

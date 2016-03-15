@@ -24,7 +24,6 @@ abstract class AbstractAbstractFactory implements
         return $this->initializers ?? $this->initializers = [
             new Persistence\ObjectManagerInitializer(),
             new Persistence\AuditObjectManagerInitializer(),
-            new Persistence\AuditServiceInitializer(),
             new Persistence\AuditOptionsInitializer(),
             new Persistence\AuditEntitiesInitializer(),
             new Persistence\AuthenticationServiceInitializer(),
