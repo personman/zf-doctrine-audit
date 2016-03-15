@@ -8,6 +8,7 @@ Using an object manager configured independently of the target object manager th
 share the same database or use a different database for auditing.  
 
 ![Entity Relationship Diagram](https://raw.githubusercontent.com/API-Skeletons/zf-doctrine-audit/master/media/zf-doctrine-audit-erd.png)
+
 Entity Relationship Diagram created with [Skipper](https://skipper18.com)
 
 
