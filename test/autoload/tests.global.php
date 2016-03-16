@@ -3,17 +3,24 @@
 namespace ZFTest\Doctrine\Audit;
 
 return array(
+    'service_manager' => array(
+        'invokables' => array(
+            'Zend\Authentication\AuthenticationService' => 
+                'Zend\Authentication\AuthenticationService',
+        ),
+    ),
+
     'zf-doctrine-audit' => array(
-        'datetimeFormat' => 'r',
-        'paginatorLimit' => 999999,
+        'target_object_manager' => 'doctrine.entitymanager.orm_default',
+        'audit_object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
 
-        'userEntityClassName' => 'ZfcUserDoctrineORM\Entity\User',
-        'authenticationService' => 'zfcuser_auth_service',
+        'datetime_format' => 'r',
+        'paginator_limit' => 999999,
 
-        'tableNamePrefix' => '',
-        'tableNameSuffix' => '_audit',
-        'revisionTableName' => 'Revision',
-        'revisionEntityTableName' => 'RevisionEntity',
+        'authentication_service' => 'Zend\Authentication\AuthenticationService',
+
+        'table_name_prefix' => '',
+        'table_name_suffix' => '_audit',
 
         'entities' => array(
             'ZFTest\Doctrine\Audit\Models\Bootstrap\Album' => array(),

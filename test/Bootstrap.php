@@ -91,7 +91,7 @@ class Bootstrap
             'Zend\Loader\StandardAutoloader' => array(
                 'autoregister_zf' => true,
                 'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/AuditTest',
+                    __NAMESPACE__ => __DIR__ . '/ZFTest',
                 ),
             ),
         ));
