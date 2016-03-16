@@ -1,0 +1,96 @@
+DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>;
+
+DELIMITER ;;
+CREATE PROCEDURE zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE var_target_entity bigint(20);
+
+    DECLARE var_revision_id bigint(20);
+    DECLARE var_revision_entity_id bigint(20);
+    DECLARE var_revision_type bigint(20);
+
+<?php
+    foreach ($this->columns as $columnName => $columnType) {
+?>
+    DECLARE var_<?= $columnName; ?> <?= $columnType;?>;
+<?php
+    }
+    ?>
+
+    DECLARE cur CURSOR FOR SELECT
+        <?= implode(",\n        ", array_keys($this->columns)); ?>
+        FROM <?= $this->targetDatabase; ?>.<?= $this->targetEntity->getTableName(); ?>
+        LIMIT <?= $this->offset; ?>, <?= $this->limit; ?>;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    SET var_target_entity = <?= $this->targetEntity->getId(); ?>;
+    SET var_revision_type = 4;
+
+    INSERT INTO Revision_Audit (
+        comment,
+        createdAt
+    ) VALUES (
+        'Epoch <?= $this->targetEntity->getTableName(); ?>',
+        now()
+    );
+
+    SELECT last_insert_id() INTO var_revision_id;
+
+    START TRANSACTION;
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO
+            var_<?= implode(",\n            var_", array_keys($this->columns)); ?>;
+
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        INSERT INTO RevisionEntity_Audit (
+            revision_id,
+            target_entity_id,
+            revision_type_id,
+            title
+        ) values (
+            var_revision_id,
+            var_target_entity,
+            var_revision_type,
+            'Epoch'
+        );
+
+        SELECT last_insert_id() INTO var_revision_entity_id;
+
+        INSERT INTO <?= $this->targetEntity->getTableName(); ?> (
+            <?= implode(",\n            ", array_keys($this->columns)); ?>,
+            revisionEntity_id
+        ) SELECT
+            var_<?= implode(",\n            var_", array_keys($this->columns)); ?>,
+            var_revision_entity_id;
+
+<?php
+        foreach ($this->targetEntity->getIdentifier() as $identifier) {
+?>
+        INSERT INTO RevisionEntityIdentifierValue_Audit (
+            value,
+            identifier_id,
+            revision_entity_id
+        ) VALUES (
+            var_<?= $identifier->getColumnName(); ?>,
+            <?= $identifier->getId(); ?>,
+            var_revision_entity_id
+        );
+        <?php
+        }
+        ?>
+
+    END LOOP read_loop;
+    CLOSE cur;
+    COMMIT;
+END;;
+
+DELIMITER ;
+CALL zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>();
+
+DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>;
