@@ -15,10 +15,12 @@ use ZF\Doctrine\Audit\Persistence;
 
 class EpochMySQLController extends AbstractActionController implements
     Persistence\AuditObjectManagerAwareInterface,
-    Persistence\ObjectManagerAwareInterface
+    Persistence\ObjectManagerAwareInterface,
+    Persistence\AuditOptionsAwareInterface
 {
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
+    use Persistence\AuditOptionsAwareTrait;
 
     public function importAction()
     {
@@ -35,147 +37,56 @@ class EpochMySQLController extends AbstractActionController implements
             ->getRepository('ZF\Doctrine\Audit\Entity\TargetEntity')
             ->findAll();
 
+        $connection = $this->getObjectManager()->getConnection();
+
         foreach ($targetEntities as $targetEntity) {
-            $storedProcedure = <<<EOF
-DELIMITER ;;
-DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_{$targetEntity->getTableName()};;
+            if ($targetEntity->getTableName() != 'Weather') continue;
+            // We have to iterate the whole stored procedure based on import limit size
+            // because mysql cursors don't flex that way.
+#            print_r(get_class_methods($connection));die();
+            $queryBuilder = $this->getObjectManager()->createQueryBuilder();
+            $queryBuilder->select('count(ct)');
+            $queryBuilder->from($targetEntity->getName(), 'ct');
 
-CREATE PROCEDURE zf_doctrine_audit_epoch_{$targetEntity->getTableName()}()
-BEGIN
-    DECLARE var_revision_id bigint(20);
-    DECLARE var_revision_entity_id bigint(20);
-    DECLARE var_revision_type bigint(20);
-    DECLARE var_target_entity bigint(20);
-    DECLARE done INT DEFAULT FALSE;
-
-EOF;
-
-            $connection = $this->getObjectManager()->getConnection();
+            $count = $queryBuilder->getQuery()->getSingleScalarResult();
+            $iterations = ceil($count / $this->getAuditOptions()['epoch_import_limit']);
 
             $columnDefinitionSql = "
-                SELECT
-                    column_name,
-                    column_type
+                SELECT column_name, column_type
                 FROM information_schema.columns
                 WHERE table_schema = '"
                 . $connection->getDatabase()
                 . "' and table_name = '"
                 . $targetEntity->getTableName()
-                . "'";
-
-            $tableColumns = $connection->fetchAll($columnDefinitionSql);
-            $columnNames = [];
-            foreach ($tableColumns as $column) {
-                $columnNames[$column['column_name']] = 'var_' . strtolower($column['column_name']);
-                $storedProcedure .= "    DECLARE " . $columnNames[$column['column_name']];
-                $storedProcedure .= ' ' . $column['column_type'];
-                $storedProcedure .= ";\n";
-            }
-
-            $storedProcedure .= "\n    DECLARE rows CURSOR FOR\n        SELECT\n            "
-                . implode(", \n            ", array_keys($columnNames))
-                . "\n        FROM "
-                . $connection->getDatabase()
-                . '.'
-                . $targetEntity->getTableName()
-                . ";\n\n"
-                . "    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;"
-                . "\n\n"
-                . "    SET var_target_entity = " . $targetEntity->getId() . ';'
+                . "'"
                 ;
-
-            $storedProcedure .= <<<EOF
-
-    SET var_revision_type = 4;
-
-    INSERT INTO Revision_Audit (
-        comment,
-        createdAt
-    ) VALUES (
-        'Epoch',
-        now()
-    );
-
-    SELECT last_insert_id() INTO var_revision_id;
-
-    OPEN rows;
-    read_loop: LOOP
-
-        FETCH next FROM rows INTO
-
-EOF;
-
-            $storedProcedure .= '            ';
-            $storedProcedure .= implode(",\n            ", $columnNames) . ";";
-
-            $storedProcedure .= <<<EOF
-
-
-        IF DONE then
-            LEAVE read_loop;
-        END IF;
-
-        INSERT INTO RevisionEntity_Audit (
-            revision_id,
-            target_entity_id,
-            revision_type_id,
-            title
-        ) values (
-            var_revision_id,
-            var_target_entity,
-            var_revision_type,
-            'Epoch'
-        );
-
-        SELECT last_insert_id() INTO var_revision_entity_id;
-
-EOF;
-
-            $revisionEntityColumns = $columnNames;
-            $revisionEntityColumns['revisionEntity_id'] = 'var_revision_entity_id';
-
-            $storedProcedure .=
-        "\n        INSERT INTO "
-        . $targetEntity->getAuditEntity()->getTableName()
-        . " (\n            "
-        . implode(",\n            ", array_keys($revisionEntityColumns))
-        . "\n        ) SELECT\n            "
-        . implode(",\n            ", $revisionEntityColumns)
-        . ";\n\n"
-        ;
-
-            foreach ($targetEntity->getIdentifier() as $identifier) {
-                $storedProcedure .= "
-                INSERT INTO RevisionEntityIdentifierValue_Audit (
-                    value,
-                    identifier_id,
-                    revision_entity_id
-                ) VALUES (\n            "
-                        . $revisionEntityColumns[$identifier->getColumnName()]
-                        . ",\n            "
-                        . $identifier->getId()
-                        . ",\n            "
-                        . 'var_revision_entity_id'
-                        . "\n        );\n\n";
+            $tableColumns = $connection->fetchAll($columnDefinitionSql);
+            $column = [];
+            foreach ($tableColumns as $column) {
+                $columns[$column['column_name']] = $column['column_type'];
             }
 
-            $storedProcedure .= "    END LOOP;
-    CLOSE rows;
-END;;
+            $viewRender = $this->getServiceLocator()->get('ViewRenderer');
 
-DELIMITER ;";
+            $offset = 1;
+            for ($i = 0; $i < $iterations; $i++) {
+                $viewParams = [
+                    'offset' => $offset,
+                    'limit' => $this->getAuditOptions()['epoch_import_limit'],
+                    'columns' => $columns,
+                    'targetEntity' => $targetEntity,
+                    'targetDatabase' => $connection->getDatabase(),
+                ];
 
-            $storedProcedure .= <<<EOF
+                $viewModel = new ViewModel($viewParams);
+                $viewModel->setTemplate('zf-doctrine-audit/epoch/mysql');
 
+                echo($viewRender->render($viewModel));
 
-CALL zf_doctrine_audit_epoch_{$targetEntity->getTableName()}();
-DROP PROCEDURE zf_doctrine_audit_epoch_{$targetEntity->getTableName()};
-
-
-EOF;
-
-            print_r($storedProcedure);
+                $offset += $this->getAuditOptions()['epoch_import_limit'];
+            }
         }
+        die();
     }
 }
 

@@ -103,6 +103,6 @@ class DataFixtureController extends AbstractActionController implements
 
         $this->getAuditObjectManager()->flush();
 
-        $console->write("Audit data fixture import complete");
+        $console->write("Audit data fixture import complete", Color::GREEN);
     }
 }

@@ -19,6 +19,12 @@ return array(
         ),
     ),
 
+    'view_manager' => array(
+        'template_path_stack' => array(
+            'zf-doctrine-audit' => __DIR__ . '/../view',
+        ),
+    ),
+
     'console' => array(
         'router' => array(
             'routes' => array(
