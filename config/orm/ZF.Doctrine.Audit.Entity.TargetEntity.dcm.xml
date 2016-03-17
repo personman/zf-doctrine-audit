@@ -8,7 +8,7 @@
     <field name="tableName" type="string" nullable="false"/>
     <one-to-one field="auditEntity" target-entity="ZF\Doctrine\Audit\Entity\AuditEntity" inversed-by="targetEntity">
       <join-columns>
-        <join-column name="entity_id" referenced-column-name="id" nullable="false" unique="true"/>
+        <join-column name="audit_entity_id" referenced-column-name="id" nullable="false" unique="true"/>
       </join-columns>
     </one-to-one>
     <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="targetEntity"/>

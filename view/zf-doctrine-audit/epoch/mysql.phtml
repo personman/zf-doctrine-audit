@@ -1,3 +1,5 @@
+SELECT 'Begin <?= $this->targetEntity->getTableName(); ?> offset <?= $this->offset; ?> rows <?= $this->limit; ?>' as 'Status', now();
+
 DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>;
 
 DELIMITER ;;

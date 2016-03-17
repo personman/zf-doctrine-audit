@@ -40,7 +40,7 @@ class EpochMySQLController extends AbstractActionController implements
         $connection = $this->getObjectManager()->getConnection();
 
         foreach ($targetEntities as $targetEntity) {
-            if ($targetEntity->getTableName() != 'Weather') continue;
+#            if ($targetEntity->getTableName() != 'Weather') continue;
             // We have to iterate the whole stored procedure based on import limit size
             // because mysql cursors don't flex that way.
 #            print_r(get_class_methods($connection));die();
@@ -85,6 +85,9 @@ class EpochMySQLController extends AbstractActionController implements
 
                 $offset += $this->getAuditOptions()['epoch_import_limit'];
             }
+
+            $offset = 1;
+            $columns = [];
         }
         die();
     }

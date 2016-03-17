@@ -20,9 +20,6 @@ return [
         // The object manager to audit with.  May be the same as target_object_manager
         'audit_object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
 
-        'datetime_format' => 'r',
-        'paginator_limit' => 20,
-
         // If you use the same entity manager for the target and audit your table must
         // be named differently.  Suffix is strongly recommended over prefix.
         'audit_table_name_suffix' => '_audit',
@@ -54,7 +51,7 @@ return [
 
          * You may optionally specify a route to the data the entity audits
 
-            'Db\Entity\song' => array(
+            'Db\Entity\Song' => array(
                 'route' => 'default',
                 'defaults' => array(
                     'controller' => 'song',
