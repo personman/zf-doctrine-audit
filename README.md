@@ -12,5 +12,5 @@ share the same database or use a different database for auditing.
 Entity Relationship Diagram created with [Skipper](https://skipper18.com)
 
 
-[Read the documentation](https://github.com/API-Skeletons/zf-doctrine-audit/wiki)
+[Read the documentation](https://github.com/API-Skeletons/zf-doctrine-audit/wiki/zf-doctrine-audit)
 ------------------------
