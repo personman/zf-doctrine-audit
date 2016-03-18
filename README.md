@@ -1,11 +1,10 @@
-ORM Audit for Doctrine
-======================
+Auditing for Doctrine ORM
+=========================
 
 [![Build Status](https://travis-ci.org/API-Skeletons/zf-doctrine-audit.png)](https://travis-ci.org/API-Skeletons/zf-doctrine-audit)
+[![Total Downloads](https://poser.pugx.org/api-skeletons/zf-doctrine-audit/downloads)](https://packagist.org/packages/api-skeletons/zf-doctrine-audit)
 
-This module implements auditing against a target object manager and list of entities.  
-Using an object manager configured independently of the target object manager the audit tables may
-share the same database or use a different database for auditing.  
+Auditing of a target object manager and list of entities using an object manager configured independently of the target object manager.  The audit tables may share the same database or use a different database for auditing.  
 
 ![Entity Relationship Diagram](https://raw.githubusercontent.com/API-Skeletons/zf-doctrine-audit/master/media/zf-doctrine-audit-erd.png)
 
