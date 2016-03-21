@@ -21,7 +21,7 @@ BEGIN
     ?>
 
     DECLARE cur CURSOR FOR SELECT
-        <?= implode(",\n        ", array_keys($this->columns)); ?>
+        `<?= implode("`,\n        `", array_keys($this->columns)); ?>`
         FROM <?= $this->targetDatabase; ?>.<?= $this->targetEntity->getTableName(); ?>
         LIMIT <?= $this->offset; ?>, <?= $this->limit; ?>;
 
@@ -64,8 +64,8 @@ BEGIN
 
         SELECT last_insert_id() INTO var_revision_entity_id;
 
-        INSERT INTO <?= $this->targetEntity->getTableName(); ?> (
-            <?= implode(",\n            ", array_keys($this->columns)); ?>,
+        INSERT INTO `<?= $this->targetEntity->getTableName(); ?>` (
+            `<?= implode("`,\n            `", array_keys($this->columns)); ?>`,
             revisionEntity_id
         ) SELECT
             var_<?= implode(",\n            var_", array_keys($this->columns)); ?>,
