@@ -10,8 +10,6 @@ matrix:
   fast_finish: true
   include:
     - php: 7.0
-        - EXECUTE_CS_CHECK=true
-        - EXECUTE_COVERAGE=true
   
 before_install:
   - phpenv config-add .travis-config.ini || return 0
@@ -23,4 +21,4 @@ install:
 
 script:
   - ./vendor/bin/phpunit
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=test/Bootstrap.php --ignore=src/Entity/* src; fi
+  - ./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=test/Bootstrap.php --ignore=src/Entity/* src
