@@ -9,7 +9,7 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: '7.0'
+    - php: 7.0
         - EXECUTE_CS_CHECK=true
         - EXECUTE_COVERAGE=true
   
