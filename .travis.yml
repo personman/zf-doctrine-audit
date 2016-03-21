@@ -9,13 +9,9 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: 
-        - '7.0':
-            - EXECUTE_CS_CHECK=true
-            - EXECUTE_COVERAGE=true
-        - hhvm 
-  allow_failures:
-    - php: hhvm
+    - php: '7.0'
+        - EXECUTE_CS_CHECK=true
+        - EXECUTE_COVERAGE=true
   
 before_install:
   - phpenv config-add .travis-config.ini || return 0
