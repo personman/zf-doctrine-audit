@@ -26,4 +26,4 @@ install:
 
 script:
   - ./vendor/bin/phpunit
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=test/Bootstrap.php src; fi
+  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=test/Bootstrap.php --ignore=src/Entity/* src; fi

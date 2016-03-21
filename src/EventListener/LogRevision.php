@@ -101,7 +101,8 @@ class LogRevision implements
             ->innerJoin('field.fieldRevision', 'fieldRevision')
             ->innerJoin('fieldRevision.fieldStatus', 'fieldStatus')
             ->andWhere('fieldStatus.name = :fieldStatusName')
-            ->andWhere($queryBuilder->expr()->in('fieldRevision.id',
+            ->andWhere($queryBuilder->expr()->in(
+                'fieldRevision.id',
                 $queryBuilder2->select('MAX(fieldRevision2.id)')
                     ->from('ZF\Doctrine\Audit\Entity\FieldRevision', 'fieldRevision2')
                     ->innerJoin('fieldRevision2.field', 'field2')
@@ -110,8 +111,7 @@ class LogRevision implements
                     ->groupBy('field2.id')
                     ->getQuery()
                     ->getDql()
-                )
-            )
+            ))
             ->setParameter('fieldStatusName', 'active')
             ->setParameter('targetEntity', get_class($entity))
             ;
@@ -136,8 +136,8 @@ class LogRevision implements
             }
 
             if (in_array($key, $auditFields)) {
-               $properties[$key] = $value;
-           }
+                $properties[$key] = $value;
+            }
         }
 
         $auditHydrator->hydrate($properties, $auditEntity);
@@ -192,8 +192,8 @@ class LogRevision implements
                 ->setValue($entityProperties[$identifier->getFieldName()])
                 ;
 
-           $this->getAuditObjectManager()->persist($revisionEntityIdentifierValue);
-       }
+            $this->getAuditObjectManager()->persist($revisionEntityIdentifierValue);
+        }
 
         $this->getAuditObjectManager()->persist($revisionEntity);
         $this->getAuditObjectManager()->persist($auditEntity);
