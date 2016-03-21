@@ -33,11 +33,17 @@ class Revision
     private $revisionEntity;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $fieldRevision;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fieldRevision = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -155,5 +161,96 @@ class Revision
     {
         return $this->revisionEntity;
     }
-}
 
+    /**
+     * Add fieldRevision
+     *
+     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
+     *
+     * @return Revision
+     */
+    public function addFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
+    {
+        $this->fieldRevision[] = $fieldRevision;
+
+        return $this;
+    }
+
+    /**
+     * Remove fieldRevision
+     *
+     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
+     */
+    public function removeFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
+    {
+        $this->fieldRevision->removeElement($fieldRevision);
+    }
+
+    /**
+     * Get fieldRevision
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFieldRevision()
+    {
+        return $this->fieldRevision;
+    }
+    /**
+     * @var string
+     */
+    private $userName;
+
+    /**
+     * @var string
+     */
+    private $userEmail;
+
+
+    /**
+     * Set userName
+     *
+     * @param string $userName
+     *
+     * @return Revision
+     */
+    public function setUserName($userName)
+    {
+        $this->userName = $userName;
+
+        return $this;
+    }
+
+    /**
+     * Get userName
+     *
+     * @return string
+     */
+    public function getUserName()
+    {
+        return $this->userName;
+    }
+
+    /**
+     * Set userEmail
+     *
+     * @param string $userEmail
+     *
+     * @return Revision
+     */
+    public function setUserEmail($userEmail)
+    {
+        $this->userEmail = $userEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get userEmail
+     *
+     * @return string
+     */
+    public function getUserEmail()
+    {
+        return $this->userEmail;
+    }
+}

@@ -38,12 +38,18 @@ class TargetEntity
     private $identifier;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $field;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
         $this->identifier = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->field = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -195,5 +201,38 @@ class TargetEntity
     {
         return $this->identifier;
     }
-}
 
+    /**
+     * Add field
+     *
+     * @param \ZF\Doctrine\Audit\Entity\Field $field
+     *
+     * @return TargetEntity
+     */
+    public function addField(\ZF\Doctrine\Audit\Entity\Field $field)
+    {
+        $this->field[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Remove field
+     *
+     * @param \ZF\Doctrine\Audit\Entity\Field $field
+     */
+    public function removeField(\ZF\Doctrine\Audit\Entity\Field $field)
+    {
+        $this->field->removeElement($field);
+    }
+
+    /**
+     * Get field
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
+}

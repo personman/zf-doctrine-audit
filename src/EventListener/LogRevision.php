@@ -179,7 +179,7 @@ class LogRevision implements
             $revisionType = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
                 ->findOneBy([
-                    'revisionType' => 'insert',
+                    'name' => 'insert',
                 ]);
 
             $this->enqueue([
@@ -192,7 +192,7 @@ class LogRevision implements
             $revisionType = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
                 ->findOneBy([
-                    'revisionType' => 'update',
+                    'name' => 'update',
                 ]);
 
             $this->enqueue([
@@ -205,7 +205,7 @@ class LogRevision implements
             $revisionType = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
                 ->findOneBy([
-                    'revisionType' => 'delete',
+                    'name' => 'delete',
                 ]);
 
             // Delete entities are out of scope in postFlush so enqueue now.

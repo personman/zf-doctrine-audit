@@ -13,6 +13,8 @@ use RuntimeException;
 use Doctrine\ORM\Tools\SchemaTool;
 use ZF\Doctrine\Audit\Persistence;
 use ZF\Doctrine\Audit\Entity;
+use DateTime;
+use Exception;
 
 class DataFixtureController extends AbstractActionController implements
     Persistence\AuditObjectManagerAwareInterface,
@@ -33,6 +35,34 @@ class DataFixtureController extends AbstractActionController implements
         }
 
         $config = $this->getServiceLocator()->get('Config')['zf-doctrine-audit'];
+
+        // Create a revision to associate with field revision
+        $revision = new Entity\Revision();
+        $revision->setCreatedAt(new DateTime());
+        $revision->setComment('Data Fixture Import');
+
+        $this->getAuditObjectManager()->persist($revision);
+
+        // Add FieldStatus
+        foreach (array('active', 'inactive') as $name) {
+            $fieldStatus = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\FieldStatus')
+                ->findOneBy([
+                    'name' => $name,
+                ]);
+
+            if (! $fieldStatus) {
+                $fieldStatus = new Entity\FieldStatus();
+                $fieldStatus->setName($name);
+
+                // Save active for column and association mappings
+                if ($name == 'active') {
+                    $fieldStatusActive = $fieldStatus;
+                }
+
+                $this->getAuditObjectManager()->persist($fieldStatus);
+            }
+        }
 
         foreach ($config['entities'] as $className => $route) {
             $targetEntity = $this->getAuditObjectManager()
@@ -80,22 +110,80 @@ class DataFixtureController extends AbstractActionController implements
                     $this->getAuditObjectManager()->persist($identifier);
                 }
 
+                // Add Fields
+                $fields = $this->getObjectManager()
+                    ->getClassMetadata($className)
+                    ->getFieldNames()
+                    ;
+
+                foreach ($fields as $fieldName) {
+                    $field = new Entity\Field();
+                    $field->setTargetEntity($targetEntity);
+                    $field->setName($fieldName);
+                    $field->setColumnName(
+                        $this->getObjectManager()
+                            ->getClassMetadata($className)
+                            ->getColumnName($fieldName)
+                    );
+
+                    $fieldRevision = new Entity\FieldRevision();
+                    $fieldRevision->setFieldStatus($fieldStatusActive);
+                    $fieldRevision->setField($field);
+                    $fieldRevision->setRevision($revision);
+
+                    $this->getAuditObjectManager()->persist($field);
+                    $this->getAuditObjectManager()->persist($fieldRevision);
+                }
+
+                // Add Associations to Fields
+                $associations = $this->getObjectManager()
+                    ->getClassMetadata($className)
+                    ->getAssociationNames()
+                    ;
+
+                foreach ($associations as $fieldName) {
+                    $associationMapping = $this->getObjectManager()
+                        ->getClassMetadata($className)
+                        ->getAssociationMapping($fieldName);
+
+                    if (! isset($associationMapping['joinColumns'])) {
+                        continue;
+                    }
+
+                    if (sizeof($associationMapping['joinColumns']) != 1) {
+                        throw new Exception('Unable to handle > 1 join column per association');
+                    }
+
+                    $field = new Entity\Field();
+                    $field->setTargetEntity($targetEntity);
+                    $field->setName($fieldName);
+                    $field->setColumnName(array_shift($associationMapping['joinColumns'])['name']);
+
+                    $fieldRevision = new Entity\FieldRevision();
+                    $fieldRevision->setFieldStatus($fieldStatusActive);
+                    $fieldRevision->setField($field);
+                    $fieldRevision->setRevision($revision);
+
+                    $this->getAuditObjectManager()->persist($field);
+                    $this->getAuditObjectManager()->persist($fieldRevision);
+                }
+
                 $this->getAuditObjectManager()->persist($auditEntity);
                 $this->getAuditObjectManager()->persist($targetEntity);
             }
         }
 
-        // Add revision types
-        foreach (array('insert', 'update', 'delete', 'epoch') as $type) {
+        // Add RevisionType
+        foreach (array('insert', 'update', 'delete', 'epoch') as $name) {
             $revisionType = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
                 ->findOneBy([
-                    'revisionType' => $type,
+                    'name' => $name,
                 ]);
 
             if (! $revisionType) {
                 $revisionType = new Entity\RevisionType();
-                $revisionType->setRevisionType($type);
+                $revisionType->setName($name);
 
                 $this->getAuditObjectManager()->persist($revisionType);
             }

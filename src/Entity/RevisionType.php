@@ -97,5 +97,33 @@ class RevisionType
     {
         return $this->revisionEntity;
     }
-}
+    /**
+     * @var string
+     */
+    private $name;
 
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return RevisionType
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="./test/Bootstrap.php">
+    <testsuites>
+        <testsuite name="zf-doctrine-audit Tests">
+            <directory>./test/ZFTest</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./vendor</directory>
+                <directory>./test</directory>
+                <file>./config/module.config.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
+

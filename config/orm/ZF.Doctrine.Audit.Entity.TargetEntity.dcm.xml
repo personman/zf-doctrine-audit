@@ -11,7 +11,8 @@
         <join-column name="audit_entity_id" referenced-column-name="id" nullable="false" unique="true"/>
       </join-columns>
     </one-to-one>
-    <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="targetEntity"/>
     <one-to-many field="identifier" target-entity="ZF\Doctrine\Audit\Entity\Identifier" mapped-by="targetEntity"/>
+    <one-to-many field="field" target-entity="ZF\Doctrine\Audit\Entity\Field" mapped-by="targetEntity"/>
+    <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="targetEntity"/>
   </entity>
 </doctrine-mapping>

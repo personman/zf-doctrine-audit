@@ -7,6 +7,9 @@
     <field name="createdAt" type="datetime" length="6" nullable="false"/>
     <field name="comment" type="text" nullable="true"/>
     <field name="userId" type="bigint" nullable="true"/>
+    <field name="userName" type="string" nullable="true"/>
+    <field name="userEmail" type="string" nullable="true"/>
+    <one-to-many field="fieldRevision" target-entity="ZF\Doctrine\Audit\Entity\FieldRevision" mapped-by="revision"/>
     <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="revision"/>
   </entity>
 </doctrine-mapping>

@@ -3,14 +3,14 @@
 namespace ZF\Doctrine\Audit\Entity;
 
 /**
- * Identifier
+ * Field
  */
-class Identifier
+class Field
 {
     /**
      * @var string
      */
-    private $fieldName;
+    private $name;
 
     /**
      * @var string
@@ -25,7 +25,7 @@ class Identifier
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $revisionEntityIdentifierValue;
+    private $fieldRevision;
 
     /**
      * @var \ZF\Doctrine\Audit\Entity\TargetEntity
@@ -37,31 +37,31 @@ class Identifier
      */
     public function __construct()
     {
-        $this->revisionEntityIdentifierValue = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fieldRevision = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Set fieldName
+     * Set name
      *
-     * @param string $fieldName
+     * @param string $name
      *
-     * @return Identifier
+     * @return Field
      */
-    public function setFieldName($fieldName)
+    public function setName($name)
     {
-        $this->fieldName = $fieldName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get fieldName
+     * Get name
      *
      * @return string
      */
-    public function getFieldName()
+    public function getName()
     {
-        return $this->fieldName;
+        return $this->name;
     }
 
     /**
@@ -69,7 +69,7 @@ class Identifier
      *
      * @param string $columnName
      *
-     * @return Identifier
+     * @return Field
      */
     public function setColumnName($columnName)
     {
@@ -99,37 +99,37 @@ class Identifier
     }
 
     /**
-     * Add revisionEntityIdentifierValue
+     * Add fieldRevision
      *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
+     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
      *
-     * @return Identifier
+     * @return Field
      */
-    public function addRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
+    public function addFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
     {
-        $this->revisionEntityIdentifierValue[] = $revisionEntityIdentifierValue;
+        $this->fieldRevision[] = $fieldRevision;
 
         return $this;
     }
 
     /**
-     * Remove revisionEntityIdentifierValue
+     * Remove fieldRevision
      *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
+     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
      */
-    public function removeRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
+    public function removeFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
     {
-        $this->revisionEntityIdentifierValue->removeElement($revisionEntityIdentifierValue);
+        $this->fieldRevision->removeElement($fieldRevision);
     }
 
     /**
-     * Get revisionEntityIdentifierValue
+     * Get fieldRevision
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getRevisionEntityIdentifierValue()
+    public function getFieldRevision()
     {
-        return $this->revisionEntityIdentifierValue;
+        return $this->fieldRevision;
     }
 
     /**
@@ -137,7 +137,7 @@ class Identifier
      *
      * @param \ZF\Doctrine\Audit\Entity\TargetEntity $targetEntity
      *
-     * @return Identifier
+     * @return Field
      */
     public function setTargetEntity(\ZF\Doctrine\Audit\Entity\TargetEntity $targetEntity)
     {
