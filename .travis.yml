@@ -10,7 +10,7 @@ matrix:
   fast_finish: true
   include:
     - php: 
-        - '7.0'
+        - '7.0':
             - EXECUTE_CS_CHECK=true
             - EXECUTE_COVERAGE=true
         - hhvm 
