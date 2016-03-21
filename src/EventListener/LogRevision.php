@@ -85,9 +85,38 @@ class LogRevision implements
      * Extract entity into a flat array where references become getId()
      * then hydrate the auditEntity with those values.
      * Return the array of values for identifier processing.
+     *
+     * The auditing entity may have fields the target does not.  To handle changes
+     * to the data model without losing data fields are revisioned.  All fields
+     * remain in the audit database but only those fields which are active will be
+     * audited here.
      */
     private function hydrateAuditEntityFromTargetEntity($auditEntity, $entity): array
     {
+        // Get list of active fields
+        $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
+        $queryBuilder2 = $this->getAuditObjectManager()->createQueryBuilder();
+        $queryBuilder->select('field.name')
+            ->from('ZF\Doctrine\Audit\Entity\Field', 'field')
+            ->innerJoin('field.fieldRevision', 'fieldRevision')
+            ->innerJoin('fieldRevision.fieldStatus', 'fieldStatus')
+            ->andWhere('fieldStatus.name = :fieldStatusName')
+            ->andWhere($queryBuilder->expr()->in('fieldRevision.id',
+                $queryBuilder2->select('MAX(fieldRevision2.id)')
+                    ->from('ZF\Doctrine\Audit\Entity\FieldRevision', 'fieldRevision2')
+                    ->innerJoin('fieldRevision2.field', 'field2')
+                    ->innerJoin('field2.targetEntity', 'targetEntity')
+                    ->andWhere('targetEntity.name = :targetEntity')
+                    ->groupBy('field2.id')
+                    ->getQuery()
+                    ->getDql()
+                )
+            )
+            ->setParameter('fieldStatusName', 'active')
+            ->setParameter('targetEntity', get_class($entity))
+            ;
+        $auditFields = array_column($queryBuilder->getQuery()->getArrayResult(), 'name');
+
         $properties = array();
         $hydrator = new DoctrineHydrator($this->getObjectManager(), true);
         $auditHydrator = new DoctrineHydrator($this->getAuditObjectManager(), false);
@@ -106,7 +135,9 @@ class LogRevision implements
                 throw new Exception(get_class($value) . " does not have a getId function");
             }
 
-            $properties[$key] = $value;
+            if (in_array($key, $auditFields)) {
+               $properties[$key] = $value;
+           }
         }
 
         $auditHydrator->hydrate($properties, $auditEntity);

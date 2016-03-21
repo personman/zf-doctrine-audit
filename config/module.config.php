@@ -55,6 +55,24 @@ return array(
                         ),
                     ),
                 ),
+                'zf-doctrine-audit-field-deactivate' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:field:deactivate --entity= --field= [--comment=]',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
+                            'action' => 'deactivate',
+                        ),
+                    ),
+                ),
+                'zf-doctrine-audit-field-activate' => array(
+                    'options' => array(
+                        'route' => 'zf-doctrine-audit:field:activate --entity= --field= [--comment=]',
+                        'defaults' => array(
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
+                            'action' => 'activate',
+                        ),
+                    ),
+                ),
             ),
         ),
     ),

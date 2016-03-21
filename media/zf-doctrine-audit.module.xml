@@ -165,8 +165,8 @@
     <entity uuid="f61e1674-be10-4899-9abf-1862b8689c14" bg-color="#FFFFFF" hdr-color="#0BC0A9" position-x="26" position-y="204" size-x="0" size-x2="77" size-y="0" size-y2="45"/>
     <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" bg-color="#FFB79D" size-x="46" size-x2="760" size-y="22" size-y2="759"/>
     <region uuid="4157623f-f7a6-422f-868f-b9523093bc45" bg-color="#EAE4F1" position-x="474" position-y="544" size-x="0" size-x2="236" size-y="0" size-y2="165"/>
-    <region uuid="461fa4e9-ec5e-4166-9ca2-beedddf4a30e" bg-color="#E8FADF" position-x="-28" position-y="204" size-x="0" size-x2="317" size-y="0" size-y2="324"/>
+    <region uuid="461fa4e9-ec5e-4166-9ca2-beedddf4a30e" bg-color="#E8FADF" position-x="-28" position-y="204" size-x="-7" size-x2="317" size-y="0" size-y2="324"/>
     <region uuid="b5142677-953e-44e4-8c4c-53db7247cc20" bg-color="#FDEBEF" position-x="-21" position-y="11" size-x="0" size-x2="730" size-y="0" size-y2="179"/>
-    <region uuid="ce5d972e-f016-41b2-9354-52b3830031e9" bg-color="#D6EDFF" position-x="188" position-y="249" size-x="-128" size-x2="522" size-y="47" size-y2="280"/>
+    <region uuid="ce5d972e-f016-41b2-9354-52b3830031e9" bg-color="#D6EDFF" position-x="178" position-y="252" size-x="-128" size-x2="532" size-y="47" size-y2="277"/>
   </visual-data>
 </skipper>

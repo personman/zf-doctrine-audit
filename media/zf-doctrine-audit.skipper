@@ -14,6 +14,6 @@
     <association uuid="cc518d27-fae6-4170-9f22-97bf44057e16" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="0" color="#969696"/>
     <association uuid="f32e532b-9717-4760-8c7b-946301d15225" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="0" color="#969696"/>
     <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" position-x="65" position-y="42"/>
-    <project uuid="ef6f4ef3-f519-448b-be69-829e7daaf1fd" size-x="31" size-x2="875" size-y="30" size-y2="851"/>
+    <project uuid="ef6f4ef3-f519-448b-be69-829e7daaf1fd" size-x="31" size-x2="870" size-y="30" size-y2="851"/>
   </visual-data>
 </skipper>

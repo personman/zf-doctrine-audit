@@ -15,9 +15,14 @@ class Module implements
     public function getConsoleUsage(Console $console)
     {
         return array(
-            'zf-doctrine-audit:schema-tool:update' => 'Get Update SQL for Audit',
+            'zf-doctrine-audit:schema-tool:update' => 'Get update SQL for audit',
             'zf-doctrine-audit:data-fixture:import' => 'Create audit entity fixtures. '
                 . 'Run before target entity fixtures.',
+            'zf-doctrine-audit:epoch:import --mysql' => 'Create epoch stored procedures',
+            'zf-doctrine-audit:field:activate --entity="entity\name" --field="fieldName" [--comment=]' =>
+                'Activate a field for auditing',
+            'zf-doctrine-audit:field:deactivate --entity="entity\name" --field="fieldName" [--comment=]' =>
+                'Deactivate a field from auditing',
         );
     }
 

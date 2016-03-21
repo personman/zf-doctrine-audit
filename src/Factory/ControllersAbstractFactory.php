@@ -13,5 +13,7 @@ class ControllersAbstractFactory extends AbstractAbstractFactory
             'ZF\Doctrine\Audit\Controller\DataFixtureController',
         'ZF\Doctrine\Audit\Controller\EpochMySQL' =>
             'ZF\Doctrine\Audit\Controller\EpochMySQLController',
+        'ZF\Doctrine\Audit\Controller\Field' =>
+            'ZF\Doctrine\Audit\Controller\FieldController',
     ];
 }
