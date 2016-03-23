@@ -8,7 +8,7 @@ use ZF\Doctrine\Audit\Mapping\Driver\AuditDriver;
 use ZF\Doctrine\Audit\Loader\AuditAutoloader;
 use PHPUnit_Framework_TestCase;
 
-Class ServiceManagerAbstractFactoryTest extends PHPUnit_Framework_TestCase
+class ServiceManagerAbstractFactoryTest extends PHPUnit_Framework_TestCase
 {
     function testLogRevision()
     {

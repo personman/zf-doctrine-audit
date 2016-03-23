@@ -5,7 +5,7 @@ namespace ZFTest\Doctrine\Audit;
 return array(
     'service_manager' => array(
         'invokables' => array(
-            'Zend\Authentication\AuthenticationService' => 
+            'Zend\Authentication\AuthenticationService' =>
                 'Zend\Authentication\AuthenticationService',
         ),
     ),
@@ -23,6 +23,8 @@ return array(
         'table_name_suffix' => '_audit',
 
         'entities' => array(
+            'ZFTest\Doctrine\Audit\Entity\Artist' => [],
+            'ZFTest\Doctrine\Audit\Entity\Album' => [],
         ),
     ),
 
@@ -38,6 +40,21 @@ return array(
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
                 'params' => array(
                     'memory' => true,
+                ),
+            ),
+        ),
+
+        'driver' => array(
+            'zftest_driver' => array(
+                'class' => 'Doctrine\\ORM\\Mapping\\Driver\\XmlDriver',
+                'paths' => array(
+                    0 => __DIR__ . '/../ZFTest/config/orm',
+                ),
+            ),
+            'orm_default' => array(
+                'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
+                'drivers' => array(
+                    'ZFTest\\Doctrine\\Audit\\Entity' => 'zftest_driver',
                 ),
             ),
         ),
