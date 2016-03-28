@@ -5,6 +5,7 @@ return array(
         'ZFTest\Doctrine\Audit',
         'DoctrineModule',
         'DoctrineORMModule',
+        'DoctrineDataFixtureModule',
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(

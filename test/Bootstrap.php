@@ -2,12 +2,14 @@
 
 namespace ZFTest\Doctrine\Audit;
 
-use Zend\Loader\AutoloaderFactory
-    , Zend\Mvc\Service\ServiceManagerConfig
-    , Zend\ServiceManager\ServiceManager
-    , Zend\Stdlib\ArrayUtils
-    , RuntimeException
-    ;
+use Zend\Loader\AutoloaderFactory;
+use Zend\Mvc\Service\ServiceManagerConfig;
+use Zend\ServiceManager\ServiceManager;
+use Zend\Stdlib\ArrayUtils;
+use RuntimeException;
+use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
@@ -60,6 +62,16 @@ class Bootstrap
         $auditEntityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_zf_doctrine_audit');
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($auditEntityManager);
         $schemaTool->createSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
+
+        // Run audit fixtures
+
+        // Lodgable default fixtures
+        $loader = new ServiceLocatorAwareLoader($application->getServiceManager());
+        $purger = new ORMPurger();
+        $executor = new ORMExecutor($auditEntityManager, $purger);
+
+        $loader->loadFromDirectory(__DIR__ . '/../src/Fixture');
+        $executor->execute($loader->getFixtures(), true);
 
         static::$application = $application;
     }
