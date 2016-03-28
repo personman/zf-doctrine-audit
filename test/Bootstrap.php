@@ -16,7 +16,7 @@ chdir(__DIR__);
 
 class Bootstrap
 {
-    protected static $application;
+    protected static $config;
 
     public static function init()
     {
@@ -51,8 +51,20 @@ class Bootstrap
         );
 
         $config = ArrayUtils::merge($baseConfig, $testConfig);
-        $application = \Zend\Mvc\Application::init($config);
 
+        static::$config = $config;
+    }
+
+    public static function getApplication()
+    {
+        $application = \Zend\Mvc\Application::init(static::$config);
+        self::createDatabase($application);
+
+        return $application;
+    }
+
+    public static function createDatabase(\Zend\Mvc\Application $application)
+    {
         // build test database
         $entityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_default');
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
@@ -64,23 +76,13 @@ class Bootstrap
         $schemaTool->createSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
 
         // Run audit fixtures
-
-        // Lodgable default fixtures
         $loader = new ServiceLocatorAwareLoader($application->getServiceManager());
         $purger = new ORMPurger();
         $executor = new ORMExecutor($auditEntityManager, $purger);
 
         $loader->loadFromDirectory(__DIR__ . '/../src/Fixture');
         $executor->execute($loader->getFixtures(), true);
-
-        static::$application = $application;
     }
-
-    public static function getApplication()
-    {
-        return static::$application;
-    }
-
 
     protected static function initAutoloader()
     {

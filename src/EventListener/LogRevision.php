@@ -261,5 +261,7 @@ class LogRevision implements
 
         // Flush revision and revisionEntities
         $this->getAuditObjectManager()->flush();
+
+        $this->getAuditObjectManager()->clear();
     }
 }
