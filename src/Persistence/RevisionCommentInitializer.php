@@ -2,20 +2,15 @@
 
 namespace ZF\Doctrine\Audit\Persistence;
 
-use Zend\ServiceManager\InitializerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
-class RevisionCommentInitializer implements InitializerInterface
+class RevisionCommentInitializer
 {
-    public function initialize($instance, ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $instance)
     {
         if ($instance instanceof RevisionCommentAwareInterface) {
-            if (method_exists($serviceLocator, 'getServiceLocator')) {
-                $serviceLocator = $serviceLocator->getServiceLocator();
-            }
-
             $instance->setRevisionComment(
-                $serviceLocator->get('ZF\Doctrine\Audit\Service\RevisionComment')
+                $container->get('ZF\Doctrine\Audit\Service\RevisionComment')
             );
         }
     }
