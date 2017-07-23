@@ -48,6 +48,5 @@ class Module implements
 
         $serviceManager->get('ZF\Doctrine\Audit\Loader\AuditAutoloader')->register();
         $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
-        $serviceManager->get('ZF\Doctrine\Audit\EventListener\LogRevision')->register();
     }
 }

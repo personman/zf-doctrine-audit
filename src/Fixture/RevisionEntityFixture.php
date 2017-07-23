@@ -122,9 +122,12 @@ class RevisionEntityFixture implements
                         continue;
                     }
 
+
+                    // @codeCoverageIgnoreStart
                     if (sizeof($associationMapping['joinColumns']) != 1) {
                         throw new Exception('Unable to handle > 1 join column per association');
                     }
+                    // @codeCoverageIgnoreEnd
 
                     $field = new Entity\Field();
                     $field->setTargetEntity($targetEntity);

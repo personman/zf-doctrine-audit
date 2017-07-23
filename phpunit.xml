@@ -6,6 +6,8 @@
         </testsuite>
 	<testsuite name="new">
  	    <directory>test/ZFTest/Plugin</directory>
+ 	    <directory>test/ZFTest/Repository</directory>
+ 	    <directory>test/ZFTest/Service</directory>
 	</testsuite>
     </testsuites>
 
