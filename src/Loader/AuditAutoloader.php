@@ -46,7 +46,7 @@ class AuditAutoloader extends StandardAutoloader implements
         $auditClass = new ClassGenerator();
         $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\RevisionEntity");
         $auditClass->setName(str_replace('\\', '_', $className));
-        $auditClass->setExtendedClass('AbstractAudit');
+        $auditClass->setExtendedClass('ZF\Doctrine\Audit\RevisionEntity\AbstractAudit');
 
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);

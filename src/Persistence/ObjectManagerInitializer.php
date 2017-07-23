@@ -2,21 +2,16 @@
 
 namespace ZF\Doctrine\Audit\Persistence;
 
-use Zend\ServiceManager\InitializerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
-class ObjectManagerInitializer implements InitializerInterface
+class ObjectManagerInitializer
 {
-    public function initialize($instance, ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $instance)
     {
         if ($instance instanceof ObjectManagerAwareInterface) {
-            if (method_exists($serviceLocator, 'getServiceLocator')) {
-                $serviceLocator = $serviceLocator->getServiceLocator();
-            }
-
-            $config = $serviceLocator->get('Config')['zf-doctrine-audit'];
+            $config = $container->get('config')['zf-doctrine-audit'];
             $instance->setObjectManager(
-                $serviceLocator->get($config['target_object_manager'])
+                $container->get($config['target_object_manager'])
             );
         }
     }

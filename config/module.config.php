@@ -5,6 +5,21 @@ namespace ZF\Doctrine\Audit;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 return [
+    'doctrine' => [
+        'fixture' => [
+            'zf-doctrine-audit' => [
+                'object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
+                'factories' => [
+                    'ZF\Doctrine\Audit\Fixture\FieldStatusFixture'
+                        => InvokableFactory::class,
+                    'ZF\Doctrine\Audit\Fixture\RevisionTypeFixture'
+                        => InvokableFactory::class,
+                    'ZF\Doctrine\Audit\Fixture\RevisionEntityFixture'
+                        => 'ZF\Doctrine\Audit\Fixture\RevisionEntityFixtureFactory'
+                ],
+            ],
+        ],
+    ],
     'zf-doctrine-repository-plugin' => [
         'aliases' => [
             'audit' => Plugin\AuditPlugin::class,
@@ -17,11 +32,17 @@ return [
         'invokables' => [
             'ZF\\Doctrine\\Audit\\Service\\RevisionComment' => 'ZF\\Doctrine\\Audit\\Service\\RevisionComment',
             'ZF\Doctrine\Audit\EventListener\LogRevision' => 'ZF\Doctrine\Audit\EventListener\LogRevision',
-            'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver' => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver',
-            'ZF\Doctrine\Audit\Loader\AuditAutoloader' => 'ZF\Doctrine\Audit\Loader\AuditAutoloader',
+        ],
+        'factories' => [
+            'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver'
+                => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriverFactory',
+            'ZF\Doctrine\Audit\Loader\AuditAutoloader'
+                => 'ZF\Doctrine\Audit\Loader\AuditAutoloaderFactory',
+
         ],
         'initializers' => [
             'ZF\\Doctrine\\Audit\\Persistence\\RevisionCommentInitializer',
+            'ZF\\Doctrine\\Audit\\Persistence\\ObjectManagerInitializer',
         ],
     ],
 

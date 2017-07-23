@@ -4,18 +4,16 @@ namespace ZF\Doctrine\Audit\Fixture;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use ZF\Doctrine\Audit\Entity;
 use DateTime;
 
 class RevisionEntityFixture implements
     FixtureInterface,
-    ServiceLocatorAwareInterface,
     DependentFixtureInterface
 {
-    use ServiceLocatorAwareTrait;
+    public $config;
+    public $objectManager;
 
     public function getDependencies()
     {
@@ -26,9 +24,6 @@ class RevisionEntityFixture implements
 
     public function load(ObjectManager $auditObjectManager)
     {
-        $config = $this->getServiceLocator()->get('Config')['zf-doctrine-audit'];
-        $objectManager = $this->getServiceLocator()->get($config['target_object_manager']);
-
         $fieldStatusActive = $auditObjectManager->getRepository('ZF\Doctrine\Audit\Entity\FieldStatus')
             ->findOneBy([
                 'name' => 'active',
@@ -41,7 +36,7 @@ class RevisionEntityFixture implements
 
         $auditObjectManager->persist($revision);
 
-        foreach ($config['entities'] as $className => $route) {
+        foreach ($this->config['entities'] as $className => $route) {
             $targetEntity = $auditObjectManager
                 ->getRepository('ZF\Doctrine\Audit\Entity\TargetEntity')
                 ->findOneBy(['name' => $className]);
@@ -64,12 +59,12 @@ class RevisionEntityFixture implements
                 $targetEntity->setAuditEntity($auditEntity);
                 $targetEntity->setName($className);
                 $targetEntity->setTableName(
-                    $objectManager
+                    $this->objectManager
                         ->getClassMetadata($className)
                         ->getTableName()
                 );
 
-                $identifiers = $objectManager
+                $identifiers = $this->objectManager
                     ->getClassMetadata($className)
                     ->getIdentifierFieldNames()
                     ;
@@ -79,7 +74,7 @@ class RevisionEntityFixture implements
                     $identifier->setTargetEntity($targetEntity);
                     $identifier->setFieldName($fieldName);
                     $identifier->setColumnName(
-                        $objectManager
+                        $this->objectManager
                             ->getClassMetadata($className)
                             ->getColumnName($fieldName)
                     );
@@ -88,7 +83,7 @@ class RevisionEntityFixture implements
                 }
 
                 // Add Fields
-                $fields = $objectManager
+                $fields = $this->objectManager
                     ->getClassMetadata($className)
                     ->getFieldNames()
                     ;
@@ -98,7 +93,7 @@ class RevisionEntityFixture implements
                     $field->setTargetEntity($targetEntity);
                     $field->setName($fieldName);
                     $field->setColumnName(
-                        $objectManager
+                        $this->objectManager
                             ->getClassMetadata($className)
                             ->getColumnName($fieldName)
                     );
@@ -113,13 +108,13 @@ class RevisionEntityFixture implements
                 }
 
                 // Add Associations to Fields
-                $associations = $objectManager
+                $associations = $this->objectManager
                     ->getClassMetadata($className)
                     ->getAssociationNames()
                     ;
 
                 foreach ($associations as $fieldName) {
-                    $associationMapping = $objectManager
+                    $associationMapping = $this->objectManager
                         ->getClassMetadata($className)
                         ->getAssociationMapping($fieldName);
 

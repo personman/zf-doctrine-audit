@@ -10,6 +10,7 @@ use RuntimeException;
 use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Loader;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
@@ -76,11 +77,17 @@ class Bootstrap
         $schemaTool->createSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
 
         // Run audit fixtures
-        $loader = new ServiceLocatorAwareLoader($application->getServiceManager());
+        $dataFixtureManager = $application->getServiceManager()
+            ->build('ZF\Doctrine\DataFixture\DataFixtureManager', ['group' => 'zf-doctrine-audit']);
+
+        $loader = new Loader();
         $purger = new ORMPurger();
         $executor = new ORMExecutor($auditEntityManager, $purger);
 
-        $loader->loadFromDirectory(__DIR__ . '/../src/Fixture');
+        foreach ($dataFixtureManager->getAll() as $fixture) {
+            $loader->addFixture($fixture);
+        }
+
         $executor->execute($loader->getFixtures(), true);
     }
 
