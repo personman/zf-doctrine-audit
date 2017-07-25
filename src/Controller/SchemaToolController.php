@@ -12,16 +12,23 @@ use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
 use RuntimeException;
 use Doctrine\ORM\Tools\SchemaTool;
 use ZF\Doctrine\Audit\Persistence;
+use Doctrine\Common\Persistence\ObjectManager;
 
-class SchemaToolController extends AbstractActionController implements
+final class SchemaToolController extends AbstractActionController implements
     Persistence\AuditObjectManagerAwareInterface
 {
     use Persistence\AuditObjectManagerAwareTrait;
 
+    private $console;
+
+    public function __construct(Console $console, ObjectManager $auditObjectManager)
+    {
+        $this->console = $console;
+        $this->setAuditObjectManager($auditObjectManager);
+    }
+
     public function updateAction()
     {
-        $console = $this->getServiceLocator()->get('console');
-
         // Make sure that we are running in a console and the user has not tricked our
         // application into running this action from a public web server.
         $request = $this->getRequest();
@@ -39,14 +46,14 @@ class SchemaToolController extends AbstractActionController implements
         try {
             $result = $schemaTool->getUpdateSchemaSql($classes, false);
         } catch (\Exception $e) {
-            $console->write($e->getCode() . ": " . $e->getMessage());
-            $console->write("\nExiting now");
+            $this->console->write($e->getCode() . ": " . $e->getMessage());
+            $this->console->write("\nExiting now");
 
             return;
         }
 
         foreach ($result as $sql) {
-            $console->write($sql . ";\n");
+            $this->console->write($sql . ";\n");
         }
     }
 }

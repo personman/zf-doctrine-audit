@@ -37,6 +37,8 @@ class Revision
      */
     private $fieldRevision;
 
+    private $connectionId;
+
     /**
      * Constructor
      */
@@ -44,6 +46,18 @@ class Revision
     {
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
         $this->fieldRevision = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function getConnectionId()
+    {
+        return $this->connectionId;
+    }
+
+    public function setConnectionId($connectionId)
+    {
+        $this->connectionId = $connectionId;
+
+        return $this;
     }
 
     /**

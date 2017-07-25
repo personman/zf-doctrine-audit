@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<skipper version="3.2.6.1309" mvc="Without MVC" orm="Doctrine2">
+<skipper version="3.2.8.1347" mvc="Without MVC" orm="Doctrine2">
   <module name="\zf-doctrine-audit" local-name="zf-doctrine-audit" namespace="\ZF\Doctrine\Audit\Entity\" local-namespace="ZF\Doctrine\Audit\Entity\" export-format="Doctrine2Xml" export-path="../config/orm" uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5">
     <region namespace="\ZF\Doctrine\Audit\Entity\" caption="Entity Mapping" uuid="ce5d972e-f016-41b2-9354-52b3830031e9">
       <entity name="\ZF\Doctrine\Audit\Entity\Identifier" local-name="Identifier" namespace="\ZF\Doctrine\Audit\Entity\" uuid="9e75c04e-5414-4c70-abf0-5a93c5f5a988">
@@ -85,6 +85,7 @@
         <field name="userId" type="bigint" uuid="8a637c4a-d6fc-4d51-95a5-d28fe4cd554b"/>
         <field name="userName" type="string" uuid="6da51fb5-fbb5-4cf2-93c3-adda743fd00b"/>
         <field name="userEmail" type="string" uuid="8daa9e63-d36c-4ec4-a6b5-5e9fda2f3e72"/>
+        <field name="connectionId" type="bigint" uuid="8383bfe7-ce3c-4510-af58-053ad1dd5b39"/>
         <orm-attributes>
           <attribute name="repository-class">ZF\Doctrine\Audit\Repository\RevisionRepository</attribute>
           <attribute name="table">Revision_Audit</attribute>
@@ -154,7 +155,7 @@
     <comment uuid="cbc63fce-9cf6-4c9d-b515-4ed60773d998" bg-color="#FFFFE0" position-x="371" position-y="14" size-x="0" size-x2="168" size-y="-3" size-y2="59" txt-color="#000000"/>
     <comment uuid="dd68da58-cb12-44e7-8298-3b024f71b85a" bg-color="#D1D1D1" position-x="13" position-y="84" size-x="0" size-x2="213" size-y="0" size-y2="30" txt-color="#000000"/>
     <entity uuid="01aab066-93a9-4361-8250-f0e9825c27ab" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="146" position-y="55" size-x="0" size-x2="112" size-y="0" size-y2="73"/>
-    <entity uuid="29489e46-8c0a-40c0-86c2-1630dca4471c" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="17" position-y="51" size-x="0" size-x2="116" size-y="0" size-y2="101"/>
+    <entity uuid="29489e46-8c0a-40c0-86c2-1630dca4471c" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="27" position-y="33" size-x="0" size-x2="116" size-y="0" size-y2="101"/>
     <entity uuid="2ac28ce6-9023-4f40-9bbc-ec5190e5db41" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="27" position-y="59" size-x="0" size-x2="111" size-y="0" size-y2="73"/>
     <entity uuid="4508ceac-2636-46ae-8253-5af37e60b9ba" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="576" position-y="51" size-x="0" size-x2="132" size-y="0" size-y2="73"/>
     <entity uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="232" position-y="58" size-x="0" size-x2="119" size-y="0" size-y2="87"/>

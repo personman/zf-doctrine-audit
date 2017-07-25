@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<skipper version="3.2.6.1309" mvc="Without MVC" orm="Doctrine2" name="zf-doctrine-audit" uuid="ef6f4ef3-f519-448b-be69-829e7daaf1fd">
+<skipper version="3.2.8.1347" mvc="Without MVC" orm="Doctrine2" name="zf-doctrine-audit" uuid="ef6f4ef3-f519-448b-be69-829e7daaf1fd">
   <external-module storage-path="zf-doctrine-audit.module.xml"/>
   <visual-data>
     <association uuid="0a592691-5655-4669-9c9b-6161d9e81ccb" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="0" color="#969696"/>

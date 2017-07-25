@@ -38,7 +38,8 @@ return [
                 => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriverFactory',
             'ZF\Doctrine\Audit\Loader\AuditAutoloader'
                 => 'ZF\Doctrine\Audit\Loader\AuditAutoloaderFactory',
-
+            'ZF\Doctrine\Audit\Tools\TriggerTool'
+                => 'ZF\Doctrine\Audit\Tools\TriggerToolFactory',
         ],
         'initializers' => [
             'ZF\\Doctrine\\Audit\\Persistence\\RevisionCommentInitializer',
@@ -48,14 +49,16 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'ZF\Doctrine\Audit\Controller\SchemaTool' =>
-                'ZF\Doctrine\Audit\Controller\SchemaToolController',
-            'ZF\Doctrine\Audit\Controller\DataFixture' =>
-                'ZF\Doctrine\Audit\Controller\DataFixtureController',
             'ZF\Doctrine\Audit\Controller\EpochMySQL' =>
                 'ZF\Doctrine\Audit\Controller\EpochMySQLController',
             'ZF\Doctrine\Audit\Controller\Field' =>
                 'ZF\Doctrine\Audit\Controller\FieldController',
+        ],
+        'factories' => [
+            'ZF\Doctrine\Audit\Controller\SchemaToolController' =>
+                'ZF\Doctrine\Audit\Controller\SchemaToolControllerFactory',
+            'ZF\Doctrine\Audit\Controller\TriggerToolController' =>
+                'ZF\Doctrine\Audit\Controller\TriggerToolControllerFactory',
         ],
     ],
 
@@ -68,27 +71,27 @@ return [
     'console' => [
         'router' => [
             'routes' => [
-                'zf-doctrine-audit-data-fixture-import' => [
+                'zf-doctrine-audit-schema-tool-update' => [
                     'options' => [
-                        'route' => 'zf-doctrine-audit:data-fixture:import',
+                        'route' => 'audit:schema-tool:update',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\DataFixture',
-                            'action' => 'import',
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
+                            'action' => 'update',
                         ],
                     ],
                 ],
-                'zf-doctrine-audit-schema-tool-update' => [
+                'zf-doctrine-audit-trigger-tool-create' => [
                     'options' => [
-                        'route' => 'zf-doctrine-audit:schema-tool:update',
+                        'route' => 'audit:trigger-tool:create',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaTool',
-                            'action' => 'update',
+                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\TriggerToolController',
+                            'action' => 'create',
                         ],
                     ],
                 ],
                 'zf-doctrine-audit-epoch-mysql' => [
                     'options' => [
-                        'route' => 'zf-doctrine-audit:epoch:import --mysql',
+                        'route' => 'audit:epoch:import --mysql',
                         'defaults' => [
                             'controller' => 'ZF\\Doctrine\\Audit\\Controller\\EpochMySQL',
                             'action' => 'import',
@@ -97,7 +100,7 @@ return [
                 ],
                 'zf-doctrine-audit-field-deactivate' => [
                     'options' => [
-                        'route' => 'zf-doctrine-audit:field:deactivate --entity= --field= [--comment=]',
+                        'route' => 'audit:field:deactivate --entity= --field= [--comment=]',
                         'defaults' => [
                             'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
                             'action' => 'deactivate',
@@ -106,7 +109,7 @@ return [
                 ],
                 'zf-doctrine-audit-field-activate' => [
                     'options' => [
-                        'route' => 'zf-doctrine-audit:field:activate --entity= --field= [--comment=]',
+                        'route' => 'audit:field:activate --entity= --field= [--comment=]',
                         'defaults' => [
                             'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
                             'action' => 'activate',
