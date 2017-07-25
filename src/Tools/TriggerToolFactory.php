@@ -12,7 +12,8 @@ class TriggerToolFactory implements
     {
         $config = $container->get('config')['zf-doctrine-audit'];
         $objectManager = $container->get($config['target_object_manager']);
+        $auditObjectManager = $container->get($config['audit_object_manager']);
 
-        return new $requestedName($objectManager, $config);
+        return new $requestedName($objectManager, $auditObjectManager, $config);
     }
 }
