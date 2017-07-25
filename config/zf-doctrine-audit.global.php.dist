@@ -13,6 +13,15 @@
 */
 
 return [
+    'doctrine' => [
+        'configuration' => [
+            'orm_default' => [
+                'numeric_functions' => [
+                    'close_revision_audit'  => 'ZF\Doctrine\Audit\Query\MySQL\CloseRevisionAudit',
+                ],
+            ],
+        ],
+    ],
     'zf-doctrine-audit' => [
         // The object manager containing the entities to audit
         'target_object_manager' => 'doctrine.entitymanager.orm_default',

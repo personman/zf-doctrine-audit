@@ -7,6 +7,7 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\ServiceManager\ServiceManager;
+use Doctrine\ORM\Events;
 
 class Module implements
     ConfigProviderInterface,
@@ -16,7 +17,7 @@ class Module implements
     {
         return array(
             'audit:schema-tool:update' => 'Get update SQL for audit',
-            'audit:trigger-tool:create' => 'Create trigger SQL for target database',
+            'audit:trigger-tool     :create' => 'Create trigger SQL for target database',
             'data-fixture:import zf-doctrine-audit' => 'Create audit entity fixtures. '
                 . 'Run before target entity fixtures.',
             'audit:epoch:import --mysql' => 'Create epoch stored procedures',
@@ -47,7 +48,12 @@ class Module implements
     {
         $serviceManager = $e->getParam('application')->getServiceManager();
 
+        $config = $serviceManager->get('config')['zf-doctrine-audit'];
+
         $serviceManager->get('ZF\Doctrine\Audit\Loader\AuditAutoloader')->register();
         $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
+
+        $objectManager = $serviceManager->get($config['target_object_manager']);
+        $objectManager->getEventManager()->addEventListener([Events::postFlush], new EventListener\PostFlush());
     }
 }
