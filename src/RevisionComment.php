@@ -1,6 +1,6 @@
 <?php
 
-namespace ZF\Doctrine\Audit\Service;
+namespace ZF\Doctrine\Audit;
 
 class RevisionComment
 {

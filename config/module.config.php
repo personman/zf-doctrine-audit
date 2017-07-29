@@ -30,19 +30,19 @@ return [
     ],
     'service_manager' => [
         'invokables' => [
-            'ZF\\Doctrine\\Audit\\Service\\RevisionComment' => 'ZF\\Doctrine\\Audit\\Service\\RevisionComment',
-            'ZF\Doctrine\Audit\EventListener\LogRevision' => 'ZF\Doctrine\Audit\EventListener\LogRevision',
+            RevisionComment::class => RevisionComment::class
         ],
         'factories' => [
             'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver'
                 => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriverFactory',
             'ZF\Doctrine\Audit\Loader\AuditAutoloader'
                 => 'ZF\Doctrine\Audit\Loader\AuditAutoloaderFactory',
-            'ZF\Doctrine\Audit\Tools\TriggerTool'
-                => 'ZF\Doctrine\Audit\Tools\TriggerToolFactory',
+            Tools\TriggerTool::class
+                => Tools\TriggerToolFactory::class,
+            EventListener\PostFlush::class
+                => EventListener\PostFlushFactory::class,
         ],
         'initializers' => [
-            'ZF\\Doctrine\\Audit\\Persistence\\RevisionCommentInitializer',
             'ZF\\Doctrine\\Audit\\Persistence\\ObjectManagerInitializer',
         ],
     ],

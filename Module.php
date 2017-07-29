@@ -53,7 +53,8 @@ class Module implements
         $serviceManager->get('ZF\Doctrine\Audit\Loader\AuditAutoloader')->register();
         $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
 
+        $postFlushListener = $serviceManager->get(EventListener\PostFlush::class);
         $objectManager = $serviceManager->get($config['target_object_manager']);
-        $objectManager->getEventManager()->addEventListener([Events::postFlush], new EventListener\PostFlush());
+        $objectManager->getEventManager()->addEventListener([Events::postFlush], $postFlushListener);
     }
 }
