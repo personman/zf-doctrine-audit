@@ -10,6 +10,17 @@ use ZF\MvcAuth\Identity\AuthenticatedIdentity;
 use ZF\MvcAuth\Identity\GuestIdentity;
 use ZF\Doctrine\Audit\RevisionComment;
 
+/**
+ * After each change to the database the revision entity stays
+ * "open" and mapped to the mysql connection.  This listener
+ * must run after every flush() event to close the revision on
+ * the current connection thereby completeing the auditing transaction.
+ *
+ * This class may be overridden via the service_manager
+ * in order to implement your custom identity for revision
+ * auditing.  You will still need to use native query
+ * because doctrine createQuery expects a FROM clause.
+ */
 final class PostFlush
 {
     private $identity;
@@ -17,8 +28,8 @@ final class PostFlush
 
     public function __construct(RevisionComment $revisionComment, AbstractRbacRole $identity = null)
     {
-        $this->identity = $identity;
         $this->revisionComment = $revisionComment;
+        $this->identity = $identity;
     }
 
     public function postFlush(PostFlushEventArgs $args)
@@ -50,12 +61,10 @@ final class PostFlush
             // Is null or other identity
         }
 
-        $resultSetMapping = new ResultSetMapping();
-
         $query = $args->getEntityManager()
             ->createNativeQuery("
                 SELECT close_revision_audit(:userId, :userName, :userEmail, :comment)
-            ", $resultSetMapping)
+            ", new ResultSetMapping())
             ->setParameter('userId', $userId)
             ->setParameter('userName', $userName)
             ->setParameter('userEmail', $userEmail)

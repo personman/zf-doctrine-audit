@@ -10,12 +10,10 @@ return [
             'zf-doctrine-audit' => [
                 'object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
                 'factories' => [
-                    'ZF\Doctrine\Audit\Fixture\FieldStatusFixture'
+                    Fixture\RevisionTypeFixture::class
                         => InvokableFactory::class,
-                    'ZF\Doctrine\Audit\Fixture\RevisionTypeFixture'
-                        => InvokableFactory::class,
-                    'ZF\Doctrine\Audit\Fixture\RevisionEntityFixture'
-                        => 'ZF\Doctrine\Audit\Fixture\RevisionEntityFixtureFactory'
+                    Fixture\RevisionEntityFixture::class
+                        => Fixture\RevisionEntityFixtureFactory::class,
                 ],
             ],
         ],
@@ -33,17 +31,14 @@ return [
             RevisionComment::class => RevisionComment::class
         ],
         'factories' => [
-            'ZF\Doctrine\Audit\Mapping\Driver\AuditDriver'
-                => 'ZF\Doctrine\Audit\Mapping\Driver\AuditDriverFactory',
-            'ZF\Doctrine\Audit\Loader\AuditAutoloader'
-                => 'ZF\Doctrine\Audit\Loader\AuditAutoloaderFactory',
+            Mapping\Driver\AuditDriver::class
+                => Mapping\Driver\AuditDriverFactory::class,
+            Loader\AuditAutoloader::class
+                => Loader\AuditAutoloaderFactory::class,
             Tools\TriggerTool::class
                 => Tools\TriggerToolFactory::class,
             EventListener\PostFlush::class
                 => EventListener\PostFlushFactory::class,
-        ],
-        'initializers' => [
-            'ZF\\Doctrine\\Audit\\Persistence\\ObjectManagerInitializer',
         ],
     ],
 
@@ -57,8 +52,8 @@ return [
         'factories' => [
             'ZF\Doctrine\Audit\Controller\SchemaToolController' =>
                 'ZF\Doctrine\Audit\Controller\SchemaToolControllerFactory',
-            'ZF\Doctrine\Audit\Controller\TriggerToolController' =>
-                'ZF\Doctrine\Audit\Controller\TriggerToolControllerFactory',
+            Controller\TriggerToolController::class =>
+                Controller\TriggerToolControllerFactory::class,
         ],
     ],
 

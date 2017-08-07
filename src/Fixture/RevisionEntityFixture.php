@@ -4,30 +4,21 @@ namespace ZF\Doctrine\Audit\Fixture;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use ZF\Doctrine\Audit\Entity;
 use DateTime;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Common\Collections\ArrayCollection;
+
 class RevisionEntityFixture implements
-    FixtureInterface,
-    DependentFixtureInterface
+    FixtureInterface
 {
     public $config;
     public $objectManager;
 
-    public function getDependencies()
-    {
-        return [
-            'ZF\Doctrine\Audit\Fixture\FieldStatusFixture',
-        ];
-    }
-
     public function load(ObjectManager $auditObjectManager)
     {
-        $fieldStatusActive = $auditObjectManager->getRepository('ZF\Doctrine\Audit\Entity\FieldStatus')
-            ->findOneBy([
-                'name' => 'active',
-            ]);
+        $joinTableCollection = new ArrayCollection();
 
         // Create a revision to associate with field revision
         $revision = new Entity\Revision();
@@ -46,6 +37,15 @@ class RevisionEntityFixture implements
                     ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
                     ->generateClassName($className)
                     ;
+
+                // Is this a many to many mapping?
+                try {
+                    $auditObjectManager->getClassMetadata($auditEntityClassName);
+                } catch (MappingException $e) {
+                    // The entity does not exist and this is probably a many to many
+                    $joinTableCollection->add($className);
+                    continue;
+                }
 
                 $auditEntity = new Entity\AuditEntity();
                 $auditEntity->setName($auditEntityClassName);
@@ -82,32 +82,7 @@ class RevisionEntityFixture implements
                     $auditObjectManager->persist($identifier);
                 }
 
-                // Add Fields
-                $fields = $this->objectManager
-                    ->getClassMetadata($className)
-                    ->getFieldNames()
-                    ;
-
-                foreach ($fields as $fieldName) {
-                    $field = new Entity\Field();
-                    $field->setTargetEntity($targetEntity);
-                    $field->setName($fieldName);
-                    $field->setColumnName(
-                        $this->objectManager
-                            ->getClassMetadata($className)
-                            ->getColumnName($fieldName)
-                    );
-
-                    $fieldRevision = new Entity\FieldRevision();
-                    $fieldRevision->setFieldStatus($fieldStatusActive);
-                    $fieldRevision->setField($field);
-                    $fieldRevision->setRevision($revision);
-
-                    $auditObjectManager->persist($field);
-                    $auditObjectManager->persist($fieldRevision);
-                }
-
-                // Add Associations to Fields
+                // Add Join Columns as Target Entities
                 $associations = $this->objectManager
                     ->getClassMetadata($className)
                     ->getAssociationNames()
@@ -121,33 +96,81 @@ class RevisionEntityFixture implements
                     if (! isset($associationMapping['joinColumns'])) {
                         continue;
                     }
-
-
-                    // @codeCoverageIgnoreStart
-                    if (sizeof($associationMapping['joinColumns']) != 1) {
-                        throw new Exception('Unable to handle > 1 join column per association');
-                    }
-                    // @codeCoverageIgnoreEnd
-
-                    $field = new Entity\Field();
-                    $field->setTargetEntity($targetEntity);
-                    $field->setName($fieldName);
-                    $field->setColumnName(array_shift($associationMapping['joinColumns'])['name']);
-
-                    $fieldRevision = new Entity\FieldRevision();
-                    $fieldRevision->setFieldStatus($fieldStatusActive);
-                    $fieldRevision->setField($field);
-                    $fieldRevision->setRevision($revision);
-
-                    $auditObjectManager->persist($field);
-                    $auditObjectManager->persist($fieldRevision);
                 }
 
                 $auditObjectManager->persist($auditEntity);
                 $auditObjectManager->persist($targetEntity);
             }
         }
-
         $auditObjectManager->flush();
+
+        foreach ($joinTableCollection as $joinTableClassName) {
+            $this->mapJoinTable($auditObjectManager, $joinTableClassName);
+        }
+//        $auditObjectManager->flush();
+    }
+
+    private function mapJoinTable(ObjectManager $auditObjectManager, $joinTableClassName)
+    {
+        $namespaceParts = explode('\\', $joinTableClassName);
+        $tableName = array_pop($namespaceParts);
+
+        $foundJoinTable = false;
+        foreach ($this->config['entities'] as $className => $route) {
+            // The same error will happen here for this invalid class name so catch and release
+            try {
+                $metadata = $this->objectManager->getClassMetadata($className);
+            } catch (MappingException $e) {
+                continue;
+            }
+
+            foreach ($metadata->getAssociationMappings() as $mapping) {
+                if (isset($mapping['joinTable'])) {
+                    if ($mapping['joinTable']['name'] == $tableName) {
+                        $foundJoinTable = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($foundJoinTable) {
+                break;
+            }
+        }
+
+        if (! $foundJoinTable) {
+            throw new MappingException('JoinTable for mapping ' . $joinTableClassName . ' does not exist.');
+        }
+
+        // Find parent AuditEntity
+        $parent = $auditObjectManager
+            ->getRepository(Entity\AuditEntity::class)
+            ->findOneBy([
+                'name' => $mapping['targetEntity'],
+            ]);
+
+        $auditEntityClassName = $auditObjectManager
+            ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+            ->generateClassName($joinTableClassName)
+            ;
+
+        $auditEntity = new Entity\AuditEntity();
+        $auditEntity->setName($auditEntityClassName);
+        $auditEntity->setTableName(
+            $auditObjectManager
+                ->getClassMetadata($auditEntityClassName)
+                ->getTableName()
+        );
+
+        $targetEntity = new Entity\TargetEntity();
+        $targetEntity->setAuditEntity($auditEntity);
+        $targetEntity->setName($className);
+        $targetEntity->setTableName($tableName);
+        $targetEntity->setIsJoinTable(true);
+        $targetEntity->setParent($parent);
+
+        $auditObjectManager->persist($auditEntity);
+        $auditObjectManager->persist($targetEntity);
+
     }
 }

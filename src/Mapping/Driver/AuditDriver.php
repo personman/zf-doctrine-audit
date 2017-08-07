@@ -58,6 +58,11 @@ class AuditDriver implements
 
         $auditedClassMetadata = $metadataFactory->getMetadataFor($metadataClass->getAuditedEntityClass());
 
+        // Is the passed class name a regular entity?
+        if (! in_array($metadataClass->getAuditedEntityClass(), array_keys($this->getAuditEntities()))) {
+            die($className . ' not found in loadMetadataForClass');
+        }
+
         $builder->addManyToOne('revisionEntity', 'ZF\\Doctrine\\Audit\\Entity\\RevisionEntity');
         $identifiers[] = 'revisionEntity';
 

@@ -10,7 +10,6 @@
     <field name="userName" type="string" nullable="true"/>
     <field name="userEmail" type="string" nullable="true"/>
     <field name="connectionId" type="bigint" nullable="true"/>
-    <one-to-many field="fieldRevision" target-entity="ZF\Doctrine\Audit\Entity\FieldRevision" mapped-by="revision"/>
     <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="revision"/>
   </entity>
 </doctrine-mapping>

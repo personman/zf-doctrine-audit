@@ -18,6 +18,11 @@ class TargetEntity
     private $tableName;
 
     /**
+     * @var boolean
+     */
+    private $isJoinTable = '0';
+
+    /**
      * @var integer
      */
     private $id;
@@ -30,26 +35,31 @@ class TargetEntity
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $revisionEntity;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
     private $identifier;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $field;
+    private $child;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $revisionEntity;
+
+    /**
+     * @var \ZF\Doctrine\Audit\Entity\TargetEntity
+     */
+    private $parent;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
         $this->identifier = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->field = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->child = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -101,6 +111,30 @@ class TargetEntity
     }
 
     /**
+     * Set isJoinTable
+     *
+     * @param boolean $isJoinTable
+     *
+     * @return TargetEntity
+     */
+    public function setIsJoinTable($isJoinTable)
+    {
+        $this->isJoinTable = $isJoinTable;
+
+        return $this;
+    }
+
+    /**
+     * Get isJoinTable
+     *
+     * @return boolean
+     */
+    public function getIsJoinTable()
+    {
+        return $this->isJoinTable;
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -132,40 +166,6 @@ class TargetEntity
     public function getAuditEntity()
     {
         return $this->auditEntity;
-    }
-
-    /**
-     * Add revisionEntity
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
-     *
-     * @return TargetEntity
-     */
-    public function addRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
-    {
-        $this->revisionEntity[] = $revisionEntity;
-
-        return $this;
-    }
-
-    /**
-     * Remove revisionEntity
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
-     */
-    public function removeRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
-    {
-        $this->revisionEntity->removeElement($revisionEntity);
-    }
-
-    /**
-     * Get revisionEntity
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRevisionEntity()
-    {
-        return $this->revisionEntity;
     }
 
     /**
@@ -203,36 +203,95 @@ class TargetEntity
     }
 
     /**
-     * Add field
+     * Add child
      *
-     * @param \ZF\Doctrine\Audit\Entity\Field $field
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $child
      *
      * @return TargetEntity
      */
-    public function addField(\ZF\Doctrine\Audit\Entity\Field $field)
+    public function addChild(\ZF\Doctrine\Audit\Entity\TargetEntity $child)
     {
-        $this->field[] = $field;
+        $this->child[] = $child;
 
         return $this;
     }
 
     /**
-     * Remove field
+     * Remove child
      *
-     * @param \ZF\Doctrine\Audit\Entity\Field $field
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $child
      */
-    public function removeField(\ZF\Doctrine\Audit\Entity\Field $field)
+    public function removeChild(\ZF\Doctrine\Audit\Entity\TargetEntity $child)
     {
-        $this->field->removeElement($field);
+        $this->child->removeElement($child);
     }
 
     /**
-     * Get field
+     * Get child
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getField()
+    public function getChild()
     {
-        return $this->field;
+        return $this->child;
+    }
+
+    /**
+     * Add revisionEntity
+     *
+     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
+     *
+     * @return TargetEntity
+     */
+    public function addRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
+    {
+        $this->revisionEntity[] = $revisionEntity;
+
+        return $this;
+    }
+
+    /**
+     * Remove revisionEntity
+     *
+     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
+     */
+    public function removeRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
+    {
+        $this->revisionEntity->removeElement($revisionEntity);
+    }
+
+    /**
+     * Get revisionEntity
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRevisionEntity()
+    {
+        return $this->revisionEntity;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $parent
+     *
+     * @return TargetEntity
+     */
+    public function setParent(\ZF\Doctrine\Audit\Entity\TargetEntity $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \ZF\Doctrine\Audit\Entity\TargetEntity
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }
+

@@ -10,7 +10,7 @@ use ZF\Doctrine\Audit\Persistence;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class AuditAutoloader extends StandardAutoloader implements
+class JoinTableAutoloader extends StandardAutoloader implements
     Persistence\AuditEntitiesAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface

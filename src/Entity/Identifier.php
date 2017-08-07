@@ -156,3 +156,4 @@ class Identifier
         return $this->targetEntity;
     }
 }
+
