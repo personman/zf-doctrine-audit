@@ -4,6 +4,7 @@ namespace ZF\Doctrine\Audit\Mapping\Driver;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class AuditDriverFactory implements
     FactoryInterface
@@ -22,7 +23,8 @@ class AuditDriverFactory implements
         ];
 
         $instance = new $requestedName();
-        $instance->setAuditEntities($config['entities']);
+        $instance->setEntityConfigCollection(new ArrayCollection($config['entities']));
+        $instance->setJoinTableConfigCollection(new ArrayCollection($config['joinTables']));
         $instance->setObjectManager($container->get($config['target_object_manager']));
         $instance->setAuditObjectManager($container->get($config['audit_object_manager']));
         $instance->setAuditOptions($auditOptions);

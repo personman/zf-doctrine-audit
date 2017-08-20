@@ -10,12 +10,12 @@ use ZF\Doctrine\Audit\Persistence;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class JoinTableAutoloader extends StandardAutoloader implements
-    Persistence\AuditEntitiesAwareInterface,
+final class JoinTableAutoloader extends StandardAutoloader implements
+    Persistence\JoinTableConfigCollectionAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface
 {
-    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\JoinTableConfigCollectionAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
 
@@ -24,10 +24,20 @@ class JoinTableAutoloader extends StandardAutoloader implements
      */
     public function loadClass($auditClassName, $type)
     {
-        echo "Autoloading " . $auditClassName . "\n";
+        if (! $this->getJoinTableConfigCollection->containsKey($auditClassName)) {
+            return false;
+        }
+
+        die('found JoinTable ' . $className);
+
 
         $foundClassName = false;
-        foreach ($this->getAuditEntities() as $className => $classOptions) {
+        foreach ($this->getJoinTableConfigCollection() as $className => $classOptions) {
+            if ($className != $auditClassName) {
+                continue;
+            }
+
+
             if ($this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
                 ->generateClassName($className) == $auditClassName) {

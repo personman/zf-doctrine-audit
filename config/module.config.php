@@ -23,18 +23,22 @@ return [
             'audit' => Plugin\AuditPlugin::class,
         ],
         'factories' => [
-            Plugin\AuditPlugin::class => InvokableFactory::class,
+            Plugin\AuditPlugin::class
+                => InvokableFactory::class,
         ]
     ],
     'service_manager' => [
         'invokables' => [
-            RevisionComment::class => RevisionComment::class
+            RevisionComment::class
+                => RevisionComment::class
         ],
         'factories' => [
+            Loader\EntityAutoloader::class
+                => Loader\EntityAutoloaderFactory::class,
+            Loader\JoinTableAutoloader::class
+                => Loader\JoinTableAutoloaderFactory::class,
             Mapping\Driver\AuditDriver::class
                 => Mapping\Driver\AuditDriverFactory::class,
-            Loader\AuditAutoloader::class
-                => Loader\AuditAutoloaderFactory::class,
             Tools\TriggerTool::class
                 => Tools\TriggerToolFactory::class,
             EventListener\PostFlush::class
@@ -44,14 +48,14 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'ZF\Doctrine\Audit\Controller\EpochMySQL' =>
-                'ZF\Doctrine\Audit\Controller\EpochMySQLController',
-            'ZF\Doctrine\Audit\Controller\Field' =>
-                'ZF\Doctrine\Audit\Controller\FieldController',
+            Controller\EpochMySQLController::class =>
+                Controller\EpochMySQLController::class,
+            Controller\FieldController::class =>
+                Controller\FieldController::class,
         ],
         'factories' => [
-            'ZF\Doctrine\Audit\Controller\SchemaToolController' =>
-                'ZF\Doctrine\Audit\Controller\SchemaToolControllerFactory',
+            Controller\SchemaToolController::class =>
+                Controller\SchemaToolControllerFactory::class,
             Controller\TriggerToolController::class =>
                 Controller\TriggerToolControllerFactory::class,
         ],
@@ -70,7 +74,7 @@ return [
                     'options' => [
                         'route' => 'audit:schema-tool:update',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\SchemaToolController',
+                            'controller' => Controller\SchemaToolController::class,
                             'action' => 'update',
                         ],
                     ],
@@ -79,7 +83,7 @@ return [
                     'options' => [
                         'route' => 'audit:trigger-tool:create',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\TriggerToolController',
+                            'controller' => Controller\TriggerToolController::class,
                             'action' => 'create',
                         ],
                     ],
@@ -88,7 +92,7 @@ return [
                     'options' => [
                         'route' => 'audit:epoch:import --mysql',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\EpochMySQL',
+                            'controller' => Controller\EpochMySQLController::class,
                             'action' => 'import',
                         ],
                     ],
@@ -97,7 +101,7 @@ return [
                     'options' => [
                         'route' => 'audit:field:deactivate --entity= --field= [--comment=]',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
+                            'controller' => Controller\FieldController::class,
                             'action' => 'deactivate',
                         ],
                     ],
@@ -106,7 +110,7 @@ return [
                     'options' => [
                         'route' => 'audit:field:activate --entity= --field= [--comment=]',
                         'defaults' => [
-                            'controller' => 'ZF\\Doctrine\\Audit\\Controller\\Field',
+                            'controller' => Controller\FieldControler::class,
                             'action' => 'activate',
                         ],
                     ],

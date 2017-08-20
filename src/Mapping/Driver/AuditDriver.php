@@ -11,12 +11,14 @@ use Exception;
 
 class AuditDriver implements
     MappingDriver,
-    Persistence\AuditEntitiesAwareInterface,
+    Persistence\EntityConfigCollectionAwareInterface,
+    Persistence\JoinTableConfigCollectionAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface,
     Persistence\AuditOptionsAwareInterface
 {
-    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\EntityConfigCollectionAwareTrait;
+    use Persistence\JoinTableConfigCollectionAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
@@ -55,11 +57,15 @@ class AuditDriver implements
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
         $metadataClass = new $metadataClassName();
+        $auditedClassName = $metadataClass->getAuditedEntityClass();
 
-        $auditedClassMetadata = $metadataFactory->getMetadataFor($metadataClass->getAuditedEntityClass());
+        $auditedClassMetadata = $metadataFactory->getMetadataFor($auditedClassName);
+        $auditedClassName = $metadataClass->getAuditedEntityClass();
 
         // Is the passed class name a regular entity?
-        if (! in_array($metadataClass->getAuditedEntityClass(), array_keys($this->getAuditEntities()))) {
+        if (! $this->getEntityConfigCollection()->containsKey($auditedClassName)
+            && ! $this->getJoinTableConfigCollection()->containsKey($auditedClassName)
+        ) {
             die($className . ' not found in loadMetadataForClass');
         }
 
@@ -128,11 +134,16 @@ class AuditDriver implements
      */
     public function getAllClassNames(): array
     {
+        $auditEntityRepository = $this->getAuditObjectManager()
+            ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity');
+
         $classNames = [];
-        foreach ($this->getAuditEntities() as $className => $options) {
-            $classNames[] = $this->getAuditObjectManager()
-                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
-                ->generateClassName($className);
+        foreach ($this->getEntityConfigCollection() as $className => $options) {
+            $classNames[] = $auditEntityRepository->generateClassName($className);
+        }
+
+       foreach ($this->getJoinTableConfigCollection() as $className => $options) {
+            $classNames[] = $auditEntityRepository->generateClassName($className);
         }
 
         return $classNames;

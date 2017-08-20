@@ -9,13 +9,14 @@ use Zend\Code\Generator\PropertyGenerator;
 use ZF\Doctrine\Audit\Persistence;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Collections\ArrayCollection;
+use ZF\Doctrine\Audit\Entity;
 
-class AuditAutoloader extends StandardAutoloader implements
-    Persistence\AuditEntitiesAwareInterface,
+class EntityAutoloader extends StandardAutoloader implements
+    Persistence\EntityConfigCollectionAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface
 {
-    use Persistence\AuditEntitiesAwareTrait;
+    use Persistence\EntityConfigCollectionAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
 
@@ -24,12 +25,10 @@ class AuditAutoloader extends StandardAutoloader implements
      */
     public function loadClass($auditClassName, $type)
     {
-        echo "Autoloading " . $auditClassName . "\n";
-
         $foundClassName = false;
-        foreach ($this->getAuditEntities() as $className => $classOptions) {
+        foreach ($this->getEntityConfigCollection() as $className => $classOptions) {
             if ($this->getAuditObjectManager()
-                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->getRepository(Entity\AuditEntity::class)
                 ->generateClassName($className) == $auditClassName) {
 
                 $foundClassName = true;
@@ -50,7 +49,7 @@ class AuditAutoloader extends StandardAutoloader implements
         $auditClass = new ClassGenerator();
         $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\RevisionEntity");
         $auditClass->setName(str_replace('\\', '_', $className));
-        $auditClass->setExtendedClass('ZF\Doctrine\Audit\RevisionEntity\AbstractAudit');
+        $auditClass->setExtendedClass("ZF\\Doctrine\\Audit\\RevisionEntity\\AbstractAudit");
 
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
@@ -137,7 +136,7 @@ class AuditAutoloader extends StandardAutoloader implements
         $tableName = array_pop($namespaceParts);
 
         $foundJoinTable = false;
-        foreach ($this->getAuditEntities() as $className => $classOptions) {
+        foreach ($this->getEntityConfigCollection() as $className => $classOptions) {
             // The same error will happen here for this invalid class name so catch and release
             try {
                 $metadata = $this->getObjectManager()->getClassMetadata($className);
