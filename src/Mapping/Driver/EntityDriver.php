@@ -5,8 +5,8 @@ namespace ZF\Doctrine\Audit\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
-use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use ZF\Doctrine\Audit\Persistence;
+use ZF\Doctrine\Audit\Entity;
 use Exception;
 
 class EntityDriver implements
@@ -21,20 +21,14 @@ class EntityDriver implements
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
 
-    public function register()
+    public function register(): self
     {
-        // Driver for zf-doctrine-audit entites
-        $xmlDriver = new XmlDriver(__DIR__ . '/../../../config/orm');
-        $this->getAuditObjectManager()
-            ->getConfiguration()
-            ->getMetadataDriverImpl()
-            ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity');
-
         // Driver for audited entities
         $this->getAuditObjectManager()
             ->getConfiguration()
             ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
+            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity')
+            ;
 
         return $this;
     }
@@ -132,7 +126,7 @@ class EntityDriver implements
     public function getAllClassNames(): array
     {
         $auditEntityRepository = $this->getAuditObjectManager()
-            ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity');
+            ->getRepository(Entity\AuditEntity::class);
 
         $classNames = [];
         foreach ($this->getEntityConfigCollection() as $className => $options) {

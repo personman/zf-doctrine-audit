@@ -37,6 +37,8 @@ return [
                 => Loader\EntityAutoloaderFactory::class,
             Loader\JoinEntityAutoloader::class
                 => Loader\JoinEntityAutoloaderFactory::class,
+            Mapping\Driver\MergedDriver::class
+                => Mapping\Driver\MergedDriverFactory::class,
             Mapping\Driver\EntityDriver::class
                 => Mapping\Driver\EntityDriverFactory::class,
             Mapping\Driver\JoinEntityDriver::class

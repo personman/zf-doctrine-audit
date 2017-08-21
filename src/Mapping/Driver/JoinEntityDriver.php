@@ -28,7 +28,8 @@ class JoinEntityDriver implements
         $this->getAuditObjectManager()
             ->getConfiguration()
             ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
+            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity')
+            ;
 
         return $this;
     }
@@ -118,8 +119,8 @@ class JoinEntityDriver implements
 
         $builder->setTable(
             $this->getAuditOptions()['audit_table_name_prefix']
-                . $options['tableName']
-                . $this->getAuditOptions()['audit_table_name_suffix']
+            . $config['tableName']
+            . $this->getAuditOptions()['audit_table_name_suffix']
         );
     }
 

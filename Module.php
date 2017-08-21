@@ -7,6 +7,7 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\ServiceManager\ServiceManager;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Events;
 
 class Module implements
@@ -53,11 +54,24 @@ class Module implements
         $serviceManager->get('ZF\Doctrine\Audit\Loader\EntityAutoloader')->register();
         $serviceManager->get('ZF\Doctrine\Audit\Loader\JoinEntityAutoloader')->register();
 
-        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\EntityDriver')->register();
-        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\JoinEntityDriver')->register();
+        $mergedDriver = $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\MergedDriver');
+        $mergedDriver->addDriver($serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\EntityDriver'));
+        $mergedDriver->addDriver($serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\JoinEntityDriver'));
+        $mergedDriver->register();
 
         $postFlushListener = $serviceManager->get(EventListener\PostFlush::class);
+
         $objectManager = $serviceManager->get($config['target_object_manager']);
+        $auditObjectManager = $serviceManager->get($config['audit_object_manager']);
+
+        // Driver for zf-doctrine-audit entites
+        $xmlDriver = new XmlDriver(__DIR__ . '/config/orm');
+        $auditObjectManager
+            ->getConfiguration()
+            ->getMetadataDriverImpl()
+            ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity')
+            ;
+
         $objectManager->getEventManager()->addEventListener([Events::postFlush], $postFlushListener);
     }
 }
