@@ -51,9 +51,10 @@ class Module implements
         $config = $serviceManager->get('config')['zf-doctrine-audit'];
 
         $serviceManager->get('ZF\Doctrine\Audit\Loader\EntityAutoloader')->register();
-//        $serviceManager->get('ZF\Doctrine\Audit\Loader\JoinTableAutoloader')->register();
+        $serviceManager->get('ZF\Doctrine\Audit\Loader\JoinEntityAutoloader')->register();
 
-        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
+        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\EntityDriver')->register();
+        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\JoinEntityDriver')->register();
 
         $postFlushListener = $serviceManager->get(EventListener\PostFlush::class);
         $objectManager = $serviceManager->get($config['target_object_manager']);

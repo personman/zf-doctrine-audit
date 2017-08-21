@@ -11,12 +11,12 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Collections\ArrayCollection;
 use ZF\Doctrine\Audit\Entity;
 
-class EntityAutoloader extends StandardAutoloader implements
-    Persistence\EntityConfigCollectionAwareInterface,
+final class JoinEntityAutoloader extends StandardAutoloader implements
+    Persistence\JoinEntityConfigCollectionAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface
 {
-    use Persistence\EntityConfigCollectionAwareTrait;
+    use Persistence\JoinEntityConfigCollectionAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
 
@@ -25,8 +25,7 @@ class EntityAutoloader extends StandardAutoloader implements
      */
     public function loadClass($auditClassName, $type)
     {
-        $foundClassName = false;
-        foreach ($this->getEntityConfigCollection() as $className => $classOptions) {
+        foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
             if ($this->getAuditObjectManager()
                 ->getRepository(Entity\AuditEntity::class)
                 ->generateClassName($className) == $auditClassName) {
@@ -37,19 +36,33 @@ class EntityAutoloader extends StandardAutoloader implements
         }
 
         if (! $foundClassName) {
+            throw new \Exception('join entity autoloader not found: ' . $auditClassName);
             return false;
         }
 
-        // Get fields from target entity
-        $metadataFactory = $this->getObjectManager()->getMetadataFactory();
-        $auditedClassMetadata = $metadataFactory->getMetadataFor($className);
-        $fields = $auditedClassMetadata->getFieldNames();
-        $identifiers = $auditedClassMetadata->getFieldNames();
+        $namespaceParts = explode('\\', $auditClassName);
+        array_pop($namespaceParts);
+        $auditEntityConfig = $this->getJoinEntityConfigCollection()[$className];
+
+        $metadata = $this->getObjectManager()->getClassMetadata($auditEntityConfig['ownerEntity']);
+
+        foreach ($metadata->getAssociationMappings() as $mapping) {
+            if (isset($mapping['joinTable'])) {
+                if ($mapping['joinTable']['name'] == $auditEntityConfig['tableName']) {
+                    $foundJoinEntity = true;
+                    break;
+                }
+            }
+        }
+
+        if (! $foundJoinEntity) {
+            return false;
+        }
 
         $auditClass = new ClassGenerator();
         $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\RevisionEntity");
-        $auditClass->setName(str_replace('\\', '_', $className));
-        $auditClass->setExtendedClass("ZF\\Doctrine\\Audit\\RevisionEntity\\AbstractAudit");
+        $auditClass->setName($auditClassName);
+        $auditClass->setExtendedClass('ZF\Doctrine\Audit\RevisionEntity\AbstractAudit');
 
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
@@ -68,29 +81,40 @@ class EntityAutoloader extends StandardAutoloader implements
             "
         );
 
-        // Generate audit entity
-        foreach ($fields as $field) {
-            $auditClass->addProperty($field, null, PropertyGenerator::FLAG_PROTECTED);
+        $fields = [];
+        foreach ($mapping['joinTable']['joinColumns'] as $column) {
+            $column['dataType'] = $this->getObjectManager()
+                ->getClassMetadata($mapping['sourceEntity'])
+                ->getTypeOfField($column['referencedColumnName'])
+                ;
+            $fields[] = $column;
+        }
+        foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
+            $column['dataType'] = $this->getObjectManager()
+                ->getClassMetadata($mapping['targetEntity'])
+                ->getTypeOfField($column['referencedColumnName'])
+                ;
+            $fields[] = $column;
         }
 
-        foreach ($auditedClassMetadata->getAssociationNames() as $associationName) {
-            $auditClass->addProperty($associationName, null, PropertyGenerator::FLAG_PROTECTED);
-            $fields[] = $associationName;
+        // Generate audit entity
+        foreach ($fields as $field) {
+            $auditClass->addProperty($field['name'], null, PropertyGenerator::FLAG_PROTECTED);
         }
 
         $auditClass->addMethod(
             'getAssociationMappings',
             array(),
             MethodGenerator::FLAG_PUBLIC,
-            "return unserialize('" . serialize($auditedClassMetadata->getAssociationMappings()) . "');"
+            "return unserialize('" . serialize($mapping) . "');"
         );
 
         // Add exchange array method
         $setters = array();
-        foreach ($fields as $fieldName) {
-            $setters[] = '$this->' . $fieldName
-                . ' = (isset($data["' . $fieldName . '"])) ? $data["' . $fieldName . '"]: null;';
-            $arrayCopy[] = "    \"$fieldName\"" . ' => $this->' . $fieldName;
+        foreach ($fields as $field) {
+            $setters[] = '$this->' . $field['name']
+                . ' = (isset($data["' . $field['name'] . '"])) ? $data["' . $field['name'] . '"]: null;';
+            $arrayCopy[] = "    \"$fieldName\"" . ' => $this->' . $field['name'];
         }
 
         $auditClass->addMethod(
@@ -112,8 +136,10 @@ class EntityAutoloader extends StandardAutoloader implements
             'getAuditedEntityClass',
             array(),
             MethodGenerator::FLAG_PUBLIC,
-            " return '" .  addslashes($className) . "';"
+            " return '" .  addslashes($auditClassName) . "';"
         );
+
+#echo "Created " . $auditClass->getName() . "\n" . $auditClass->getNamespaceName() . "\n";
 
         eval($auditClass->generate());
 

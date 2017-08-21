@@ -6,7 +6,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class AuditDriverFactory implements
+class EntityDriverFactory implements
     FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
@@ -24,7 +24,6 @@ class AuditDriverFactory implements
 
         $instance = new $requestedName();
         $instance->setEntityConfigCollection(new ArrayCollection($config['entities']));
-        $instance->setJoinTableConfigCollection(new ArrayCollection($config['joinTables']));
         $instance->setObjectManager($container->get($config['target_object_manager']));
         $instance->setAuditObjectManager($container->get($config['audit_object_manager']));
         $instance->setAuditOptions($auditOptions);

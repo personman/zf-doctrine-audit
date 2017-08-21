@@ -35,10 +35,12 @@ return [
         'factories' => [
             Loader\EntityAutoloader::class
                 => Loader\EntityAutoloaderFactory::class,
-            Loader\JoinTableAutoloader::class
-                => Loader\JoinTableAutoloaderFactory::class,
-            Mapping\Driver\AuditDriver::class
-                => Mapping\Driver\AuditDriverFactory::class,
+            Loader\JoinEntityAutoloader::class
+                => Loader\JoinEntityAutoloaderFactory::class,
+            Mapping\Driver\EntityDriver::class
+                => Mapping\Driver\EntityDriverFactory::class,
+            Mapping\Driver\JoinEntityDriver::class
+                => Mapping\Driver\JoinEntityDriverFactory::class,
             Tools\TriggerTool::class
                 => Tools\TriggerToolFactory::class,
             EventListener\PostFlush::class

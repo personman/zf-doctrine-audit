@@ -9,16 +9,14 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use ZF\Doctrine\Audit\Persistence;
 use Exception;
 
-class AuditDriver implements
+class EntityDriver implements
     MappingDriver,
     Persistence\EntityConfigCollectionAwareInterface,
-    Persistence\JoinTableConfigCollectionAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditObjectManagerAwareInterface,
     Persistence\AuditOptionsAwareInterface
 {
     use Persistence\EntityConfigCollectionAwareTrait;
-    use Persistence\JoinTableConfigCollectionAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
@@ -63,14 +61,13 @@ class AuditDriver implements
         $auditedClassName = $metadataClass->getAuditedEntityClass();
 
         // Is the passed class name a regular entity?
-        if (! $this->getEntityConfigCollection()->containsKey($auditedClassName)
-            && ! $this->getJoinTableConfigCollection()->containsKey($auditedClassName)
-        ) {
+        if (! $this->getEntityConfigCollection()->containsKey($auditedClassName)) {
             die($className . ' not found in loadMetadataForClass');
         }
 
-        $builder->addManyToOne('revisionEntity', 'ZF\\Doctrine\\Audit\\Entity\\RevisionEntity');
-        $identifiers[] = 'revisionEntity';
+        $association = $builder->createManyToOne('revisionEntity', Entity\RevisionEntity::class);
+        $association->makePrimaryKey();
+        $association->build();
 
         // Add fields from target to audit entity
         foreach ($auditedClassMetadata->getFieldNames() as $fieldName) {
@@ -139,10 +136,6 @@ class AuditDriver implements
 
         $classNames = [];
         foreach ($this->getEntityConfigCollection() as $className => $options) {
-            $classNames[] = $auditEntityRepository->generateClassName($className);
-        }
-
-       foreach ($this->getJoinTableConfigCollection() as $className => $options) {
             $classNames[] = $auditEntityRepository->generateClassName($className);
         }
 
