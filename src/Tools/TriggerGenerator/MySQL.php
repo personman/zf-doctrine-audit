@@ -109,6 +109,64 @@ END;//
 
 EOF;
 
+        // Now iterate through join entities and build trigger code for each.
+        foreach ($this->config['joinEntities'] as $className => $config) {
+            $auditClassName = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->generateClassName($className)
+                ;
+
+            $metadataFactory = $this->getObjectManager()->getMetadataFactory();
+            $metadata = $metadataFactory->getMetadataFor($config['ownerEntity']);
+
+            foreach ($metadata->getAssociationMappings() as $mapping) {
+                if (isset($mapping['joinTable'])) {
+                    if ($mapping['joinTable']['name'] == $config['tableName']) {
+                        $foundJoinEntity = true;
+                        break;
+                    }
+                }
+            }
+
+            if (! $foundJoinEntity) {
+                throw new Exception(
+                    'joinTable '
+                    . $targetClassName
+                    . ' not found by tableName '
+                    . $config['tableName']
+                    . ' on ownerEntity: '
+                    . $config['ownerEntity']
+                );
+            }
+
+            $fields = [];
+            foreach ($mapping['joinTable']['joinColumns'] as $column) {
+                $column['dataType'] = $this->getObjectManager()
+                    ->getClassMetadata($mapping['sourceEntity'])
+                    ->getTypeOfField($column['referencedColumnName'])
+                    ;
+                $fields[] = $column['name'];
+            }
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
+                $column['dataType'] = $this->getObjectManager()
+                    ->getClassMetadata($mapping['targetEntity'])
+                    ->getTypeOfField($column['referencedColumnName'])
+                    ;
+                $fields[] = $column['name'];
+            }
+
+            // Get fields and identifiers from target entity
+            $auditMetadataFactory = $this->getAuditObjectManager()->getMetadataFactory();
+            $auditClassMetadata = $auditMetadataFactory->getMetadataFor($auditClassName);
+
+            $tableName = $config['tableName'];
+            $auditTableName =
+            $auditTableName = $auditClassMetadata->getTableName();
+            $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
+
+            $sql .= $this->buildSql($tableName, $auditTableName, $fields, $className);
+        }
+
         // Now iterate through the entities and build trigger code for each.
         foreach ($this->config['entities'] as $className => $options) {
             $auditClassName = $this->getAuditObjectManager()
@@ -148,10 +206,20 @@ EOF;
 
             $tableName = $classMetadata->getTableName();
             $auditTableName = $auditClassMetadata->getTableName();
-            $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
-            $addSlashesClassName = addslashes($className);
 
-            $sql .= <<<EOF
+            $sql .= $this->buildSql($tableName, $auditTableName, $fields, $className);
+        }
+
+        $sql .= "\nDELIMITER ;\n";
+
+        return $sql;
+    }
+
+    public function buildSql($tableName, $auditTableName, $fields, $className) {
+        $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
+        $addSlashesClassName = addslashes($className);
+
+            $sql = <<<EOF
 
 DROP TRIGGER IF EXISTS {$tableName}_insert_audit;//
 CREATE TRIGGER {$tableName}_insert_audit
@@ -208,10 +276,6 @@ EOF;
 END;//
 
 EOF;
-
-        }
-
-        $sql .= "\nDELIMITER ;\n";
 
         return $sql;
     }
