@@ -57,7 +57,7 @@ final class PostFlush
             $userName = $this->identity->getName();
         } elseif ($this->identity instanceof GuestIdentity) {
 
-        } elseif ($this {
+        } else {
             // Is null or other identity
         }
 

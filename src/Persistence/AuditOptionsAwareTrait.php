@@ -3,23 +3,20 @@
 namespace ZF\Doctrine\Audit\Persistence;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use ZF\Doctrine\Audit\AuditOptions;
 
 trait AuditOptionsAwareTrait
 {
-    /**
-     * @var Doctrine\ORM\EntityManager
-     */
     protected $auditOptions;
 
-    public function setAuditOptions(array $options)
+    public function setAuditOptions(AuditOptions $auditOptions)
     {
-        $this->auditOptions = $options;
+        $this->auditOptions = $auditOptions;
+
+        return $this;
     }
 
-    /**
-     * @return Doctrine\ORM\EntityManager
-     */
-    public function getAuditOptions(): array
+    public function getAuditOptions(): AuditOptions
     {
         return $this->auditOptions;
     }

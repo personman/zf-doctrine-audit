@@ -11,9 +11,11 @@ trait AuditObjectManagerAwareTrait
      */
     protected $auditObjectManager;
 
-    public function setAuditObjectManager(ObjectManager $objectManager)
+    public function setAuditObjectManager(ObjectManager $auditObjectManager)
     {
-        $this->auditObjectManager = $objectManager;
+        $this->auditObjectManager = $auditObjectManager;
+
+        return $this;
     }
 
     /**

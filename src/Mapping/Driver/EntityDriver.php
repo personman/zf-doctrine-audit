@@ -109,9 +109,9 @@ class EntityDriver implements
         }
 
         $metadata->setTableName(
-            $this->getAuditOptions()['audit_table_name_prefix']
+            $this->getAuditOptions()->getAuditTableNamePrefix()
                 . $auditedClassMetadata->getTableName()
-                . $this->getAuditOptions()['audit_table_name_suffix']
+                . $this->getAuditOptions()->getAuditTableNameSuffix()
         );
         $metadata->setIdentifier($identifiers);
 
@@ -129,7 +129,7 @@ class EntityDriver implements
             ->getRepository(Entity\AuditEntity::class);
 
         $classNames = [];
-        foreach ($this->getEntityConfigCollection() as $className => $options) {
+        foreach ($this->getEntityConfigCollection() as $className => $config) {
             $classNames[] = $auditEntityRepository->generateClassName($className);
         }
 

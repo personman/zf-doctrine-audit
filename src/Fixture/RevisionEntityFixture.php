@@ -60,24 +60,6 @@ class RevisionEntityFixture implements
                         ->getTableName()
                 );
 
-                $identifiers = $this->getObjectManager()
-                    ->getClassMetadata($className)
-                    ->getIdentifierFieldNames()
-                    ;
-
-                foreach ($identifiers as $fieldName) {
-                    $identifier = new Entity\Identifier();
-                    $identifier->setTargetEntity($targetEntity);
-                    $identifier->setFieldName($fieldName);
-                    $identifier->setColumnName(
-                        $this->getObjectManager()
-                            ->getClassMetadata($className)
-                            ->getColumnName($fieldName)
-                    );
-
-                    $auditObjectManager->persist($identifier);
-                }
-
                 // Add Join Columns as Target Entities
                 $associations = $this->getObjectManager()
                     ->getClassMetadata($className)

@@ -35,6 +35,8 @@ return [
                 => RevisionComment::class
         ],
         'factories' => [
+            AuditOptions::class
+                => AuditOptionsFactory::class,
             Loader\EntityAutoloader::class
                 => Loader\EntityAutoloaderFactory::class,
             Loader\JoinEntityAutoloader::class
@@ -54,8 +56,6 @@ return [
 
     'controllers' => [
         'invokables' => [
-            Controller\EpochMySQLController::class =>
-                Controller\EpochMySQLController::class,
             Controller\FieldController::class =>
                 Controller\FieldController::class,
         ],
@@ -64,6 +64,8 @@ return [
                 Controller\SchemaToolControllerFactory::class,
             Controller\TriggerToolController::class =>
                 Controller\TriggerToolControllerFactory::class,
+            Controller\Epoch\MySQLController::class =>
+                Controller\Epoch\MySQLControllerFactory::class,
         ],
     ],
 
@@ -98,7 +100,7 @@ return [
                     'options' => [
                         'route' => 'audit:epoch:import --mysql',
                         'defaults' => [
-                            'controller' => Controller\EpochMySQLController::class,
+                            'controller' => Controller\Epoch\MySQLController::class,
                             'action' => 'import',
                         ],
                     ],

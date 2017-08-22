@@ -118,9 +118,9 @@ class JoinEntityDriver implements
         $association->build();
 
         $builder->setTable(
-            $this->getAuditOptions()['audit_table_name_prefix']
+            $this->getAuditOptions()->getAuditTableNamePrefix()
             . $config['tableName']
-            . $this->getAuditOptions()['audit_table_name_suffix']
+            . $this->getAuditOptions()->getAuditTableNameSuffix()
         );
     }
 
@@ -135,7 +135,7 @@ class JoinEntityDriver implements
             ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity');
 
         $classNames = [];
-       foreach ($this->getJoinEntityConfigCollection() as $className => $options) {
+       foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
             $classNames[] = $auditEntityRepository->generateClassName($className);
         }
 
