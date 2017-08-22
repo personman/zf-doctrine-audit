@@ -18,11 +18,6 @@ class RevisionEntity
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $revisionEntityIdentifierValue;
-
-    /**
      * @var \ZF\Doctrine\Audit\Entity\Revision
      */
     private $revision;
@@ -42,7 +37,6 @@ class RevisionEntity
      */
     public function __construct()
     {
-        $this->revisionEntityIdentifierValue = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -77,40 +71,6 @@ class RevisionEntity
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Add revisionEntityIdentifierValue
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
-     *
-     * @return RevisionEntity
-     */
-    public function addRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
-    {
-        $this->revisionEntityIdentifierValue[] = $revisionEntityIdentifierValue;
-
-        return $this;
-    }
-
-    /**
-     * Remove revisionEntityIdentifierValue
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
-     */
-    public function removeRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
-    {
-        $this->revisionEntityIdentifierValue->removeElement($revisionEntityIdentifierValue);
-    }
-
-    /**
-     * Get revisionEntityIdentifierValue
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRevisionEntityIdentifierValue()
-    {
-        return $this->revisionEntityIdentifierValue;
     }
 
     /**

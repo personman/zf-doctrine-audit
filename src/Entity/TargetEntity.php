@@ -35,11 +35,6 @@ class TargetEntity
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $identifier;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
     private $child;
 
     /**
@@ -57,7 +52,6 @@ class TargetEntity
      */
     public function __construct()
     {
-        $this->identifier = new \Doctrine\Common\Collections\ArrayCollection();
         $this->child = new \Doctrine\Common\Collections\ArrayCollection();
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -166,40 +160,6 @@ class TargetEntity
     public function getAuditEntity()
     {
         return $this->auditEntity;
-    }
-
-    /**
-     * Add identifier
-     *
-     * @param \ZF\Doctrine\Audit\Entity\Identifier $identifier
-     *
-     * @return TargetEntity
-     */
-    public function addIdentifier(\ZF\Doctrine\Audit\Entity\Identifier $identifier)
-    {
-        $this->identifier[] = $identifier;
-
-        return $this;
-    }
-
-    /**
-     * Remove identifier
-     *
-     * @param \ZF\Doctrine\Audit\Entity\Identifier $identifier
-     */
-    public function removeIdentifier(\ZF\Doctrine\Audit\Entity\Identifier $identifier)
-    {
-        $this->identifier->removeElement($identifier);
-    }
-
-    /**
-     * Get identifier
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
     }
 
     /**
