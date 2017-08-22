@@ -18,14 +18,9 @@ class Module implements
     {
         return array(
             'audit:schema-tool:update' => 'Get update SQL for audit',
-            'audit:trigger-tool     :create' => 'Create trigger SQL for target database',
-            'data-fixture:import zf-doctrine-audit' => 'Create audit entity fixtures. '
-                . 'Run before target entity fixtures.',
+            'data-fixture:import zf-doctrine-audit' => 'Create audit entity fixtures.',
+            'audit:trigger-tool:create --mysql' => 'Create trigger SQL for target database',
             'audit:epoch:import --mysql' => 'Create epoch stored procedures',
-            'audit:field:activate --entity="entity\name" --field="fieldName" [--comment=]' =>
-                'Activate a field for auditing',
-            'audit:field:deactivate --entity="entity\name" --field="fieldName" [--comment=]' =>
-                'Deactivate a field from auditing',
         );
     }
 

@@ -87,7 +87,7 @@ return [
                 ],
                 'zf-doctrine-audit-trigger-tool-create' => [
                     'options' => [
-                        'route' => 'audit:trigger-tool:create',
+                        'route' => 'audit:trigger-tool:create --mysql',
                         'defaults' => [
                             'controller' => Controller\TriggerToolController::class,
                             'action' => 'create',
