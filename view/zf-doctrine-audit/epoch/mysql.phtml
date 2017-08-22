@@ -71,22 +71,6 @@ BEGIN
             var_<?= implode(",\n            var_", array_keys($this->columns)); ?>,
             var_revision_entity_id;
 
-<?php
-        foreach ($this->targetEntity->getIdentifier() as $identifier) {
-?>
-        INSERT INTO RevisionEntityIdentifierValue_Audit (
-            value,
-            identifier_id,
-            revision_entity_id
-        ) VALUES (
-            var_<?= $identifier->getColumnName(); ?>,
-            <?= $identifier->getId(); ?>,
-            var_revision_entity_id
-        );
-        <?php
-        }
-        ?>
-
     END LOOP read_loop;
     CLOSE cur;
     COMMIT;

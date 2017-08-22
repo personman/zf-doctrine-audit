@@ -1,19 +1,16 @@
 <?php
 
-namespace ZF\Doctrine\Audit\Controller;
+namespace ZF\Doctrine\Audit\Controller\Epoch;
 
+use RuntimeException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Console\Request as ConsoleRequest;
-use Zend\Console\Adapter\AdapterInterface as Console;
-use Zend\Console\ColorInterface as Color;
-use Zend\Console\Prompt;
-use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
-use RuntimeException;
 use Doctrine\ORM\Tools\SchemaTool;
 use ZF\Doctrine\Audit\Persistence;
+use Doctrine\ORM\Query\ResultSetMapping;
 
-class EpochMySQLController extends AbstractActionController implements
+final class MySQLController extends AbstractActionController implements
     Persistence\AuditObjectManagerAwareInterface,
     Persistence\ObjectManagerAwareInterface,
     Persistence\AuditOptionsAwareInterface
@@ -22,14 +19,14 @@ class EpochMySQLController extends AbstractActionController implements
     use Persistence\ObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
 
+    public $viewRenderer;
+
     public function importAction()
     {
-        $console = $this->getServiceLocator()->get('console');
-
         // Make sure that we are running in a console and the user has not tricked our
         // application into running this action from a public web server.
         $request = $this->getRequest();
-        if (!$request instanceof ConsoleRequest) {
+        if (! $request instanceof ConsoleRequest) {
             throw new RuntimeException('You can only use this action from a console.');
         }
 
@@ -40,16 +37,12 @@ class EpochMySQLController extends AbstractActionController implements
         $connection = $this->getObjectManager()->getConnection();
 
         foreach ($targetEntities as $targetEntity) {
-#            if ($targetEntity->getTableName() != 'Weather') continue;
             // We have to iterate the whole stored procedure based on import limit size
             // because mysql cursors don't flex that way.
-#            print_r(get_class_methods($connection));die();
-            $queryBuilder = $this->getObjectManager()->createQueryBuilder();
-            $queryBuilder->select('count(ct)');
-            $queryBuilder->from($targetEntity->getName(), 'ct');
+            $sql = 'SELECT count(*) as ct FROM `' . $targetEntity->getTableName() . '` t';
+            $count = $this->getObjectManager()->getConnection()->query($sql)->fetch()['ct'];
 
-            $count = $queryBuilder->getQuery()->getSingleScalarResult();
-            $iterations = ceil($count / $this->getAuditOptions()['epoch_import_limit']);
+            $iterations = ceil($count / $this->getAuditOptions()->getEpochImportLimit());
 
             $columnDefinitionSql = "
                 SELECT column_name, column_type
@@ -66,13 +59,11 @@ class EpochMySQLController extends AbstractActionController implements
                 $columns[$column['column_name']] = $column['column_type'];
             }
 
-            $viewRender = $this->getServiceLocator()->get('ViewRenderer');
-
             $offset = 1;
             for ($i = 0; $i < $iterations; $i++) {
                 $viewParams = [
                     'offset' => $offset,
-                    'limit' => $this->getAuditOptions()['epoch_import_limit'],
+                    'limit' => $this->getAuditOptions()->getEpochImportLimit(),
                     'columns' => $columns,
                     'targetEntity' => $targetEntity,
                     'targetDatabase' => $connection->getDatabase(),
@@ -81,9 +72,9 @@ class EpochMySQLController extends AbstractActionController implements
                 $viewModel = new ViewModel($viewParams);
                 $viewModel->setTemplate('zf-doctrine-audit/epoch/mysql');
 
-                echo($viewRender->render($viewModel));
+                echo($this->viewRenderer->render($viewModel));
 
-                $offset += $this->getAuditOptions()['epoch_import_limit'];
+                $offset += $this->getAuditOptions()->getEpochImportLimit();
             }
 
             $offset = 1;
@@ -92,7 +83,3 @@ class EpochMySQLController extends AbstractActionController implements
         die();
     }
 }
-
-/*
-call epoch_User_Type();
-*/
