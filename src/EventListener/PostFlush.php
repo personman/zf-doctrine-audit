@@ -45,8 +45,8 @@ final class PostFlush
                 $userId = $user->getId();
             }
 
-            if (method_exists($user, 'getName')) {
-                $userName = $user->getName();
+            if (method_exists($user, 'getDisplayName')) {
+                $userName = $user->getDisplayName();
             }
 
             if (method_exists($user, 'getEmail')) {
@@ -57,7 +57,7 @@ final class PostFlush
             $userName = $this->identity->getName();
         } elseif ($this->identity instanceof GuestIdentity) {
 
-        } else {
+        } elseif ($this {
             // Is null or other identity
         }
 
