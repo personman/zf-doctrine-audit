@@ -36,7 +36,6 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
         }
 
         if (! $foundClassName) {
-            throw new \Exception('join entity autoloader not found: ' . $auditClassName);
             return false;
         }
 

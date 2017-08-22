@@ -72,6 +72,7 @@ class Module implements
             ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity')
             ;
 
-        $objectManager->getEventManager()->addEventListener([Events::postFlush], $postFlushListener);
+        $objectManager->getEventManager()
+            ->addEventListener([Events::postFlush], $postFlushListener);
     }
 }

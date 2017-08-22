@@ -8,17 +8,17 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Collections\ArrayCollection;
 use ZF\Doctrine\Audit\Entity;
-use ZF\Doctrine\Audit\Persistence\EntityConfigCollectionAwareInterface;
-use ZF\Doctrine\Audit\Persistence\EntityConfigCollectionAwareTrait;
+use ZF\Doctrine\Audit\Persistence\JoinEntityConfigCollectionAwareInterface;
+use ZF\Doctrine\Audit\Persistence\JoinEntityConfigCollectionAwareTrait;
 use ZF\Doctrine\Audit\Persistence\ObjectManagerAwareInterface;
 use ZF\Doctrine\Audit\Persistence\ObjectManagerAwareTrait;
 
-class RevisionEntityFixture implements
+class RevisionJoinEntityFixture implements
     FixtureInterface,
-    EntityConfigCollectionAwareInterface,
+    JoinEntityConfigCollectionAwareInterface,
     ObjectManagerAwareInterface
 {
-    use EntityConfigCollectionAwareTrait;
+    use JoinEntityConfigCollectionAwareTrait;
     use ObjectManagerAwareTrait;
 
     public function load(ObjectManager $auditObjectManager)
@@ -30,7 +30,7 @@ class RevisionEntityFixture implements
 
         $auditObjectManager->persist($revision);
 
-        foreach ($this->getEntityConfigCollection() as $className => $route) {
+        foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
             $targetEntity = $auditObjectManager
                 ->getRepository(Entity\TargetEntity::class)
                 ->findOneBy(['name' => $className]);
@@ -54,50 +54,13 @@ class RevisionEntityFixture implements
                 $targetEntity = new Entity\TargetEntity();
                 $targetEntity->setAuditEntity($auditEntity);
                 $targetEntity->setName($className);
-                $targetEntity->setTableName(
-                    $this->getObjectManager()
-                        ->getClassMetadata($className)
-                        ->getTableName()
-                );
-
-                $identifiers = $this->getObjectManager()
-                    ->getClassMetadata($className)
-                    ->getIdentifierFieldNames()
-                    ;
-
-                foreach ($identifiers as $fieldName) {
-                    $identifier = new Entity\Identifier();
-                    $identifier->setTargetEntity($targetEntity);
-                    $identifier->setFieldName($fieldName);
-                    $identifier->setColumnName(
-                        $this->getObjectManager()
-                            ->getClassMetadata($className)
-                            ->getColumnName($fieldName)
-                    );
-
-                    $auditObjectManager->persist($identifier);
-                }
-
-                // Add Join Columns as Target Entities
-                $associations = $this->getObjectManager()
-                    ->getClassMetadata($className)
-                    ->getAssociationNames()
-                    ;
-
-                foreach ($associations as $fieldName) {
-                    $associationMapping = $this->getObjectManager()
-                        ->getClassMetadata($className)
-                        ->getAssociationMapping($fieldName);
-
-                    if (! isset($associationMapping['joinColumns'])) {
-                        continue;
-                    }
-                }
+                $targetEntity->setTableName($config['tableName']);
 
                 $auditObjectManager->persist($auditEntity);
                 $auditObjectManager->persist($targetEntity);
             }
         }
+
         $auditObjectManager->flush();
     }
 }

@@ -20,6 +20,5 @@
         <join-column name="revision_type_id" referenced-column-name="id" nullable="false"/>
       </join-columns>
     </many-to-one>
-    <one-to-many field="revisionEntityIdentifierValue" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue" mapped-by="revisionEntity"/>
   </entity>
 </doctrine-mapping>

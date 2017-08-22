@@ -21,7 +21,6 @@
         <join-column name="target_entity_id" referenced-column-name="id"/>
       </join-columns>
     </many-to-one>
-    <one-to-many field="identifier" target-entity="ZF\Doctrine\Audit\Entity\Identifier" mapped-by="targetEntity"/>
     <one-to-many field="child" target-entity="ZF\Doctrine\Audit\Entity\TargetEntity" mapped-by="parent"/>
     <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="targetEntity"/>
   </entity>

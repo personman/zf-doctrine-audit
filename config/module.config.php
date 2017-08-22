@@ -14,6 +14,8 @@ return [
                         => InvokableFactory::class,
                     Fixture\RevisionEntityFixture::class
                         => Fixture\RevisionEntityFixtureFactory::class,
+                    Fixture\RevisionJoinEntityFixture::class
+                        => Fixture\RevisionJoinEntityFixtureFactory::class,
                 ],
             ],
         ],

@@ -6,7 +6,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class RevisionEntityFixtureFactory implements
+class RevisionJoinEntityFixtureFactory implements
     FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
@@ -15,7 +15,7 @@ class RevisionEntityFixtureFactory implements
 
         $instance = new $requestedName();
 
-        $instance->setEntityConfigCollection(new ArrayCollection($config['entities']));
+        $instance->setJoinEntityConfigCollection(new ArrayCollection($config['joinEntities']));
         $instance->setObjectManager($container->getServiceLocator()->get($config['target_object_manager']));
 
         return $instance;
