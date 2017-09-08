@@ -241,7 +241,7 @@ END;//
 
 DROP TRIGGER IF EXISTS {$tableName}_update_audit;//
 CREATE TRIGGER {$tableName}_update_audit
-AFTER INSERT ON {$tableName}
+AFTER UPDATE ON {$tableName}
 FOR EACH ROW
 BEGIN
 

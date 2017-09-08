@@ -17,8 +17,6 @@ class Module implements
     public function getConsoleUsage(Console $console)
     {
         return array(
-            'audit:schema-tool:update' => 'Get update SQL for audit',
-            'data-fixture:import zf-doctrine-audit' => 'Create audit entity fixtures.',
             'audit:trigger-tool:create --mysql' => 'Create trigger SQL for target database',
             'audit:epoch:import --mysql' => 'Create epoch stored procedures',
         );

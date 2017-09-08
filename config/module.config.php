@@ -55,10 +55,6 @@ return [
     ],
 
     'controllers' => [
-        'invokables' => [
-            Controller\FieldController::class =>
-                Controller\FieldController::class,
-        ],
         'factories' => [
             Controller\SchemaToolController::class =>
                 Controller\SchemaToolControllerFactory::class,
@@ -102,24 +98,6 @@ return [
                         'defaults' => [
                             'controller' => Controller\Epoch\MySQLController::class,
                             'action' => 'import',
-                        ],
-                    ],
-                ],
-                'zf-doctrine-audit-field-deactivate' => [
-                    'options' => [
-                        'route' => 'audit:field:deactivate --entity= --field= [--comment=]',
-                        'defaults' => [
-                            'controller' => Controller\FieldController::class,
-                            'action' => 'deactivate',
-                        ],
-                    ],
-                ],
-                'zf-doctrine-audit-field-activate' => [
-                    'options' => [
-                        'route' => 'audit:field:activate --entity= --field= [--comment=]',
-                        'defaults' => [
-                            'controller' => Controller\FieldControler::class,
-                            'action' => 'activate',
                         ],
                     ],
                 ],
