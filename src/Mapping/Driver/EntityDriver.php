@@ -62,6 +62,7 @@ class EntityDriver implements
         $association = $builder->createManyToOne('revisionEntity', Entity\RevisionEntity::class);
         $association->makePrimaryKey();
         $association->build();
+        $identifiers[] = 'revisionEntity';
 
         // Add fields from target to audit entity
         foreach ($auditedClassMetadata->getFieldNames() as $fieldName) {
