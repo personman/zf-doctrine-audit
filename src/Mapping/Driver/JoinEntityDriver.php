@@ -57,8 +57,6 @@ class JoinEntityDriver implements
             return false;
         }
 
-        $config = $this->getJoinEntityConfigCollection()[$targetClassName];
-
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
         $metadata = $metadataFactory->getMetadataFor($config['ownerEntity']);
@@ -83,7 +81,6 @@ class JoinEntityDriver implements
             );
         }
 
-
         $fields = [];
         foreach ($mapping['joinTable']['joinColumns'] as $column) {
             $column['dataType'] = $this->getObjectManager()
@@ -106,7 +103,7 @@ class JoinEntityDriver implements
                 $field['name'],
                 $field['dataType'],
                 [
-                    'nullable' => $config['nullable'],
+#                    'nullable' => $config['nullable'],
                     'columnName' => $field['name'],
                     'id' => true,
                 ]

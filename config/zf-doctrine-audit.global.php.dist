@@ -91,7 +91,27 @@ return [
 
          */
 
-        'entities' => []
+        /**
+         * The joinEntities array is a list of pseudo entity names representing a many
+         * to many join across entities.
+         *
+         * The format is the namespace of the owner entity followed by the table name (in most cases)
+         * to represent the entity.
+         * The ownerEntity is required as is the tableName.  This information is used to find the join
+         * mapping in the metadata.
+         */
+        'joinEntities' => [
+            'Db\Entity\ArtistToArtistGroup' => [
+                'ownerEntity' => 'Db\Entity\ArtistGroup',
+                'tableName' => 'ArtistToArtistGroup',
+            ],
+        ],
+
+        'entities' => [
+            'Db\Entity\ArtistGroup' => [
+                // Additional configuration of audited entities is reserved.
+            ],
+        ],
     ],
 ];
 

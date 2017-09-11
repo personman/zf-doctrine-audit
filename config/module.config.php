@@ -49,6 +49,8 @@ return [
                 => Mapping\Driver\JoinEntityDriverFactory::class,
             Tools\TriggerTool::class
                 => Tools\TriggerToolFactory::class,
+            Tools\EpochTool::class
+                => Tools\EpochToolFactory::class,
             EventListener\PostFlush::class
                 => EventListener\PostFlushFactory::class,
         ],
@@ -56,12 +58,10 @@ return [
 
     'controllers' => [
         'factories' => [
-            Controller\SchemaToolController::class =>
-                Controller\SchemaToolControllerFactory::class,
             Controller\TriggerToolController::class =>
                 Controller\TriggerToolControllerFactory::class,
-            Controller\Epoch\MySQLController::class =>
-                Controller\Epoch\MySQLControllerFactory::class,
+            Controller\EpochToolController::class =>
+                Controller\EpochToolControllerFactory::class,
         ],
     ],
 
@@ -74,18 +74,9 @@ return [
     'console' => [
         'router' => [
             'routes' => [
-                'zf-doctrine-audit-schema-tool-update' => [
-                    'options' => [
-                        'route' => 'audit:schema-tool:update',
-                        'defaults' => [
-                            'controller' => Controller\SchemaToolController::class,
-                            'action' => 'update',
-                        ],
-                    ],
-                ],
                 'zf-doctrine-audit-trigger-tool-create' => [
                     'options' => [
-                        'route' => 'audit:trigger-tool:create --mysql',
+                        'route' => 'audit:trigger-tool:create',
                         'defaults' => [
                             'controller' => Controller\TriggerToolController::class,
                             'action' => 'create',
@@ -94,9 +85,9 @@ return [
                 ],
                 'zf-doctrine-audit-epoch-mysql' => [
                     'options' => [
-                        'route' => 'audit:epoch:import --mysql',
+                        'route' => 'audit:epoch:import',
                         'defaults' => [
-                            'controller' => Controller\Epoch\MySQLController::class,
+                            'controller' => Controller\EpochToolController::class,
                             'action' => 'import',
                         ],
                     ],

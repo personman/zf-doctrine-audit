@@ -1,19 +1,19 @@
 <?php
 
-namespace ZF\Doctrine\Audit\Controller\Epoch;
+namespace ZF\Doctrine\Audit\Tools\Generator\Epoch;
 
-use RuntimeException;
-use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Renderer\RendererInterface;
 use Zend\View\Model\ViewModel;
-use Zend\Console\Request as ConsoleRequest;
-use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Common\Persistence\ObjectManager;
 use ZF\Doctrine\Audit\Persistence;
-use Doctrine\ORM\Query\ResultSetMapping;
+use ZF\Doctrine\Audit\AuditOptions;
+use ZF\Doctrine\Audit\Tools\Generator\GeneratorInterface;
 
-final class MySQLController extends AbstractActionController implements
+final class MySQL implements
     Persistence\AuditObjectManagerAwareInterface,
     Persistence\ObjectManagerAwareInterface,
-    Persistence\AuditOptionsAwareInterface
+    Persistence\AuditOptionsAwareInterface,
+    GeneratorInterface
 {
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\ObjectManagerAwareTrait;
@@ -21,14 +21,33 @@ final class MySQLController extends AbstractActionController implements
 
     public $viewRenderer;
 
-    public function importAction()
+    public function getViewRenderer()
     {
-        // Make sure that we are running in a console and the user has not tricked our
-        // application into running this action from a public web server.
-        $request = $this->getRequest();
-        if (! $request instanceof ConsoleRequest) {
-            throw new RuntimeException('You can only use this action from a console.');
-        }
+        return $this->viewRenderer;
+    }
+
+    public function setViewRenderer(RendererInterface $viewRenderer)
+    {
+        $this->viewRenderer = $viewRenderer;
+
+        return $this;
+    }
+
+    public function __construct(
+        ObjectManager $objectManager,
+        ObjectManager $auditObjectManager,
+        AuditOptions $auditOptions,
+        RendererInterface $viewRenderer
+    ) {
+        $this->setObjectManager($objectManager);
+        $this->setAuditObjectManager($auditObjectManager);
+        $this->setAuditOptions($auditOptions);
+        $this->setViewRenderer($viewRenderer);
+    }
+
+    public function generate()
+    {
+        $sql = '';
 
         $targetEntities = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\Entity\TargetEntity')
@@ -72,7 +91,7 @@ final class MySQLController extends AbstractActionController implements
                 $viewModel = new ViewModel($viewParams);
                 $viewModel->setTemplate('zf-doctrine-audit/epoch/mysql');
 
-                echo($this->viewRenderer->render($viewModel));
+                $sql .= $this->getViewRenderer()->render($viewModel);
 
                 $offset += $this->getAuditOptions()->getEpochImportLimit();
             }
@@ -80,6 +99,7 @@ final class MySQLController extends AbstractActionController implements
             $offset = 1;
             $columns = [];
         }
-        die();
+
+        return $sql;
     }
 }

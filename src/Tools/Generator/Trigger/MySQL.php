@@ -1,20 +1,19 @@
 <?php
 
-namespace ZF\Doctrine\Audit\Tools\TriggerGenerator;
+namespace ZF\Doctrine\Audit\Tools\Generator\Trigger;
 
-use ZF\Doctrine\Audit\Persistence\AuditObjectManagerAwareInterface;
-use ZF\Doctrine\Audit\Persistence\AuditObjectManagerAwareTrait;
-use ZF\Doctrine\Audit\Persistence\ObjectManagerAwareInterface;
-use ZF\Doctrine\Audit\Persistence\ObjectManagerAwareTrait;
-use Doctrine\Common\Persistence\ObjectManager;
 use Exception;
+use Doctrine\Common\Persistence\ObjectManager;
+use ZF\Doctrine\Audit\Persistence;
+use ZF\Doctrine\Audit\Tools\Generator\GeneratorInterface;
 
-class MySQL implements
-    AuditObjectManagerAwareInterface,
-    ObjectManagerAwareInterface
+final class MySQL implements
+    Persistence\AuditObjectManagerAwareInterface,
+    Persistence\ObjectManagerAwareInterface,
+    GeneratorInterface
 {
-    use AuditObjectManagerAwareTrait;
-    use ObjectManagerAwareTrait;
+    use Persistence\AuditObjectManagerAwareTrait;
+    use Persistence\ObjectManagerAwareTrait;
 
     private $config;
 
@@ -160,7 +159,6 @@ EOF;
             $auditClassMetadata = $auditMetadataFactory->getMetadataFor($auditClassName);
 
             $tableName = $config['tableName'];
-            $auditTableName =
             $auditTableName = $auditClassMetadata->getTableName();
             $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
 

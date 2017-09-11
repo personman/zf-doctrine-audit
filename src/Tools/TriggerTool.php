@@ -26,7 +26,7 @@ final class TriggerTool implements
     {
         switch($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()) {
             case 'mysql':
-                $generator = new TriggerGenerator\MySQL($this->getObjectManager(), $this->getAuditObjectManager(), $this->config);
+                $generator = new Generator\Trigger\MySQL($this->getObjectManager(), $this->getAuditObjectManager(), $this->config);
                 break;
             default:
                 throw new Exception("Unsupported database platform: "

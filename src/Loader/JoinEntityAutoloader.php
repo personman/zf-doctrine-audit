@@ -39,15 +39,11 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
             return false;
         }
 
-        $namespaceParts = explode('\\', $auditClassName);
-        array_pop($namespaceParts);
-        $auditEntityConfig = $this->getJoinEntityConfigCollection()[$className];
-
-        $metadata = $this->getObjectManager()->getClassMetadata($auditEntityConfig['ownerEntity']);
+        $metadata = $this->getObjectManager()->getClassMetadata($config['ownerEntity']);
 
         foreach ($metadata->getAssociationMappings() as $mapping) {
             if (isset($mapping['joinTable'])) {
-                if ($mapping['joinTable']['name'] == $auditEntityConfig['tableName']) {
+                if ($mapping['joinTable']['name'] == $config['tableName']) {
                     $foundJoinEntity = true;
                     break;
                 }
