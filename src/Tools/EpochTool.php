@@ -54,8 +54,10 @@ final class EpochTool implements
                 );
                 break;
             default:
-                throw new Exception("Unsupported database platform: "
-                    . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName());
+                throw new Exception(
+                    'Unsupported database platform: '
+                    . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
+                );
                 break;
         }
 
