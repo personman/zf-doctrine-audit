@@ -47,7 +47,7 @@ final class MySQL implements
 
     public function generate()
     {
-        $sql = '';
+        $output = '';
 
         $targetEntities = $this->getAuditObjectManager()
             ->getRepository('ZF\Doctrine\Audit\Entity\TargetEntity')
@@ -58,7 +58,7 @@ final class MySQL implements
         foreach ($targetEntities as $targetEntity) {
             // We have to iterate the whole stored procedure based on import limit size
             // because mysql cursors don't flex that way.
-            $sql = 'SELECT count(*) as ct FROM `' . $targetEntity->getTableName() . '` t';
+            $sql = 'SELECT count(*) as ct FROM `' . $targetEntity->getTableName() . '`;' . "\n";
             $count = $this->getObjectManager()->getConnection()->query($sql)->fetch()['ct'];
 
             $iterations = ceil($count / $this->getAuditOptions()->getEpochImportLimit());
@@ -91,7 +91,7 @@ final class MySQL implements
                 $viewModel = new ViewModel($viewParams);
                 $viewModel->setTemplate('zf-doctrine-audit/epoch/mysql');
 
-                $sql .= $this->getViewRenderer()->render($viewModel);
+                $output .= $this->getViewRenderer()->render($viewModel);
 
                 $offset += $this->getAuditOptions()->getEpochImportLimit();
             }
@@ -100,6 +100,6 @@ final class MySQL implements
             $columns = [];
         }
 
-        return $sql;
+        return $output;
     }
 }

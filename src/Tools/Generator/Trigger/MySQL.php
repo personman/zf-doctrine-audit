@@ -59,7 +59,7 @@ BEGIN
 END;//
 
 DROP FUNCTION IF EXISTS get_revision_entity_audit;//
-CREATE FUNCTION get_revision_entity_audit(p_targetEntity varchar(255), p_revisionType varchar(255))
+CREATE FUNCTION get_revision_entity_audit(p_targetEntity varchar(255) character set utf8, p_revisionType varchar(255) character set utf8)
     RETURNS bigint
     READS SQL DATA
 BEGIN
@@ -77,7 +77,7 @@ BEGIN
     FROM audit.Revision_Audit
     WHERE connectionId = CONNECTION_ID()
     LIMIT 1;
-
+return 112;
     IF revisionId = 0 THEN
         INSERT INTO audit.Revision_Audit (
             createdAt,
@@ -88,7 +88,7 @@ BEGIN
 
         SET revisionId = LAST_INSERT_ID();
     END IF;
-
+return 111;
     SELECT id INTO targetEntityId
     FROM audit.TargetEntity_Audit
     WHERE name = p_targetEntity;
