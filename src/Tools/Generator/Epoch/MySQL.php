@@ -78,7 +78,7 @@ final class MySQL implements
                 $columns[$column['column_name']] = $column['column_type'];
             }
 
-            $offset = 1;
+            $offset = 0;
             for ($i = 0; $i < $iterations; $i++) {
                 $viewParams = [
                     'offset' => $offset,
@@ -96,7 +96,7 @@ final class MySQL implements
                 $offset += $this->getAuditOptions()->getEpochImportLimit();
             }
 
-            $offset = 1;
+            $offset = 0;
             $columns = [];
         }
 
