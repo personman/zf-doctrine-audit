@@ -1,4 +1,4 @@
-`API-Skeletons/zf-doctrine-audit<https://github.com/API-Skeletons/zf-doctrine-audit>`_
+`API-Skeletons/zf-doctrine-audit  <https://github.com/API-Skeletons/zf-doctrine-audit>`_
 ===============================
 
 This repository creates an auditing database to track your target database changes.
@@ -20,4 +20,10 @@ To see this in action and begin exploring what this repository can do, follow th
 
 Explore the data in the test database.  The audit database has the audit trails for the test data.  Manipulating data in the test database is immediatly audited in the audit database.
 
-Continue reading with .. _The Basics: basics.rst
+
+.. toctree::
+    :caption: Table of Contents
+
+    the-basics
+    not-so-basic
+    advanced
