@@ -16,8 +16,6 @@ class AuditOptionsFactory implements
         $options = [
             'auditTableNamePrefix' => $config['audit_table_name_prefix'] ?? '',
             'auditTableNameSuffix' => $config['audit_table_name_suffix'] ?? '_audit',
-            'revisionTableName' => $config['revision_table_name'] ?? 'Revision',
-            'revisionEntityTableName' => $config['revision_entity_table_name'] ?? 'RevisionEntity',
             'epochImportLimit' => $config['epoch_import_limit'] ?? 200,
         ];
 

@@ -21,7 +21,6 @@ return array(
         'target_object_manager' => 'doctrine.entitymanager.orm_default',
         'audit_object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
 
-        'datetime_format' => 'r',
         'paginator_limit' => 999999,
 
         'authentication_service' => 'Zend\Authentication\AuthenticationService',

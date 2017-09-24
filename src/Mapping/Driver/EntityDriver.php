@@ -21,17 +21,6 @@ class EntityDriver implements
     use Persistence\AuditObjectManagerAwareTrait;
     use Persistence\AuditOptionsAwareTrait;
 
-    public function register(): self
-    {
-        // Driver for audited entities
-        $this->getAuditObjectManager()
-            ->getConfiguration()
-            ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
-
-        return $this;
-    }
-
     /**
      * Load the metadata for the specified class into the provided container.
      *

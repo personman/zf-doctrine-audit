@@ -13,6 +13,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\DataFixtures\Loader;
 use MySQLi;
 use ZF\Doctrine\Audit\Tools\TriggerTool;
+use ZF\Doctrine\Audit\Tools\EpochTool;
+use ZF\Doctrine\Audit\EventListener\PostFlush;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
@@ -34,6 +36,7 @@ foreach ($localConfig['doctrine']['connection'] as $name => $dbConfig) {
 class Bootstrap
 {
     protected static $config;
+    protected static $epochRun = false;
 
     public static function init()
     {
@@ -82,11 +85,25 @@ class Bootstrap
 
     public static function createDatabase(\Zend\Mvc\Application $application)
     {
+        if (self::$epochRun) {
+            return;
+        }
+
         // build test database
         $objectManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_default');
         // Add tables
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($objectManager);
         $schemaTool->updateSchema($objectManager->getMetadataFactory()->getAllMetadata());
+
+        // Populate database with records for testing epoch
+        if (! self::$epochRun) {
+            $application->getServiceManager()->get(PostFlush::class)->disable();
+            $artist = new Entity\Artist();
+            $artist->setName('Epoch Test 1');
+            $objectManager->persist($artist);
+            $objectManager->flush();
+            $application->getServiceManager()->get(PostFlush::class)->enable();
+        }
 
         // build audit database
         $auditEntityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_zf_doctrine_audit');
@@ -115,6 +132,20 @@ class Bootstrap
         $ormDefaultConfig = $localConfig['doctrine']['connection']['orm_default']['params'];
         $command = "mysql -u root -h " . $ormDefaultConfig['host'] . " test < audit_triggers.sql";
         `$command`;
+
+        // Run epoch
+        $epochTool = $application->getServiceManager()->get(EpochTool::class);
+//        $epochTool->generate();
+
+        if (! self::$epochRun) {
+            file_put_contents('audit_epoch.sql', $epochTool->generate());
+            // Static connect values - find a way to run triggers not from command line
+            $localConfig = include __DIR__ . '/autoload/tests.global.php';
+            $ormAuditConfig = $localConfig['doctrine']['connection']['orm_zf_doctrine_audit']['params'];
+            $command = "mysql -u root -h " . $ormAuditConfig['host'] . " audit < audit_epoch.sql";
+            `$command`;
+            self::$epochRun = true;
+        }
     }
 
     protected static function initAutoloader()

@@ -29,14 +29,6 @@ return [
         'epoch_import_limit' => 200,
 
         /**
-         * The user_entity_class_name is a string for the doctrine entity class
-         * identifying a user in your application on the target_object_manager.
-         *
-         * This class MUST implement ZF\Doctrine\Audit\Entity\UserInterface.php
-         */
-        'user_entity_class_name' => 'Database\Entity\User',
-
-        /**
          * The authentication service for fetching the user_entity_class_name
          */
         'authentication_service' => 'Zend\Authentication\AuthenticationService',

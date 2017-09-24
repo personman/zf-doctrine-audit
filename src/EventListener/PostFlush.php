@@ -25,6 +25,7 @@ final class PostFlush
 {
     private $identity;
     private $revisionComment;
+    private $enable = true;
 
     public function __construct(RevisionComment $revisionComment, AbstractRbacRole $identity = null)
     {
@@ -73,9 +74,21 @@ final class PostFlush
             ->setParameter('comment', $this->revisionComment->getComment());
         ;
 
-        $query->getResult();
+        if ($this->enable) {
+            $query->getResult();
+        }
 
         // Reset the revision comment
         $this->revisionComment->setComment('');
+    }
+
+    public function enable()
+    {
+        $this->enable = true;
+    }
+
+    public function disable()
+    {
+        $this->enable = false;
     }
 }

@@ -10,10 +10,6 @@ class AuditOptions extends AbstractOptions
 
     protected $auditTableNameSuffix;
 
-    protected $revisionTableName;
-
-    protected $revisionEntityTableName;
-
     protected $epochImportLimit;
 
     public function getAuditTableNamePrefix()
@@ -36,30 +32,6 @@ class AuditOptions extends AbstractOptions
     protected function setAuditTableNameSuffix($auditTableNameSuffix)
     {
         $this->auditTableNameSuffix = $auditTableNameSuffix;
-
-        return $this;
-    }
-
-    public function getRevisionTableName()
-    {
-        return $this->revisionTableName;
-    }
-
-    protected function setRevisionTableName($revisionTableName)
-    {
-        $this->revisionTableName = $revisionTableName;
-
-        return $this;
-    }
-
-    public function getRevisionEntityTableName()
-    {
-        return $this->revisionEntityTableName;
-    }
-
-    protected function setRevisionEntityTableName($revisionEntityTableName)
-    {
-        $this->revisionEntityTableName = $revisionEntityTableName;
 
         return $this;
     }
