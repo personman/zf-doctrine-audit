@@ -11,5 +11,5 @@ Auditing of a target object manager and list of entities using an object manager
 Entity Relationship Diagram created with [Skipper](https://skipper18.com)
 
 
-[Read the documentation](https://github.com/API-Skeletons/zf-doctrine-audit/wiki)
+[Read the documentation](http://zf-doctrine-audit.readthedocs.io/en/latest/)
 ------------------------
