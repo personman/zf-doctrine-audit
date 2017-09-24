@@ -26,7 +26,7 @@ return [
         ],
         'factories' => [
             Plugin\AuditPlugin::class
-                => InvokableFactory::class,
+                => Plugin\AuditPluginFactory::class,
         ]
     ],
     'service_manager' => [
