@@ -12,4 +12,3 @@ To see this in action and begin exploring what this repository can do, follow th
 
 Explore the data in the test database.  The audit database has the audit trails for the test data.  Manipulating data in the test database is immediatly audited in the audit database.
 
-Continue reading with .. _The Basics: basics.rst
