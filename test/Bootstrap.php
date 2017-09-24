@@ -18,10 +18,10 @@ error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
 
 
-$localConfig = include(__DIR__ . '/autoload/tests.global.php');
+$localConfig = include __DIR__ . '/autoload/tests.global.php';
 
 foreach ($localConfig['doctrine']['connection'] as $name => $dbConfig) {
-    #print_r($dbConfig['params']);die();
+    // print_r($dbConfig['params']);die();
     $mysqli = new MySQLi($dbConfig['params']['host'], $dbConfig['params']['user'], '');
     $mysqli->query('DROP DATABASE IF EXISTS ' . $dbConfig['params']['dbname']);
     $mysqli->query('CREATE DATABASE ' . $dbConfig['params']['dbname']);
@@ -111,7 +111,7 @@ class Bootstrap
         $triggerTool = $application->getServiceManager()->get(TriggerTool::class);
         file_put_contents('audit_triggers.sql', $triggerTool->generate());
         // Static connect values - find a way to run triggers not from command line
-        $localConfig = include(__DIR__ . '/autoload/tests.global.php');
+        $localConfig = include __DIR__ . '/autoload/tests.global.php';
         $ormDefaultConfig = $localConfig['doctrine']['connection']['orm_default']['params'];
         $command = "mysql -u root -h " . $ormDefaultConfig['host'] . " test < audit_triggers.sql";
         `$command`;
@@ -134,14 +134,16 @@ class Bootstrap
 
         }
 
-        AutoloaderFactory::factory(array(
+        AutoloaderFactory::factory(
+            array(
             'Zend\Loader\StandardAutoloader' => array(
                 'autoregister_zf' => true,
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/ZFTest',
                 ),
             ),
-        ));
+            )
+        );
     }
 
     protected static function findParentPath($path)
@@ -150,7 +152,8 @@ class Bootstrap
         $previousDir = '.';
         while (!is_dir($dir . '/' . $path)) {
             $dir = dirname($dir);
-            if ($previousDir === $dir) return false;
+            if ($previousDir === $dir) { return false;
+            }
             $previousDir = $dir;
         }
         return $dir . '/' . $path;

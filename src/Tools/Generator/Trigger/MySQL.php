@@ -23,8 +23,7 @@ final class MySQL implements
         $this->setAuditObjectManager($auditObjectManager);
         $this->config = $config;
 
-        if ($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName() !== 'mysql')
-        {
+        if ($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             throw new Exception('Invalid database platform for MySQL trigger generator');
         }
     }
@@ -112,8 +111,7 @@ EOF;
         foreach ($this->config['joinEntities'] as $className => $config) {
             $auditClassName = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
-                ->generateClassName($className)
-                ;
+                ->generateClassName($className);
 
             $metadataFactory = $this->getObjectManager()->getMetadataFactory();
             $metadata = $metadataFactory->getMetadataFor($config['ownerEntity']);
@@ -142,15 +140,13 @@ EOF;
             foreach ($mapping['joinTable']['joinColumns'] as $column) {
                 $column['dataType'] = $this->getObjectManager()
                     ->getClassMetadata($mapping['sourceEntity'])
-                    ->getTypeOfField($column['referencedColumnName'])
-                    ;
+                    ->getTypeOfField($column['referencedColumnName']);
                 $fields[] = $column['name'];
             }
             foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
                 $column['dataType'] = $this->getObjectManager()
                     ->getClassMetadata($mapping['targetEntity'])
-                    ->getTypeOfField($column['referencedColumnName'])
-                    ;
+                    ->getTypeOfField($column['referencedColumnName']);
                 $fields[] = $column['name'];
             }
 
@@ -169,8 +165,7 @@ EOF;
         foreach ($this->config['entities'] as $className => $options) {
             $auditClassName = $this->getAuditObjectManager()
                 ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
-                ->generateClassName($className)
-                ;
+                ->generateClassName($className);
 
             // Get fields and identifiers from target entity
             $metadataFactory = $this->getObjectManager()->getMetadataFactory();
@@ -213,7 +208,8 @@ EOF;
         return $sql;
     }
 
-    public function buildSql($tableName, $auditTableName, $fields, $className) {
+    public function buildSql($tableName, $auditTableName, $fields, $className) 
+    {
         $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
         $addSlashesClassName = addslashes($className);
 

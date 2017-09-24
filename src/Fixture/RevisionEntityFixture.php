@@ -38,8 +38,7 @@ class RevisionEntityFixture implements
             if (! $targetEntity) {
                 $auditEntityClassName = $auditObjectManager
                     ->getRepository(Entity\AuditEntity::class)
-                    ->generateClassName($className)
-                    ;
+                    ->generateClassName($className);
 
                 $auditObjectManager->getClassMetadata($auditEntityClassName);
 
@@ -63,8 +62,7 @@ class RevisionEntityFixture implements
                 // Add Join Columns as Target Entities
                 $associations = $this->getObjectManager()
                     ->getClassMetadata($className)
-                    ->getAssociationNames()
-                    ;
+                    ->getAssociationNames();
 
                 foreach ($associations as $fieldName) {
                     $associationMapping = $this->getObjectManager()

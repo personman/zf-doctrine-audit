@@ -27,8 +27,7 @@ class EntityDriver implements
         $this->getAuditObjectManager()
             ->getConfiguration()
             ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity')
-            ;
+            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
 
         return $this;
     }

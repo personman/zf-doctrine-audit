@@ -15,9 +15,11 @@ class RevisionTypeFixture implements
         foreach (array('insert', 'update', 'delete', 'epoch') as $name) {
             $revisionType = $auditObjectManager
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
-                ->findOneBy([
+                ->findOneBy(
+                    [
                     'name' => $name,
-                ]);
+                    ]
+                );
 
             if (! $revisionType) {
                 $revisionType = new Entity\RevisionType();

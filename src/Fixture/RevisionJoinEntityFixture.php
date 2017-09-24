@@ -38,8 +38,7 @@ class RevisionJoinEntityFixture implements
             if (! $targetEntity) {
                 $auditEntityClassName = $auditObjectManager
                     ->getRepository(Entity\AuditEntity::class)
-                    ->generateClassName($className)
-                    ;
+                    ->generateClassName($className);
 
                 $auditObjectManager->getClassMetadata($auditEntityClassName);
 

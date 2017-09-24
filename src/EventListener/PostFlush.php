@@ -62,19 +62,20 @@ final class PostFlush
         }
 
         $query = $args->getEntityManager()
-            ->createNativeQuery("
+            ->createNativeQuery(
+                "
                 SELECT close_revision_audit(:userId, :userName, :userEmail, :comment)
-            ", new ResultSetMapping())
+            ", new ResultSetMapping()
+            )
             ->setParameter('userId', $userId)
             ->setParameter('userName', $userName)
             ->setParameter('userEmail', $userEmail)
-            ->setParameter('comment', $this->revisionComment->getComment())
-            ;
+            ->setParameter('comment', $this->revisionComment->getComment());
         ;
 
-       $query->getResult();
+        $query->getResult();
 
-       // Reset the revision comment
-       $this->revisionComment->setComment('');
+        // Reset the revision comment
+        $this->revisionComment->setComment('');
     }
 }

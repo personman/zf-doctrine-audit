@@ -27,9 +27,8 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
     {
         $foundClassName = false;
         foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
-            if ($this->getAuditObjectManager()
-                ->getRepository(Entity\AuditEntity::class)
-                ->generateClassName($className) == $auditClassName) {
+            if ($this->getAuditObjectManager()->getRepository(Entity\AuditEntity::class)->generateClassName($className) == $auditClassName
+            ) {
 
                 $foundClassName = true;
                 break;
@@ -81,15 +80,13 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
         foreach ($mapping['joinTable']['joinColumns'] as $column) {
             $column['dataType'] = $this->getObjectManager()
                 ->getClassMetadata($mapping['sourceEntity'])
-                ->getTypeOfField($column['referencedColumnName'])
-                ;
+                ->getTypeOfField($column['referencedColumnName']);
             $fields[] = $column;
         }
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
             $column['dataType'] = $this->getObjectManager()
                 ->getClassMetadata($mapping['targetEntity'])
-                ->getTypeOfField($column['referencedColumnName'])
-                ;
+                ->getTypeOfField($column['referencedColumnName']);
             $fields[] = $column;
         }
 
@@ -135,7 +132,7 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
             " return '" .  addslashes($auditClassName) . "';"
         );
 
-#echo "Created " . $auditClass->getName() . "\n" . $auditClass->getNamespaceName() . "\n";
+        // echo "Created " . $auditClass->getName() . "\n" . $auditClass->getNamespaceName() . "\n";
 
         eval($auditClass->generate());
 

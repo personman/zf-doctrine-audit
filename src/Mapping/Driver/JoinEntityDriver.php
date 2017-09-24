@@ -28,8 +28,7 @@ class JoinEntityDriver implements
         $this->getAuditObjectManager()
             ->getConfiguration()
             ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity')
-            ;
+            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
 
         return $this;
     }
@@ -43,9 +42,8 @@ class JoinEntityDriver implements
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         foreach ($this->getJoinEntityConfigCollection() as $targetClassName => $config) {
-            if ($this->getAuditObjectManager()
-                ->getRepository(Entity\AuditEntity::class)
-                ->generateClassName($targetClassName) == $className) {
+            if ($this->getAuditObjectManager()->getRepository(Entity\AuditEntity::class)->generateClassName($targetClassName) == $className
+            ) {
 
                 $foundClassName = true;
                 break;
@@ -85,15 +83,13 @@ class JoinEntityDriver implements
         foreach ($mapping['joinTable']['joinColumns'] as $column) {
             $column['dataType'] = $this->getObjectManager()
                 ->getClassMetadata($mapping['sourceEntity'])
-                ->getTypeOfField($column['referencedColumnName'])
-                ;
+                ->getTypeOfField($column['referencedColumnName']);
             $fields[] = $column;
         }
         foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
             $column['dataType'] = $this->getObjectManager()
                 ->getClassMetadata($mapping['targetEntity'])
-                ->getTypeOfField($column['referencedColumnName'])
-                ;
+                ->getTypeOfField($column['referencedColumnName']);
             $fields[] = $column;
         }
 
@@ -103,7 +99,7 @@ class JoinEntityDriver implements
                 $field['name'],
                 $field['dataType'],
                 [
-#                    'nullable' => $config['nullable'],
+                // 'nullable' => $config['nullable'],
                     'columnName' => $field['name'],
                     'id' => true,
                 ]
@@ -132,7 +128,7 @@ class JoinEntityDriver implements
             ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity');
 
         $classNames = [];
-       foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
+        foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
             $classNames[] = $auditEntityRepository->generateClassName($className);
         }
 

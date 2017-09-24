@@ -25,18 +25,18 @@ final class TriggerTool implements
     public function generate()
     {
         switch($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()) {
-            case 'mysql':
-                $generator = new Generator\Trigger\MySQL(
-                    $this->getObjectManager(),
-                    $this->getAuditObjectManager(),
-                    $this->config
-                );
-                break;
-            default:
-                throw new Exception(
-                    'Unsupported database platform: '
+        case 'mysql':
+            $generator = new Generator\Trigger\MySQL(
+                $this->getObjectManager(),
+                $this->getAuditObjectManager(),
+                $this->config
+            );
+            break;
+        default:
+            throw new Exception(
+                'Unsupported database platform: '
                     . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
-                );
+            );
                 break;
         }
 
