@@ -51,10 +51,11 @@ class JoinEntityDriver implements
             }
         }
 
+        // @codeCoverageIgnoreStart
         if (! $foundClassName) {
-            throw new \Exception('join entity autoloader not found: ' . $auditClassName);
             return false;
         }
+        // @codeCoverageIgnoreEnd
 
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
@@ -69,6 +70,7 @@ class JoinEntityDriver implements
             }
         }
 
+        // @codeCoverageIgnoreStart
         if (! $foundJoinEntity) {
             throw new Exception(
                 'joinTable '
@@ -79,6 +81,7 @@ class JoinEntityDriver implements
                 . $config['ownerEntity']
             );
         }
+        // @codeCoverageIgnoreEnd
 
         $fields = [];
         foreach ($mapping['joinTable']['joinColumns'] as $column) {
@@ -144,8 +147,11 @@ class JoinEntityDriver implements
      * @param  string $className
      * @return boolean
      */
+
+    // @codeCoverageIgnoreStart
     public function isTransient($className): bool
     {
         return true;
     }
+    // @codeCoverageIgnoreEnd
 }

@@ -33,7 +33,12 @@ return array(
             'ZFTest\Doctrine\Audit\Entity\Artist' => [],
             'ZFTest\Doctrine\Audit\Entity\Album' => [],
         ),
-        'joinEntities' => [],
+        'joinEntities' => [
+            'ZFTest\Doctrine\Audit\Entity\UserToAlbum' => [
+                'ownerEntity' => 'ZFTest\Doctrine\Audit\Entity\Album',
+                'tableName' => 'UserToAlbum',
+            ],
+        ],
     ),
 
     'doctrine' => array(

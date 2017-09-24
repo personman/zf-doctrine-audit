@@ -23,9 +23,11 @@ final class MySQL implements
         $this->setAuditObjectManager($auditObjectManager);
         $this->config = $config;
 
+        // @codeCoverageIgnoreStart
         if ($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             throw new Exception('Invalid database platform for MySQL trigger generator');
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function generate()

@@ -32,12 +32,14 @@ final class TriggerTool implements
                     $this->config
                 );
                 break;
+            // @codeCoverageIgnoreStart
             default:
                 throw new Exception(
                     'Unsupported database platform: '
                     . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
                 );
                 break;
+             // @codeCoverageIgnoreEnd
         }
 
         return $generator->generate();

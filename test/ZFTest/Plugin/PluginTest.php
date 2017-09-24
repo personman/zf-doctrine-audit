@@ -6,6 +6,7 @@ use ZF\Doctrine\Audit\Plugin\AuditPlugin;
 use ZFTest\Doctrine\Audit\Bootstrap;
 use ZFTest\Doctrine\Audit\Entity;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 class PluginTest extends PHPUnit_Framework_TestCase
 {
@@ -43,5 +44,13 @@ class PluginTest extends PHPUnit_Framework_TestCase
         $createdAtCompare = $auditPlugin->getCreatedAt($artist);
 
         $this->assertEquals($createdAt, $createdAtCompare);
+
+        $artist2 = new Entity\Artist();
+        $shouldBeNull = $auditPlugin->getCreatedAt($artist2);
+        $this->assertNull($shouldBeNull);
+
+        $class = new stdClass();
+        $shouldBeNull = $auditPlugin->getCreatedAt($class);
+        $this->assertNull($shouldBeNull);
     }
 }

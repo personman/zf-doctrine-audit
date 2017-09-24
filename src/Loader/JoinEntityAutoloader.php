@@ -108,7 +108,7 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
         foreach ($fields as $field) {
             $setters[] = '$this->' . $field['name']
                 . ' = (isset($data["' . $field['name'] . '"])) ? $data["' . $field['name'] . '"]: null;';
-            $arrayCopy[] = "    \"$fieldName\"" . ' => $this->' . $field['name'];
+            $arrayCopy[] = "    \"" . $field['name'] . "\"" . ' => $this->' . $field['name'];
         }
 
         $auditClass->addMethod(

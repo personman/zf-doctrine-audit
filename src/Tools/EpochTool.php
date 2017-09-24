@@ -53,12 +53,14 @@ final class EpochTool implements
                     $this->getViewRenderer()
                 );
                 break;
+            // @codeCoverageIgnoreStart
             default:
                 throw new Exception(
                     'Unsupported database platform: '
                     . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
                 );
                 break;
+            // @codeCoverageIgnoreEnd
         }
 
         return $generator->generate();

@@ -29,6 +29,14 @@ class AuditPlugin implements
             ->generateClassName(get_class($entity))
             ;
 
+        if (! class_exists($auditEntityClass)) {
+            return;
+        }
+
+        if (! $entity->getId()) {
+            return;
+        }
+
         $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
         $queryBuilder
             ->select('row')
@@ -42,8 +50,10 @@ class AuditPlugin implements
 
         $oldest = $queryBuilder->getQuery()->getOneOrNullResult();
 
-        if ($oldest) {
-            return $oldest->getRevisionEntity()->getRevision()->getCreatedAt();
+        if (! $oldest) {
+            return;
         }
+
+        return $oldest->getRevisionEntity()->getRevision()->getCreatedAt();
     }
 }

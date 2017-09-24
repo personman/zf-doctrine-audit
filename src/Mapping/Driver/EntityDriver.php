@@ -55,7 +55,7 @@ class EntityDriver implements
 
         // Is the passed class name a regular entity?
         if (! $this->getEntityConfigCollection()->containsKey($auditedClassName)) {
-            die($className . ' not found in loadMetadataForClass');
+            return false;
         }
 
         $association = $builder->createManyToOne('revisionEntity', Entity\RevisionEntity::class);
@@ -144,8 +144,10 @@ class EntityDriver implements
      * @param  string $className
      * @return boolean
      */
+    // @codeCoverageIgnoreStart
     public function isTransient($className): bool
     {
         return true;
     }
+    // @codeCoverageIgnoreEnd
 }
