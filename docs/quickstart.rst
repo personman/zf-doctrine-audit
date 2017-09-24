@@ -1,11 +1,6 @@
 Quickstart
 ==========
 
-This repository creates an auditing database to track your target database changes.
-
-Auditing is a complex subject.  I've spent years trying to find an easier answer and by leveraging Object Relational Mapping through Doctrine what we have here is a plugin for new or existing Doctrine Zend Framework projects to implement auditing across a selection of entities or the whole database.
-
-
 To see this in action and begin exploring what this repository can do, follow these steps:
 
 1. Clone the repository outside of a project and cd into the repository directory.
