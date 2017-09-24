@@ -52,5 +52,10 @@ class PluginTest extends PHPUnit_Framework_TestCase
         $class = new stdClass();
         $shouldBeNull = $auditPlugin->getCreatedAt($class);
         $this->assertNull($shouldBeNull);
+
+
+        $collection = $auditPlugin->getRevisionEntityCollection($artist);
+
+        $this->assertEquals(3, sizeof($collection));
     }
 }

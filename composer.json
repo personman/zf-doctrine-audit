@@ -16,12 +16,11 @@
     ],
     "require": {
         "php": ">=7.1",
-        "zendframework/zendframework": "~3.0",
-	"zendframework/zend-servicemanager": "^3.3",
-	"zendframework/zend-authentication": "^2.5.3",
+	    "zendframework/zend-servicemanager": "^3.3",
+	    "zendframework/zend-authentication": "^2.5.3",
         "doctrine/doctrine-orm-module": "^1.1.5",
-	"api-skeletons/zf-doctrine-data-fixture": "^4.0",
-	"api-skeletons/zf-doctrine-repository": "^1.0"
+	    "api-skeletons/zf-doctrine-data-fixture": "^4.0",
+	    "api-skeletons/zf-doctrine-repository": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2",

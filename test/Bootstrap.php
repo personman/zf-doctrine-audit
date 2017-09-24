@@ -37,6 +37,7 @@ class Bootstrap
 {
     protected static $config;
     protected static $epochRun = false;
+    protected static $createDatabase = false;
 
     public static function init()
     {
@@ -85,7 +86,7 @@ class Bootstrap
 
     public static function createDatabase(\Zend\Mvc\Application $application)
     {
-        if (self::$epochRun) {
+        if (self::$createDatabase) {
             return;
         }
 
@@ -146,6 +147,8 @@ class Bootstrap
             `$command`;
             self::$epochRun = true;
         }
+
+        self::$createDatabase = true;
     }
 
     protected static function initAutoloader()

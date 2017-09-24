@@ -130,6 +130,7 @@ EOF;
                 }
             }
 
+            // @codeCoverageIgnoreStart
             if (! $foundJoinEntity) {
                 throw new Exception(
                     'joinTable '
@@ -140,6 +141,7 @@ EOF;
                     . $config['ownerEntity']
                 );
             }
+            // @codeCoverageIgnoreEnd
 
             $fields = [];
             foreach ($mapping['joinTable']['joinColumns'] as $column) {
