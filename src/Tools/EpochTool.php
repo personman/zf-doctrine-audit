@@ -44,20 +44,20 @@ final class EpochTool implements
 
     public function generate()
     {
-        switch($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()) {
-        case 'mysql':
-            $generator = new Generator\Epoch\MySQL(
-                $this->getObjectManager(),
-                $this->getAuditObjectManager(),
-                $this->getAuditOptions(),
-                $this->getViewRenderer()
-            );
-            break;
-        default:
-            throw new Exception(
-                'Unsupported database platform: '
+        switch ($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()) {
+            case 'mysql':
+                $generator = new Generator\Epoch\MySQL(
+                    $this->getObjectManager(),
+                    $this->getAuditObjectManager(),
+                    $this->getAuditOptions(),
+                    $this->getViewRenderer()
+                );
+                break;
+            default:
+                throw new Exception(
+                    'Unsupported database platform: '
                     . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
-            );
+                );
                 break;
         }
 

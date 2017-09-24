@@ -27,9 +27,10 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
     {
         $foundClassName = false;
         foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
-            if ($this->getAuditObjectManager()->getRepository(Entity\AuditEntity::class)->generateClassName($className) == $auditClassName
+            if ($this->getAuditObjectManager()
+                ->getRepository(Entity\AuditEntity::class)
+                ->generateClassName($className) == $auditClassName
             ) {
-
                 $foundClassName = true;
                 break;
             }

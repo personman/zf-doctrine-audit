@@ -27,9 +27,10 @@ class EntityAutoloader extends StandardAutoloader implements
     {
         $foundClassName = false;
         foreach ($this->getEntityConfigCollection() as $className => $classOptions) {
-            if ($this->getAuditObjectManager()->getRepository(Entity\AuditEntity::class)->generateClassName($className) == $auditClassName
+            if ($this->getAuditObjectManager()
+                ->getRepository(Entity\AuditEntity::class)
+                ->generateClassName($className) == $auditClassName
             ) {
-
                 $foundClassName = true;
                 break;
             }

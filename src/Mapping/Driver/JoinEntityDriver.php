@@ -42,9 +42,10 @@ class JoinEntityDriver implements
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         foreach ($this->getJoinEntityConfigCollection() as $targetClassName => $config) {
-            if ($this->getAuditObjectManager()->getRepository(Entity\AuditEntity::class)->generateClassName($targetClassName) == $className
+            if ($this->getAuditObjectManager()
+                ->getRepository(Entity\AuditEntity::class)
+                ->generateClassName($targetClassName) == $className
             ) {
-
                 $foundClassName = true;
                 break;
             }

@@ -56,7 +56,6 @@ final class PostFlush
             $userId = $this->identity->getAuthenticationIdentity()['user_id'];
             $userName = $this->identity->getName();
         } elseif ($this->identity instanceof GuestIdentity) {
-
         } else {
             // Is null or other identity
         }
@@ -65,7 +64,8 @@ final class PostFlush
             ->createNativeQuery(
                 "
                 SELECT close_revision_audit(:userId, :userName, :userEmail, :comment)
-            ", new ResultSetMapping()
+            ",
+                new ResultSetMapping()
             )
             ->setParameter('userId', $userId)
             ->setParameter('userName', $userName)

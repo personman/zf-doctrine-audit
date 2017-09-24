@@ -22,7 +22,10 @@ BEGIN
 END;//
 
 DROP FUNCTION IF EXISTS get_revision_entity_audit;//
-CREATE FUNCTION get_revision_entity_audit(p_targetEntity varchar(255) charset utf8 collate utf8_unicode_ci, p_revisionType varchar(255) charset utf8 collate utf8_unicode_ci)
+CREATE FUNCTION get_revision_entity_audit(
+    p_targetEntity varchar(255) charset utf8 collate utf8_unicode_ci,
+    p_revisionType varchar(255) charset utf8 collate utf8_unicode_ci
+)
     RETURNS bigint
     READS SQL DATA
 BEGIN

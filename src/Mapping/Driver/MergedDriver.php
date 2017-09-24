@@ -46,7 +46,7 @@ class MergedDriver implements
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        foreach($this->drivers as $driver) {
+        foreach ($this->drivers as $driver) {
             if (in_array($className, $driver->getAllClassNames())) {
                 return $driver->loadMetadataForClass($className, $metadata);
             }
@@ -61,7 +61,7 @@ class MergedDriver implements
     public function getAllClassNames(): array
     {
         $classNames = [];
-        foreach($this->drivers as $driver) {
+        foreach ($this->drivers as $driver) {
             $classNames = array_merge($classNames, $driver->getAllClassNames());
         }
 
