@@ -87,14 +87,14 @@
     <comment uuid="4599a595-d851-4ae5-8ff6-daff83679c82" bg-color="#0BC0A9" position-x="12" position-y="28" size-x="0" size-x2="95" size-y="0" size-y2="41" txt-color="#000000"/>
     <comment uuid="cbc63fce-9cf6-4c9d-b515-4ed60773d998" bg-color="#FFFFE0" position-x="371" position-y="14" size-x="0" size-x2="168" size-y="-3" size-y2="59" txt-color="#000000"/>
     <comment uuid="dd68da58-cb12-44e7-8298-3b024f71b85a" bg-color="#D1D1D1" position-x="13" position-y="84" size-x="0" size-x2="213" size-y="0" size-y2="30" txt-color="#000000"/>
-    <entity uuid="01aab066-93a9-4361-8250-f0e9825c27ab" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="228" position-y="50" size-x="0" size-x2="115" size-y="0" size-y2="101"/>
+    <entity uuid="01aab066-93a9-4361-8250-f0e9825c27ab" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="245" position-y="12" size-x="0" size-x2="115" size-y="0" size-y2="101"/>
     <entity uuid="29489e46-8c0a-40c0-86c2-1630dca4471c" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="27" position-y="33" size-x="0" size-x2="116" size-y="0" size-y2="101"/>
     <entity uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10" bg-color="#FFFFFF" hdr-color="#D2D2D2" position-x="232" position-y="58" size-x="0" size-x2="119" size-y="0" size-y2="87"/>
-    <entity uuid="9275ce9d-a97a-43f1-a885-ac228111c3ad" bg-color="#FFFFFF" hdr-color="#0BC0A9" position-x="428" position-y="113" size-x="0" size-x2="77" size-y="0" size-y2="45"/>
-    <entity uuid="bc795385-090b-48bb-8198-f1ae5bb83799" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="406" position-y="71" size-x="0" size-x2="98" size-y="0" size-y2="59"/>
-    <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" bg-color="#FFB79D" size-x="46" size-x2="760" size-y="22" size-y2="557"/>
-    <region uuid="4157623f-f7a6-422f-868f-b9523093bc45" bg-color="#EAE4F1" position-x="473" position-y="205" size-x="0" size-x2="236" size-y="0" size-y2="165"/>
-    <region uuid="b5142677-953e-44e4-8c4c-53db7247cc20" bg-color="#FDEBEF" position-x="-21" position-y="11" size-x="0" size-x2="730" size-y="0" size-y2="179"/>
-    <region uuid="ce5d972e-f016-41b2-9354-52b3830031e9" bg-color="#D6EDFF" position-x="-148" position-y="252" size-x="-128" size-x2="609" size-y="47" size-y2="277"/>
+    <entity uuid="9275ce9d-a97a-43f1-a885-ac228111c3ad" bg-color="#FFFFFF" hdr-color="#0BC0A9" position-x="427" position-y="79" size-x="0" size-x2="77" size-y="0" size-y2="45"/>
+    <entity uuid="bc795385-090b-48bb-8198-f1ae5bb83799" bg-color="#FFFFFF" hdr-color="#8EDBF1" position-x="180" position-y="155" size-x="0" size-x2="98" size-y="0" size-y2="59"/>
+    <module uuid="c10e1ef0-1783-4ac2-9b4a-a252992d86c5" bg-color="#FFB79D" size-x="46" size-x2="553" size-y="22" size-y2="511"/>
+    <region uuid="4157623f-f7a6-422f-868f-b9523093bc45" bg-color="#EAE4F1" position-x="299" position-y="212" size-x="0" size-x2="236" size-y="0" size-y2="165"/>
+    <region uuid="b5142677-953e-44e4-8c4c-53db7247cc20" bg-color="#FDEBEF" position-x="-21" position-y="11" size-x="0" size-x2="561" size-y="0" size-y2="179"/>
+    <region uuid="ce5d972e-f016-41b2-9354-52b3830031e9" bg-color="#D6EDFF" position-x="-148" position-y="252" size-x="-128" size-x2="388" size-y="47" size-y2="237"/>
   </visual-data>
 </skipper>
