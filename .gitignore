@@ -12,3 +12,4 @@ test/output
 composer.phar
 composer.lock
 test/coverage
+test/audit_triggers.sql
