@@ -25,6 +25,7 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
      */
     public function loadClass($auditClassName, $type)
     {
+        $foundClassName = false;
         foreach ($this->getJoinEntityConfigCollection() as $className => $config) {
             if ($this->getAuditObjectManager()
                 ->getRepository(Entity\AuditEntity::class)

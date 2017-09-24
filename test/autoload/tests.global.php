@@ -2,6 +2,13 @@
 
 namespace ZFTest\Doctrine\Audit;
 
+$host = getenv('DB_HOST');
+if ($host !== false) {
+    $ormParams['host'] = $host;
+} else {
+    $host = 'mysql';
+}
+
 return array(
     'service_manager' => array(
         'invokables' => array(
@@ -26,20 +33,31 @@ return array(
             'ZFTest\Doctrine\Audit\Entity\Artist' => [],
             'ZFTest\Doctrine\Audit\Entity\Album' => [],
         ),
+        'joinEntities' => [],
     ),
 
     'doctrine' => array(
         'connection' => array(
             'orm_default' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
                 'params' => array(
-                    'memory' => true,
+                    'user'  => 'root',
+                    'password'  => '',
+                    'host'  => $host,
+                    'dbname'  => 'test',
+                    'charset' => 'utf8',
+                    'collate' => "utf8_unicode_ci",
                 ),
             ),
             'orm_zf_doctrine_audit' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
                 'params' => array(
-                    'memory' => true,
+                    'user'  => 'root',
+                    'password'  => '',
+                    'host'  => $host,
+                    'dbname'  => 'audit',
+                    'charset' => 'utf8',
+                    'collate' => "utf8_unicode_ci",
                 ),
             ),
         ),

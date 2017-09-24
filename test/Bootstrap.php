@@ -11,9 +11,25 @@ use DoctrineDataFixtureModule\Loader\ServiceLocatorAwareLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\DataFixtures\Loader;
+use MySQLi;
+use ZF\Doctrine\Audit\Tools\TriggerTool;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
+
+
+$localConfig = include(__DIR__ . '/autoload/tests.global.php');
+
+foreach ($localConfig['doctrine']['connection'] as $name => $dbConfig) {
+    #print_r($dbConfig['params']);die();
+    $mysqli = new MySQLi($dbConfig['params']['host'], $dbConfig['params']['user'], '');
+    $mysqli->query('DROP DATABASE IF EXISTS ' . $dbConfig['params']['dbname']);
+    $mysqli->query('CREATE DATABASE ' . $dbConfig['params']['dbname']);
+    $mysqli->close();
+
+    echo 'created ' . $dbConfig['params']['dbname'] . "\n";
+}
+
 
 class Bootstrap
 {
@@ -67,14 +83,16 @@ class Bootstrap
     public static function createDatabase(\Zend\Mvc\Application $application)
     {
         // build test database
-        $entityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_default');
-        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
-        $schemaTool->createSchema($entityManager->getMetadataFactory()->getAllMetadata());
+        $objectManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_default');
+        // Add tables
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($objectManager);
+        $schemaTool->updateSchema($objectManager->getMetadataFactory()->getAllMetadata());
 
         // build audit database
         $auditEntityManager = $application->getServiceManager()->get('doctrine.entitymanager.orm_zf_doctrine_audit');
+        // Create database
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($auditEntityManager);
-        $schemaTool->createSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
+        $schemaTool->updateSchema($auditEntityManager->getMetadataFactory()->getAllMetadata());
 
         // Run audit fixtures
         $dataFixtureManager = $application->getServiceManager()
@@ -87,8 +105,16 @@ class Bootstrap
         foreach ($dataFixtureManager->getAll() as $fixture) {
             $loader->addFixture($fixture);
         }
-
         $executor->execute($loader->getFixtures(), true);
+
+        // Build audit triggers
+        $triggerTool = $application->getServiceManager()->get(TriggerTool::class);
+        file_put_contents('audit_triggers.sql', $triggerTool->generate());
+        // Static connect values - find a way to run triggers not from command line
+        $localConfig = include(__DIR__ . '/autoload/tests.global.php');
+        $ormDefaultConfig = $localConfig['doctrine']['connection']['orm_default']['params'];
+        $command = "mysql -u root -h " . $ormDefaultConfig['host'] . " test < audit_triggers.sql";
+        `$command`;
     }
 
     protected static function initAutoloader()

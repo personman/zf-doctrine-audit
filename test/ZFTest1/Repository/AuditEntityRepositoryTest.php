@@ -5,7 +5,6 @@ namespace ZFTest\Doctrine\Audit\Service;
 use ZFTest\Doctrine\Audit\Bootstrap;
 use PHPUnit_Framework_TestCase;
 use ZFTest\Doctrine\Audit\Entity;
-use ZF\Doctrine\Audit\Entity\AuditEntity;
 
 class AuditEntityRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -17,7 +16,7 @@ class AuditEntityRepositoryTest extends PHPUnit_Framework_TestCase
 
         $artist = new Entity\Artist();
 
-        $auditClass = $auditObjectManager->getRepository(AuditEntity::class)
+        $auditClass = $auditObjectManager->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
             ->generateClassName(get_class($artist));
 
         $this->assertEquals('ZF\\Doctrine\\Audit\\RevisionEntity\\ZFTest_Doctrine_Audit_Entity_Artist', $auditClass);
