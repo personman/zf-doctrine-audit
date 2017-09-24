@@ -226,6 +226,9 @@ AFTER INSERT ON {$tableName}
 FOR EACH ROW
 BEGIN
 
+DECLARE isPHP BOOL;
+DECLARE closeRevisionAudit BOOL;
+
 INSERT INTO {$auditDatabase}.{$auditTableName} (
 EOF;
             $sql .= '`' . implode('`, `', $fields) . '`';
@@ -236,6 +239,13 @@ EOF;
             $sql .= <<<EOF
 , get_revision_entity_audit('$addSlashesClassName', 'insert')
 );
+
+SELECT @zf_doctrine_audit_is_php INTO isPHP;
+
+IF isPHP IS NULL THEN
+    SELECT close_revision_audit(0, 'not orm', '', '') INTO closeRevisionAudit;
+END IF;
+
 END;//
 
 DROP TRIGGER IF EXISTS {$tableName}_update_audit;//
@@ -243,6 +253,9 @@ CREATE TRIGGER {$tableName}_update_audit
 AFTER UPDATE ON {$tableName}
 FOR EACH ROW
 BEGIN
+
+DECLARE isPHP BOOL;
+DECLARE closeRevisionAudit BOOL;
 
 INSERT INTO {$auditDatabase}.{$auditTableName} (
 EOF;
@@ -254,6 +267,13 @@ EOF;
             $sql .= <<<EOF
 , get_revision_entity_audit('$addSlashesClassName', 'update')
 );
+
+SELECT @zf_doctrine_audit_is_php INTO isPHP;
+
+IF isPHP IS NULL THEN
+    SELECT close_revision_audit(0, 'not orm', '', '') INTO closeRevisionAudit;
+END IF;
+
 END;//
 
 DROP TRIGGER IF EXISTS {$tableName}_delete_audit;//
@@ -261,6 +281,9 @@ CREATE TRIGGER {$tableName}_delete_audit
 AFTER DELETE ON {$tableName}
 FOR EACH ROW
 BEGIN
+
+DECLARE isPHP BOOL;
+DECLARE closeRevisionAudit BOOL;
 
 INSERT INTO {$auditDatabase}.{$auditTableName} (
 EOF;
@@ -272,6 +295,13 @@ EOF;
             $sql .= <<<EOF
 , get_revision_entity_audit('$addSlashesClassName', 'delete')
 );
+
+SELECT @zf_doctrine_audit_is_php INTO isPHP;
+
+IF isPHP IS NULL THEN
+    SELECT close_revision_audit(0, 'not orm', '', '') INTO closeRevisionAudit;
+END IF;
+
 END;//
 
 EOF;

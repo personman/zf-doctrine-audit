@@ -53,6 +53,8 @@ return [
                 => Tools\EpochToolFactory::class,
             EventListener\PostFlush::class
                 => EventListener\PostFlushFactory::class,
+            EventListener\PostConnect::class
+                => InvokableFactory::class,
         ],
     ],
 

@@ -9,6 +9,7 @@ use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\ServiceManager\ServiceManager;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Events;
+use Doctrine\DBAL\Events as DBALEvents;
 
 class Module implements
     ConfigProviderInterface,
@@ -52,6 +53,7 @@ class Module implements
         $mergedDriver->addDriver($serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\JoinEntityDriver'));
         $mergedDriver->register();
 
+        $postConnectListener = $serviceManager->get(EventListener\PostConnect::class);
         $postFlushListener = $serviceManager->get(EventListener\PostFlush::class);
 
         $objectManager = $serviceManager->get($config['target_object_manager']);
@@ -64,6 +66,9 @@ class Module implements
             ->getMetadataDriverImpl()
             ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity')
             ;
+
+        $objectManager->getEventManager()
+            ->addEventListener([DBALEvents::postConnect], $postConnectListener);
 
         $objectManager->getEventManager()
             ->addEventListener([Events::postFlush], $postFlushListener);
