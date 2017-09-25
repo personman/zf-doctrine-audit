@@ -1,6 +1,6 @@
+..  _unittest:
 Unit Testing
 ============
-..  _unittest:
 
 Because zf-doctrine-audit uses stored procedures sqlite isn't enough
 for unit testing.  To setup unit testing follow these steps:
