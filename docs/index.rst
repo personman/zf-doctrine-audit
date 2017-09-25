@@ -15,6 +15,4 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
     database
     epoch
     changes
-    advanced
     unittest
-
