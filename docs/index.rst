@@ -11,7 +11,8 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
     :caption: Table of Contents
 
     quickstart
-    basics
+    getting_started
+    create_audit_database
     advanced
     unittest
 
