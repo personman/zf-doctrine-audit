@@ -81,4 +81,10 @@ Example::
         ],
     ],
 
+
+Audit Object Manager
+--------------------
+
+You must setup a second object manager within your ORM application.  See `multiple object managers`_ for help.
+
 .. _multiple object managers: http://blog.tomhanderson.com/2016/03/zf2-doctrine-configure-second-object.html
