@@ -1,5 +1,5 @@
-Quickstart
-==========
+Quickstart with Unit Testing
+============================
 
 To see this in action and begin exploring what this repository can do, follow these steps:
 
