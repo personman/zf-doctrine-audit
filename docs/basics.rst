@@ -56,8 +56,12 @@ When running the epoch tool data will be processed in batches to conserve memory
 entities
 ^^^^^^^^
 
-This associative array of entity names inside target_object_manager will be audited and an audit table will be created for each.  This array takes the format
-``'Db\Entity\User' => [],``
+This associative array of entity names inside target_object_manager will be audited and an audit table will be created for each.  This array takes the format::
+
+  'entities' => [
+    'Db\Entity\User' => [],
+  ]
+
 The empty array for the entity name is reserved for future development.  It may be used to store route information for canonical paths.
 
 
