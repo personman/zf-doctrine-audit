@@ -15,7 +15,7 @@ follows this pattern (found in ``ZF\Doctrine\Audit\Repository\AuditEntityReposit
 
   return "ZF\\Doctrine\\Audit\\RevisionEntity\\" . str_replace('\\', '_', $entityName);
 
-So an entity in the target object manager named ``Db\Entity\User`` will be audited by an entity in the audit database named 
+So an entity in the target object manager named ``Db\Entity\User`` will be audited by an entity in the audit object manager named 
 ``ZF\\Doctrine\\Audit\\RevisionEntity\\Db_Entity_User``.  Access to this entity through the audit object manager works as you
 would expect in a doctrine object manager::
 
