@@ -12,7 +12,7 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
 
     quickstart
     getting_started
-    create_audit_database
+    database
     advanced
     unittest
 
