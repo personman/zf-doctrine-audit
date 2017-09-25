@@ -1,4 +1,4 @@
-API-Skeletons/zf-doctrine-audit
+`API-Skeletons/zf-doctrine-audit <http://github.com/API-Skeletons/zf-doctrine-audit>`_
 ===============================
 
 This repository creates an auditing database to track your target database changes.
