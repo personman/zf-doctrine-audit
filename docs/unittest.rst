@@ -1,5 +1,6 @@
 Unit Testing
 ============
+..  _unittest:
 
 Because zf-doctrine-audit uses stored procedures sqlite isn't enough
 for unit testing.  To setup unit testing follow these steps:
@@ -14,3 +15,4 @@ After the unit tests have ran the database will still exist.
 Connect to mysql with ``mysql -u root -h mysql test`` to explore the database.  
 The audit database has the audit trails for the test data.  
 Manipulating data in the test database is immediatly audited in the audit database.
+
