@@ -14,5 +14,6 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
     getting_started
     database
     epoch
+    how_auditing_works
     changes
     unittest
