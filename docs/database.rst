@@ -1,6 +1,11 @@
 Audit Database & Triggers
 =========================
 
+This walkthrough creates a new audit database.  For changes to a target database see :doc:`changes`.
+
+Create Database
+---------------
+
 With your application configured with a new entity manager for the audit 
 database and your configuration containing the entities you want to audit, it's time to create your audit database::
 
