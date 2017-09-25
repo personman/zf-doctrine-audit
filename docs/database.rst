@@ -1,5 +1,5 @@
-Audit Database & Triggers
-=========================
+Create Audit Database & Triggers
+================================
 
 This walkthrough creates a new audit database.  For changes to a target database see :doc:`changes`.
 
