@@ -15,6 +15,9 @@ Piping this output looks like::
 The epoch tool uses the configuration variable ``epoch_import_limit``.  This variable will paginate the epoch audit record creation.
 The default of 200 is acceptable.  
 
+Currently the epoch tool will create an epoch record for every row in the database in the entities configured to be audited.  
+
 **TODO:
-The epoch tool will only create an epoch record for rows which do not already have an epoch record.
+The epoch tool SHOULD only create an epoch record for rows which do not already have an epoch record.
 **
+
