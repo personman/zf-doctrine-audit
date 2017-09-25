@@ -35,6 +35,6 @@ Automatically populated when created, the ``createdAt`` field stores the time th
 complete audit record.
 
 There are several other fields which can be populated to help track who made a change and why the chane was made.  
-``comment``, ``userId``, ``userName``, and ``userEmail`` can be set through the :doc:`revision_comment`_ when working with the database 
+``comment``, ``userId``, ``userName``, and ``userEmail`` can be set through the :doc:`revision_comment` when working with the database 
 through the ORM in PHP.  These values will default to empty with a userName of 'not orm' when making changes to the database outside
 of PHP such as through a terminal connection.
