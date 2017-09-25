@@ -8,9 +8,9 @@ Like the trigger tool, creating an epoch should be piped to the database, but fo
  
   php public/index.php audit:epoch:import
 
-Piping this output looks like
+Piping this output looks like::
 
-  php public/index.php audit:epoch:import | mysql -u user -p123 -h mysql audit
+  php public/index.php audit:epoch:import | mysql -u user -p123 -h mysql audit_database
 
 The epoch tool uses the configuration variable ``epoch_import_limit``.  This variable will paginate the epoch audit record creation.
 The default of 200 is acceptable.  
