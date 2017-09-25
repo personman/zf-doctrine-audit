@@ -18,3 +18,4 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
     revision_comment
     changes
     unittest
+    internals
