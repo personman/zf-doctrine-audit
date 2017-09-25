@@ -69,6 +69,7 @@ The format is the namespace of the owner entity followed by the table name (in m
 The ownerEntity is required as is the tableName.  This information is used to find the join mapping in the metadata.
 
 Example::
+
     'joinEntities' => [
         'Db\Entity\ArtistToArtistGroup' => [
             'ownerEntity' => 'Db\Entity\ArtistGroup',
