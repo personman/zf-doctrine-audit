@@ -1,5 +1,5 @@
-Create Audit Database
-=====================
+Audit Database & Triggers
+=========================
 
 With your application configured with a new entity manager for the audit 
 database and your configuration containing the entities you want to audit, it's time to create your audit database::
@@ -32,7 +32,7 @@ code but instead the trigger code is output by the tool.  We will be piping this
 
   php public/index.php audit:trigger-tool:create
 
-Then pipe this output to the target database such as 
+Then pipe this output to the target database such as::
 
   php public/index.php audit:trigger-tool:create | mysql -u user -p123 -h mysql target_database
 
