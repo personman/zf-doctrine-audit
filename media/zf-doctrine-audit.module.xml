@@ -46,7 +46,6 @@
       </entity>
       <entity name="\ZF\Doctrine\Audit\Entity\RevisionEntity" local-name="RevisionEntity" namespace="\ZF\Doctrine\Audit\Entity\" uuid="6ca485eb-5d19-4dc4-a7b6-c097b5ceff10">
         <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="75596bcf-2718-4ebd-ac51-905010451d56"/>
-        <field name="title" type="string" uuid="b88472b5-0df8-49af-9680-a6bf71344e3f"/>
         <field name="revision_id" type="bigint" required="true" uuid="ed15e1b7-0717-409e-9009-5caf5d5aa394"/>
         <field name="target_entity_id" type="bigint" required="true" uuid="d0e53f12-ff1c-4155-8aa3-ab0ade905712"/>
         <field name="revision_type_id" type="bigint" required="true" uuid="539f9adc-ef65-4c9f-ab46-774dc755a041"/>

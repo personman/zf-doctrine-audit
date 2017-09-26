@@ -29,11 +29,6 @@ return [
         'epoch_import_limit' => 200,
 
         /**
-         * The authentication service for fetching the user_entity_class_name
-         */
-        'authentication_service' => 'Zend\Authentication\AuthenticationService',
-
-        /**
          * The joinEntities array is a list of pseudo entity names representing a many
          * to many join across entities.
          *

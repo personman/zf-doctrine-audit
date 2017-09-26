@@ -8,11 +8,6 @@ namespace ZF\Doctrine\Audit\Entity;
 class RevisionEntity
 {
     /**
-     * @var string
-     */
-    private $title;
-
-    /**
      * @var integer
      */
     private $id;
@@ -37,30 +32,6 @@ class RevisionEntity
      */
     public function __construct()
     {
-    }
-
-    /**
-     * Set title
-     *
-     * @param string $title
-     *
-     * @return RevisionEntity
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
     }
 
     /**

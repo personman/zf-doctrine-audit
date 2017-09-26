@@ -4,7 +4,6 @@
     <id name="id" type="bigint">
       <generator strategy="AUTO"/>
     </id>
-    <field name="title" type="string" nullable="true"/>
     <many-to-one field="revision" target-entity="ZF\Doctrine\Audit\Entity\Revision" inversed-by="revisionEntity">
       <join-columns>
         <join-column name="revision_id" referenced-column-name="id" nullable="false"/>
