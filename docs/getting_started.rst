@@ -41,8 +41,8 @@ audit_object_manager
 This is the service manager alias for the object manager for the audit database.  You will need to add this object manager to your ORM project.  See `multiple object managers`_ for help.
 
 
-audit_table_name_prefix and audit_table_name_suffix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+audit_table_name_prefix & audit_table_name_suffix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These configuration variables allow you to add a prefix or suffix to the generated tables in the audit database.
 
