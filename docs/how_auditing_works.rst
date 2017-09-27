@@ -19,6 +19,12 @@ There are two distinct object which share the same name.  For every entity you a
 There is also a RevisionEntity Entity and this entity is referenced from every "Revision Entity" as ->getRevisionEntity().  The "Revision Entity" stores the data, the RevisionEntity Entity is like a receipt for an audit.  
 
 
+"Revision Entity"
+-----------------
+
+These store the audit data for a revision.  To get the audit data use a ArraySerializable Interface:  ``$revisionEntity->getArrayCopy();``
+
+
 RevisionEntity Entity
 ---------------------
 
