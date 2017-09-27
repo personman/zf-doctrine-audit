@@ -11,8 +11,16 @@ called ``revisionEntity_id``.  This is a foreign key to the RevisionEntity_Audit
 for each set of changes to a row of audited data.  
 
 
+Disambiguating RevisionEntity
+-----------------------------
+
+There are two distinct object which share the same name.  For every entity you audit there is a table which stores the entity data at the time an audit occurs.  There are usually many of these tables and the data they store are called "Revision Entity" data.  
+
+There is also a RevisionEntity Entity and this entity is referenced from every "Revision Entity" as ->getRevisionEntity().  The "Revision Entity" stores the data, the RevisionEntity Entity is like a receipt for an audit.  
+
+
 RevisionEntity Entity
---------------------------
+---------------------
 
 This table is a reciept for the change audited in the audit database.  The RevisionEntity_Audit table is used by the 
 ``ZF\Doctrine\Audit\Entity\RevisioinEntity`` entity.  This entity has a relationship to ``ZF\Doctrine\Audit\Entity\RevisionType`` 
