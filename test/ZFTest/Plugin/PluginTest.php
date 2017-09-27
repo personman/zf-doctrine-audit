@@ -27,7 +27,7 @@ class PluginTest extends PHPUnit_Framework_TestCase
         $objectManager->persist($artist);
         $objectManager->flush();
 
-        $createdAt = $auditPlugin->getCreatedAt($artist);
+        $createdAt = $auditPlugin->getOldestRevisionEntity($artist)->getRevisionEntity()->getRevision()->getCreatedAt();
 
         sleep(2);
 
@@ -41,21 +41,19 @@ class PluginTest extends PHPUnit_Framework_TestCase
         $objectManager->persist($artist);
         $objectManager->flush();
 
-        $createdAtCompare = $auditPlugin->getCreatedAt($artist);
+        $createdAtCompare = $auditPlugin->getOldestRevisionEntity($artist);
 
-        $this->assertEquals($createdAt, $createdAtCompare);
+        $this->assertEquals($createdAt, $createdAtCompare->getRevisionEntity()->getRevision()->getCreatedAt());
 
         $artist2 = new Entity\Artist();
-        $shouldBeNull = $auditPlugin->getCreatedAt($artist2);
+        $shouldBeNull = $auditPlugin->getOldestRevisionEntity($artist2);
         $this->assertNull($shouldBeNull);
 
         $class = new stdClass();
-        $shouldBeNull = $auditPlugin->getCreatedAt($class);
+        $shouldBeNull = $auditPlugin->getOldestRevisionEntity($class);
         $this->assertNull($shouldBeNull);
 
-
         $collection = $auditPlugin->getRevisionEntityCollection($artist);
-
         $this->assertEquals(3, sizeof($collection));
     }
 }

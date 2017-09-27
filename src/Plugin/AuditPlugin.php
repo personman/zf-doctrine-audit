@@ -39,13 +39,13 @@ class AuditPlugin implements
         }
         // @codeCoverageIgnoreEnd
 
-        $metadata = $this->repository->getObjectManager()->getClassMetadata(get_class($entity));
-        $identifiers = $metadata->getIdentifierFieldNames();
+        $identifierValues = $this->repository
+            ->getObjectManager()
+            ->getClassMetadata(get_class($entity))
+            ->getIdentifierValues($entity);
 
-        foreach ($identifiers as $id) {
-            if (! $entity->{"get$id"}()) {
-                return;
-            }
+        if (! $identifierValues) {
+            return;
         }
 
         $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
@@ -57,8 +57,12 @@ class AuditPlugin implements
             ->orderBy('revision.createdAt', 'ASC')
             ;
 
-        foreach ($identifiers as $id) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq("row.$id", $entity->{"get$id"}()));
+        foreach ($identifierValues as $id => $value) {
+            if (is_null($value)) {
+                $queryBuilder->andWhere($queryBuilder->expr()->isnull("row.$id", $value));
+            } else {
+                $queryBuilder->andWhere($queryBuilder->expr()->eq("row.$id", $value));
+            }
         }
 
         return new ArrayCollection($queryBuilder->getQuery()->getResult());
@@ -67,7 +71,7 @@ class AuditPlugin implements
     /**
      * @return datetime
      */
-    public function getCreatedAt($entity)
+    public function getOldestRevisionEntity($entity)
     {
         $auditEntityClass = $this->getAuditObjectManager()
             ->getRepository(AuditEntity::class)
@@ -76,15 +80,6 @@ class AuditPlugin implements
 
         if (! class_exists($auditEntityClass)) {
             return;
-        }
-
-        $metadata = $this->repository->getObjectManager()->getClassMetadata(get_class($entity));
-        $identifiers = $metadata->getIdentifierFieldNames();
-
-        foreach ($identifiers as $id) {
-            if (! $entity->{"get$id"}()) {
-                return;
-            }
         }
 
         $queryBuilder = $this->getAuditObjectManager()->createQueryBuilder();
@@ -97,8 +92,21 @@ class AuditPlugin implements
             ->setMaxResults(1)
             ;
 
-        foreach ($identifiers as $id) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq("row.$id", $entity->{"get$id"}()));
+        $identifierValues = $this->repository
+            ->getObjectManager()
+            ->getClassMetadata(get_class($entity))
+            ->getIdentifierValues($entity);
+
+        if (! $identifierValues) {
+            return;
+        }
+
+        foreach ($identifierValues as $id => $value) {
+            if (is_null($value)) {
+                $queryBuilder->andWhere($queryBuilder->expr()->isnull("row.$id", $value));
+            } else {
+                $queryBuilder->andWhere($queryBuilder->expr()->eq("row.$id", $value));
+            }
         }
 
         $oldest = $queryBuilder->getQuery()->getOneOrNullResult();
@@ -109,6 +117,6 @@ class AuditPlugin implements
         }
         // @codeCoverageIgnoreEnd
 
-        return $oldest->getRevisionEntity()->getRevision()->getCreatedAt();
+        return $oldest;
     }
 }
