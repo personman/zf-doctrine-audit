@@ -23,13 +23,6 @@ class RevisionEntityFixture implements
 
     public function load(ObjectManager $auditObjectManager)
     {
-        // Create a revision to associate with field revision
-        $revision = new Entity\Revision();
-        $revision->setCreatedAt(new DateTime());
-        $revision->setComment('Data Fixture Import');
-
-        $auditObjectManager->persist($revision);
-
         foreach ($this->getEntityConfigCollection() as $className => $route) {
             $targetEntity = $auditObjectManager
                 ->getRepository(Entity\TargetEntity::class)

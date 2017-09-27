@@ -4,7 +4,7 @@
     <id name="id" type="bigint">
       <generator strategy="AUTO"/>
     </id>
-    <field name="createdAt" type="datetime" length="6" nullable="false"/>
+    <field name="createdAt" type="datetime" length="6" nullable="false" column-definition="datetime(6)"/>
     <field name="comment" type="text" nullable="true"/>
     <field name="userId" type="bigint" nullable="true"/>
     <field name="userName" type="string" nullable="true"/>

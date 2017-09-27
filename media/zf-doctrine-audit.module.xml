@@ -33,7 +33,11 @@
     <region namespace="\ZF\Doctrine\Audit\Entity\" caption="Revision" uuid="b5142677-953e-44e4-8c4c-53db7247cc20">
       <entity name="\ZF\Doctrine\Audit\Entity\Revision" local-name="Revision" namespace="\ZF\Doctrine\Audit\Entity\" uuid="29489e46-8c0a-40c0-86c2-1630dca4471c">
         <field name="id" type="bigint" required="true" unique="true" primary="true" auto-increment="true" uuid="a1f8cbb8-0385-4b4d-955b-dcfdb1c01130"/>
-        <field name="createdAt" type="datetime" size="6" required="true" uuid="cc7f69b1-6399-49bc-ad01-5ee20d8e5b96"/>
+        <field name="createdAt" type="datetime" size="6" default="" required="true" uuid="cc7f69b1-6399-49bc-ad01-5ee20d8e5b96">
+          <orm-attributes>
+            <attribute name="column-definition">datetime(6)</attribute>
+          </orm-attributes>
+        </field>
         <field name="comment" type="text" uuid="b8fd392e-4f36-4a7a-a8a1-530db0f03e8a"/>
         <field name="userId" type="bigint" uuid="8a637c4a-d6fc-4d51-95a5-d28fe4cd554b"/>
         <field name="userName" type="string" uuid="6da51fb5-fbb5-4cf2-93c3-adda743fd00b"/>

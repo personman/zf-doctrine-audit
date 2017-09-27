@@ -87,7 +87,7 @@ BEGIN
             createdAt,
             connectionId
         ) VALUES (
-            now(), CONNECTION_ID()
+            now(6), CONNECTION_ID()
         );
 
         SET revisionId = LAST_INSERT_ID();

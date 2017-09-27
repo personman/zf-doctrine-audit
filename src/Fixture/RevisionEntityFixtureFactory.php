@@ -5,6 +5,7 @@ namespace ZF\Doctrine\Audit\Fixture;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use ZF\Doctrine\Audit\RevisionComment;
 
 class RevisionEntityFixtureFactory implements
     FactoryInterface
