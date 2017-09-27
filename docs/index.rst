@@ -15,6 +15,7 @@ Auditing is a complex subject.  I've spent years trying to find an easier answer
     database
     epoch
     how_auditing_works
+    audit_plugin
     revision_comment
     changes
     unittest
