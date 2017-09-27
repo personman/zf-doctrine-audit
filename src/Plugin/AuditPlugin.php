@@ -71,7 +71,7 @@ class AuditPlugin implements
     /**
      * @return datetime
      */
-    public function getOldestRevisionEntity($entity)
+    public function getBoundingRevisionEntity($entity, $direction)
     {
         $auditEntityClass = $this->getAuditObjectManager()
             ->getRepository(AuditEntity::class)
@@ -88,7 +88,7 @@ class AuditPlugin implements
             ->from($auditEntityClass, 'row')
             ->innerJoin('row.revisionEntity', 'revisionEntity')
             ->innerJoin('revisionEntity.revision', 'revision')
-            ->orderBy('revision.createdAt', 'ASC')
+            ->orderBy('revision.createdAt', $direction)
             ->setMaxResults(1)
             ;
 
@@ -118,5 +118,15 @@ class AuditPlugin implements
         // @codeCoverageIgnoreEnd
 
         return $oldest;
+    }
+
+    public function getNewestRevisionEntity($entity)
+    {
+        return $this->getBoundingRevisionEntity($entity, 'desc');
+    }
+
+    public function getOldestRevisionEntity($entity)
+    {
+        return $this->getBoundingRevisionEntity($entity, 'asc');
     }
 }

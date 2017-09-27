@@ -7,6 +7,7 @@ use ZFTest\Doctrine\Audit\Bootstrap;
 use ZFTest\Doctrine\Audit\Entity;
 use PHPUnit_Framework_TestCase;
 use stdClass;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class PluginTest extends PHPUnit_Framework_TestCase
 {
@@ -44,6 +45,14 @@ class PluginTest extends PHPUnit_Framework_TestCase
         $createdAtCompare = $auditPlugin->getOldestRevisionEntity($artist);
 
         $this->assertEquals($createdAt, $createdAtCompare->getRevisionEntity()->getRevision()->getCreatedAt());
+
+
+        $oldestEntity = $auditPlugin->getNewestRevisionEntity($artist);
+        $doctrineHydrator = new DoctrineHydrator($auditPlugin->getAuditObjectManager(), false);
+        $values = $doctrineHydrator->extract($oldestEntity);
+
+        $this->assertEquals('testGetCreatedAt3', $values['name']);
+
 
         $artist2 = new Entity\Artist();
         $shouldBeNull = $auditPlugin->getOldestRevisionEntity($artist2);
