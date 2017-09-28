@@ -20,6 +20,6 @@ class AuditEntityRepositoryTest extends PHPUnit_Framework_TestCase
         $auditClass = $auditObjectManager->getRepository(AuditEntity::class)
             ->generateClassName(get_class($artist));
 
-        $this->assertEquals('ZF\\Doctrine\\Audit\\RevisionEntity\\ZFTest_Doctrine_Audit_Entity_Artist', $auditClass);
+        $this->assertEquals('ZF\\Doctrine\\Audit\\AuditEntity\\ZFTest_Doctrine_Audit_Entity_Artist', $auditClass);
     }
 }

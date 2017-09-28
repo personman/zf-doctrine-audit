@@ -56,9 +56,9 @@ final class JoinEntityAutoloader extends StandardAutoloader implements
         }
 
         $auditClass = new ClassGenerator();
-        $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\RevisionEntity");
+        $auditClass->setNamespaceName("ZF\\Doctrine\\Audit\\AuditEntity");
         $auditClass->setName($auditClassName);
-        $auditClass->setExtendedClass('ZF\Doctrine\Audit\RevisionEntity\AbstractAudit');
+        $auditClass->setExtendedClass('ZF\Doctrine\Audit\AuditEntity\AbstractAudit');
 
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);

@@ -33,7 +33,7 @@ class MergedDriver implements
         $this->getAuditObjectManager()
             ->getConfiguration()
             ->getMetadataDriverImpl()
-            ->addDriver($this, 'ZF\Doctrine\Audit\RevisionEntity');
+            ->addDriver($this, 'ZF\Doctrine\Audit\AuditEntity');
 
         return $this;
     }

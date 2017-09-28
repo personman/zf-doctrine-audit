@@ -71,7 +71,7 @@ class AuditPlugin implements
     /**
      * @return datetime
      */
-    public function getBoundingRevisionEntity($entity, $direction)
+    private function getBoundingRevisionEntity($entity, $direction)
     {
         $auditEntityClass = $this->getAuditObjectManager()
             ->getRepository(AuditEntity::class)
