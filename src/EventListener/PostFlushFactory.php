@@ -12,15 +12,9 @@ class PostFlushFactory implements
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        try {
-            $authentication = $container->get('authentication');
-            $identity = $authentication->getIdentity();
-        } catch (ServiceNotFoundException $e) {
-            $identity = null;
-        }
-
+        $authentication = $container->get('authentication');
         $revisionComment = $container->get(RevisionComment::class);
 
-        return new $requestedName($revisionComment, $identity);
+        return new $requestedName($revisionComment, $authentication);
     }
 }

@@ -2,7 +2,8 @@
 
 namespace ZF\Doctrine\Audit\EventListener;
 
-use Zend\Permissions\Rbac\AbstractRole as AbstractRbacRole;
+use Zend\Authentication\AuthenticationService;
+
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Query\ResultSetMapping;
 use ZF\OAuth2\Doctrine\Identity\AuthenticatedIdentity as OAuth2AuthenticatedIdentity;
@@ -23,14 +24,14 @@ use ZF\Doctrine\Audit\RevisionComment;
  */
 final class PostFlush
 {
-    private $identity;
+    private $authenticationService;
     private $revisionComment;
     private $enable = true;
 
-    public function __construct(RevisionComment $revisionComment, AbstractRbacRole $identity = null)
+    public function __construct(RevisionComment $revisionComment, AuthenticationService $authenticationService = null)
     {
         $this->revisionComment = $revisionComment;
-        $this->identity = $identity;
+        $this->authenticationService = $authenticationService;
     }
 
     public function postFlush(PostFlushEventArgs $args)
@@ -39,8 +40,8 @@ final class PostFlush
         $userName = 'guest';
         $userEmail = '';
 
-        if ($this->identity instanceof OAuth2AuthenticatedIdentity) {
-            $user = $this->identity->getUser();
+        if ($this->authenticationService->getIdentity() instanceof OAuth2AuthenticatedIdentity) {
+            $user = $this->authenticationService->getIdentity()->getUser();
 
             if (method_exists($user, 'getId')) {
                 $userId = $user->getId();
@@ -53,10 +54,10 @@ final class PostFlush
             if (method_exists($user, 'getEmail')) {
                 $userEmail = $user->getEmail();
             }
-        } elseif ($this->identity instanceof AuthenticatedIdentity) {
-            $userId = $this->identity->getAuthenticationIdentity()['user_id'];
-            $userName = $this->identity->getName();
-        } elseif ($this->identity instanceof GuestIdentity) {
+        } elseif ($this->authenticationService->getIdentity() instanceof AuthenticatedIdentity) {
+            $userId = $this->authenticationService->getIdentity()->getAuthenticationIdentity()['user_id'];
+            $userName = $this->authenticationService->getIdentity()->getName();
+        } elseif ($this->authenticationService->getIdentity() instanceof GuestIdentity) {
         } else {
             // Is null or other identity
         }
