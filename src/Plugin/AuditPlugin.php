@@ -2,17 +2,28 @@
 
 namespace ZF\Doctrine\Audit\Plugin;
 
+use Zend\Authentication\AuthenticationService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query\ResultSetMapping;
 use ZF\Doctrine\Repository\Plugin\PluginInterface;
 use ZF\Doctrine\Audit\Persistence\AuditObjectManagerAwareInterface;
 use ZF\Doctrine\Audit\Persistence\AuditObjectManagerAwareTrait;
+use ZF\Doctrine\Audit\Persistence\RevisionAuditToolAwareInterface;
+use ZF\Doctrine\Audit\Persistence\RevisionAuditToolAwareTrait;
+use ZF\Doctrine\Audit\Persistence\RevisionCommentAwareInterface;
+use ZF\Doctrine\Audit\Persistence\RevisionCommentAwareTrait;
 use ZF\Doctrine\Audit\Entity\AuditEntity;
-use Doctrine\Common\Collections\ArrayCollection;
+use ZF\Doctrine\Audit\RevisionComment;
 
 class AuditPlugin implements
     PluginInterface,
-    AuditObjectManagerAwareInterface
+    AuditObjectManagerAwareInterface,
+    RevisionAuditToolAwareInterface,
+    RevisionCommentAwareInterface
 {
     use AuditObjectManagerAwareTrait;
+    use RevisionAuditToolAwareTrait;
+    use RevisionCommentAwareTrait;
 
     protected $repository;
     protected $parameters;

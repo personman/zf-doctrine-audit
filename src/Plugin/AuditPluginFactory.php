@@ -4,6 +4,8 @@ namespace ZF\Doctrine\Audit\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
+use ZF\Doctrine\Audit\RevisionComment;
+use ZF\Doctrine\Audit\Tools\RevisionAuditTool;
 
 class AuditPluginFactory implements
     FactoryInterface
@@ -14,6 +16,8 @@ class AuditPluginFactory implements
 
         $instance = new $requestedName($options);
         $instance->setAuditObjectManager($container->get($config['audit_object_manager']));
+        $instance->setRevisionComment($container->get(RevisionComment::class));
+        $instance->setRevisionAuditTool($container->get(RevisionAuditTool::class));
 
         return $instance;
     }
