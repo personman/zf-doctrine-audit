@@ -51,6 +51,8 @@ return [
                 => Tools\TriggerToolFactory::class,
             Tools\EpochTool::class
                 => Tools\EpochToolFactory::class,
+            Tools\RevisionAuditTool::class
+                => Tools\RevisionAuditToolFactory::class,
             EventListener\PostFlush::class
                 => EventListener\PostFlushFactory::class,
             EventListener\PostConnect::class
