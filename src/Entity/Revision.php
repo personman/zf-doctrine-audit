@@ -23,6 +23,21 @@ class Revision
     private $userId;
 
     /**
+     * @var string
+     */
+    private $userName;
+
+    /**
+     * @var string
+     */
+    private $userEmail;
+
+    /**
+     * @var integer
+     */
+    private $connectionId;
+
+    /**
      * @var integer
      */
     private $id;
@@ -33,17 +48,11 @@ class Revision
     private $revisionEntity;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $fieldRevision;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->fieldRevision = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -119,94 +128,6 @@ class Revision
     }
 
     /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add revisionEntity
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
-     *
-     * @return Revision
-     */
-    public function addRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
-    {
-        $this->revisionEntity[] = $revisionEntity;
-
-        return $this;
-    }
-
-    /**
-     * Remove revisionEntity
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
-     */
-    public function removeRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
-    {
-        $this->revisionEntity->removeElement($revisionEntity);
-    }
-
-    /**
-     * Get revisionEntity
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRevisionEntity()
-    {
-        return $this->revisionEntity;
-    }
-
-    /**
-     * Add fieldRevision
-     *
-     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
-     *
-     * @return Revision
-     */
-    public function addFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
-    {
-        $this->fieldRevision[] = $fieldRevision;
-
-        return $this;
-    }
-
-    /**
-     * Remove fieldRevision
-     *
-     * @param \ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision
-     */
-    public function removeFieldRevision(\ZF\Doctrine\Audit\Entity\FieldRevision $fieldRevision)
-    {
-        $this->fieldRevision->removeElement($fieldRevision);
-    }
-
-    /**
-     * Get fieldRevision
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getFieldRevision()
-    {
-        return $this->fieldRevision;
-    }
-    /**
-     * @var string
-     */
-    private $userName;
-
-    /**
-     * @var string
-     */
-    private $userEmail;
-
-
-    /**
      * Set userName
      *
      * @param string $userName
@@ -253,4 +174,73 @@ class Revision
     {
         return $this->userEmail;
     }
+
+    /**
+     * Set connectionId
+     *
+     * @param integer $connectionId
+     *
+     * @return Revision
+     */
+    public function setConnectionId($connectionId)
+    {
+        $this->connectionId = $connectionId;
+
+        return $this;
+    }
+
+    /**
+     * Get connectionId
+     *
+     * @return integer
+     */
+    public function getConnectionId()
+    {
+        return $this->connectionId;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Add revisionEntity
+     *
+     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
+     *
+     * @return Revision
+     */
+    public function addRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
+    {
+        $this->revisionEntity[] = $revisionEntity;
+
+        return $this;
+    }
+
+    /**
+     * Remove revisionEntity
+     *
+     * @param \ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity
+     */
+    public function removeRevisionEntity(\ZF\Doctrine\Audit\Entity\RevisionEntity $revisionEntity)
+    {
+        $this->revisionEntity->removeElement($revisionEntity);
+    }
+
+    /**
+     * Get revisionEntity
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRevisionEntity()
+    {
+        return $this->revisionEntity;
+    }
 }
+

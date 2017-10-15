@@ -4,6 +4,7 @@ namespace ZFTest\Doctrine\Audit\Service;
 
 use ZFTest\Doctrine\Audit\Bootstrap;
 use PHPUnit_Framework_TestCase;
+use ZF\Doctrine\Audit\RevisionComment;
 
 class RevisionCommentTest extends PHPUnit_Framework_TestCase
 {
@@ -11,7 +12,7 @@ class RevisionCommentTest extends PHPUnit_Framework_TestCase
     {
         $serviceManager = Bootstrap::getApplication()->getServiceManager();
 
-        $revisionComment = $serviceManager->get('ZF\Doctrine\Audit\Service\RevisionComment');
+        $revisionComment = $serviceManager->get(RevisionComment::class);
         $revisionComment->setComment('unittest');
 
         $this->assertEquals('unittest', $revisionComment->getComment());
@@ -21,7 +22,7 @@ class RevisionCommentTest extends PHPUnit_Framework_TestCase
     {
         $serviceManager = Bootstrap::getApplication()->getServiceManager();
 
-        $revisionComment = $serviceManager->get('ZF\Doctrine\Audit\Service\RevisionComment');
+        $revisionComment = $serviceManager->get(RevisionComment::class);
 
         $revisionComment->setComment('unittest');
         $this->assertEquals('unittest', $revisionComment->getComment());

@@ -10,5 +10,15 @@
         <join-column name="artist_id" referenced-column-name="id"/>
       </join-columns>
     </many-to-one>
+    <many-to-many field="user" target-entity="ZFTest\Doctrine\Audit\Entity\User" inversed-by="album">
+      <join-table name="UserToAlbum">
+        <join-columns>
+          <join-column name="album_id" referenced-column-name="id" nullable="false"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="user_id" referenced-column-name="id" nullable="false"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
   </entity>
 </doctrine-mapping>

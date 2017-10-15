@@ -7,6 +7,9 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
 use Zend\ServiceManager\ServiceManager;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Events;
+use Doctrine\DBAL\Events as DBALEvents;
 
 class Module implements
     ConfigProviderInterface,
@@ -15,14 +18,8 @@ class Module implements
     public function getConsoleUsage(Console $console)
     {
         return array(
-            'zf-doctrine-audit:schema-tool:update' => 'Get update SQL for audit',
-            'zf-doctrine-audit:data-fixture:import' => 'Create audit entity fixtures. '
-                . 'Run before target entity fixtures.',
-            'zf-doctrine-audit:epoch:import --mysql' => 'Create epoch stored procedures',
-            'zf-doctrine-audit:field:activate --entity="entity\name" --field="fieldName" [--comment=]' =>
-                'Activate a field for auditing',
-            'zf-doctrine-audit:field:deactivate --entity="entity\name" --field="fieldName" [--comment=]' =>
-                'Deactivate a field from auditing',
+            'audit:trigger-tool:create' => 'Create trigger SQL for target database',
+            'audit:epoch:import' => 'Create epoch stored procedures SQL for target database',
         );
     }
 
@@ -46,8 +43,34 @@ class Module implements
     {
         $serviceManager = $e->getParam('application')->getServiceManager();
 
-        $serviceManager->get('ZF\Doctrine\Audit\Loader\AuditAutoloader')->register();
-        $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\AuditDriver')->register();
-        $serviceManager->get('ZF\Doctrine\Audit\EventListener\LogRevision')->register();
+        $config = $serviceManager->get('config')['zf-doctrine-audit'];
+
+        $serviceManager->get('ZF\Doctrine\Audit\Loader\EntityAutoloader')->register();
+        $serviceManager->get('ZF\Doctrine\Audit\Loader\JoinEntityAutoloader')->register();
+
+        $mergedDriver = $serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\MergedDriver');
+        $mergedDriver->addDriver($serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\EntityDriver'));
+        $mergedDriver->addDriver($serviceManager->get('ZF\Doctrine\Audit\Mapping\Driver\JoinEntityDriver'));
+        $mergedDriver->register();
+
+        $postConnectListener = $serviceManager->get(EventListener\PostConnect::class);
+        $postFlushListener = $serviceManager->get(EventListener\PostFlush::class);
+
+        $objectManager = $serviceManager->get($config['target_object_manager']);
+        $auditObjectManager = $serviceManager->get($config['audit_object_manager']);
+
+        // Driver for zf-doctrine-audit entites
+        $xmlDriver = new XmlDriver(__DIR__ . '/config/orm');
+        $auditObjectManager
+            ->getConfiguration()
+            ->getMetadataDriverImpl()
+            ->addDriver($xmlDriver, 'ZF\Doctrine\Audit\Entity')
+            ;
+
+        $objectManager->getEventManager()
+            ->addEventListener([DBALEvents::postConnect], $postConnectListener);
+
+        $objectManager->getEventManager()
+            ->addEventListener([Events::postFlush], $postFlushListener);
     }
 }

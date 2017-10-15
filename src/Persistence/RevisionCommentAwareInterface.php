@@ -2,7 +2,7 @@
 
 namespace ZF\Doctrine\Audit\Persistence;
 
-use ZF\Doctrine\Audit\Service\RevisionComment;
+use ZF\Doctrine\Audit\RevisionComment;
 
 interface RevisionCommentAwareInterface
 {

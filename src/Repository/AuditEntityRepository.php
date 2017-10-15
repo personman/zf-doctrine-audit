@@ -8,6 +8,6 @@ class AuditEntityRepository extends EntityRepository
 {
     public function generateClassName($entityName)
     {
-        return "ZF\\Doctrine\\Audit\\RevisionEntity\\" . str_replace('\\', '_', $entityName);
+        return "ZF\\Doctrine\\Audit\\AuditEntity\\" . str_replace('\\', '_', $entityName);
     }
 }

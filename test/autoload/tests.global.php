@@ -2,6 +2,13 @@
 
 namespace ZFTest\Doctrine\Audit;
 
+$host = getenv('DB_HOST');
+if ($host !== false) {
+    $ormParams['host'] = $host;
+} else {
+    $host = 'mysql';
+}
+
 return array(
     'service_manager' => array(
         'invokables' => array(
@@ -14,7 +21,6 @@ return array(
         'target_object_manager' => 'doctrine.entitymanager.orm_default',
         'audit_object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
 
-        'datetime_format' => 'r',
         'paginator_limit' => 999999,
 
         'authentication_service' => 'Zend\Authentication\AuthenticationService',
@@ -26,20 +32,36 @@ return array(
             'ZFTest\Doctrine\Audit\Entity\Artist' => [],
             'ZFTest\Doctrine\Audit\Entity\Album' => [],
         ),
+        'joinEntities' => [
+            'ZFTest\Doctrine\Audit\Entity\UserToAlbum' => [
+                'ownerEntity' => 'ZFTest\Doctrine\Audit\Entity\Album',
+                'tableName' => 'UserToAlbum',
+            ],
+        ],
     ),
 
     'doctrine' => array(
         'connection' => array(
             'orm_default' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
                 'params' => array(
-                    'memory' => true,
+                    'user'  => 'root',
+                    'password'  => '',
+                    'host'  => $host,
+                    'dbname'  => 'test',
+                    'charset' => 'utf8',
+                    'collate' => "utf8_unicode_ci",
                 ),
             ),
             'orm_zf_doctrine_audit' => array(
-                'driverClass' => 'Doctrine\DBAL\Driver\PDOSqlite\Driver',
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
                 'params' => array(
-                    'memory' => true,
+                    'user'  => 'root',
+                    'password'  => '',
+                    'host'  => $host,
+                    'dbname'  => 'audit',
+                    'charset' => 'utf8',
+                    'collate' => "utf8_unicode_ci",
                 ),
             ),
         ),

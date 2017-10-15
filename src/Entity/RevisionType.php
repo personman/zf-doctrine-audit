@@ -10,7 +10,7 @@ class RevisionType
     /**
      * @var string
      */
-    private $revisionType;
+    private $name;
 
     /**
      * @var integer
@@ -31,27 +31,27 @@ class RevisionType
     }
 
     /**
-     * Set revisionType
+     * Set name
      *
-     * @param string $revisionType
+     * @param string $name
      *
      * @return RevisionType
      */
-    public function setRevisionType($revisionType)
+    public function setName($name)
     {
-        $this->revisionType = $revisionType;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get revisionType
+     * Get name
      *
      * @return string
      */
-    public function getRevisionType()
+    public function getName()
     {
-        return $this->revisionType;
+        return $this->name;
     }
 
     /**
@@ -97,33 +97,5 @@ class RevisionType
     {
         return $this->revisionEntity;
     }
-    /**
-     * @var string
-     */
-    private $name;
-
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return RevisionType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 }
+

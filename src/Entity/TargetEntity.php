@@ -18,6 +18,11 @@ class TargetEntity
     private $tableName;
 
     /**
+     * @var boolean
+     */
+    private $isJoinTable = '0';
+
+    /**
      * @var integer
      */
     private $id;
@@ -30,26 +35,25 @@ class TargetEntity
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
+    private $child;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
     private $revisionEntity;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \ZF\Doctrine\Audit\Entity\TargetEntity
      */
-    private $identifier;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $field;
+    private $parent;
 
     /**
      * Constructor
      */
     public function __construct()
     {
+        $this->child = new \Doctrine\Common\Collections\ArrayCollection();
         $this->revisionEntity = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->identifier = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->field = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -101,6 +105,30 @@ class TargetEntity
     }
 
     /**
+     * Set isJoinTable
+     *
+     * @param boolean $isJoinTable
+     *
+     * @return TargetEntity
+     */
+    public function setIsJoinTable($isJoinTable)
+    {
+        $this->isJoinTable = $isJoinTable;
+
+        return $this;
+    }
+
+    /**
+     * Get isJoinTable
+     *
+     * @return boolean
+     */
+    public function getIsJoinTable()
+    {
+        return $this->isJoinTable;
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -132,6 +160,40 @@ class TargetEntity
     public function getAuditEntity()
     {
         return $this->auditEntity;
+    }
+
+    /**
+     * Add child
+     *
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $child
+     *
+     * @return TargetEntity
+     */
+    public function addChild(\ZF\Doctrine\Audit\Entity\TargetEntity $child)
+    {
+        $this->child[] = $child;
+
+        return $this;
+    }
+
+    /**
+     * Remove child
+     *
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $child
+     */
+    public function removeChild(\ZF\Doctrine\Audit\Entity\TargetEntity $child)
+    {
+        $this->child->removeElement($child);
+    }
+
+    /**
+     * Get child
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChild()
+    {
+        return $this->child;
     }
 
     /**
@@ -169,70 +231,27 @@ class TargetEntity
     }
 
     /**
-     * Add identifier
+     * Set parent
      *
-     * @param \ZF\Doctrine\Audit\Entity\Identifier $identifier
+     * @param \ZF\Doctrine\Audit\Entity\TargetEntity $parent
      *
      * @return TargetEntity
      */
-    public function addIdentifier(\ZF\Doctrine\Audit\Entity\Identifier $identifier)
+    public function setParent(\ZF\Doctrine\Audit\Entity\TargetEntity $parent = null)
     {
-        $this->identifier[] = $identifier;
+        $this->parent = $parent;
 
         return $this;
     }
 
     /**
-     * Remove identifier
+     * Get parent
      *
-     * @param \ZF\Doctrine\Audit\Entity\Identifier $identifier
+     * @return \ZF\Doctrine\Audit\Entity\TargetEntity
      */
-    public function removeIdentifier(\ZF\Doctrine\Audit\Entity\Identifier $identifier)
+    public function getParent()
     {
-        $this->identifier->removeElement($identifier);
-    }
-
-    /**
-     * Get identifier
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * Add field
-     *
-     * @param \ZF\Doctrine\Audit\Entity\Field $field
-     *
-     * @return TargetEntity
-     */
-    public function addField(\ZF\Doctrine\Audit\Entity\Field $field)
-    {
-        $this->field[] = $field;
-
-        return $this;
-    }
-
-    /**
-     * Remove field
-     *
-     * @param \ZF\Doctrine\Audit\Entity\Field $field
-     */
-    public function removeField(\ZF\Doctrine\Audit\Entity\Field $field)
-    {
-        $this->field->removeElement($field);
-    }
-
-    /**
-     * Get field
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getField()
-    {
-        return $this->field;
+        return $this->parent;
     }
 }
+

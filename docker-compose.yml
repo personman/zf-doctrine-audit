@@ -1,0 +1,19 @@
+php:
+    build: .
+    dockerfile: docker/build/php-fpm
+    links:
+      - mysql
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/var/www/html
+      - ./config/php.ini:/usr/local/etc/php/conf.d/custom.ini
+mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql
+      - ./config/my.cnf:/etc/mysql/conf.d/custom.cnf

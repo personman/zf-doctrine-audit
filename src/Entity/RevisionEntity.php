@@ -8,19 +8,9 @@ namespace ZF\Doctrine\Audit\Entity;
 class RevisionEntity
 {
     /**
-     * @var string
-     */
-    private $title;
-
-    /**
      * @var integer
      */
     private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $revisionEntityIdentifierValue;
 
     /**
      * @var \ZF\Doctrine\Audit\Entity\Revision
@@ -42,31 +32,6 @@ class RevisionEntity
      */
     public function __construct()
     {
-        $this->revisionEntityIdentifierValue = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Set title
-     *
-     * @param string $title
-     *
-     * @return RevisionEntity
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
     }
 
     /**
@@ -77,40 +42,6 @@ class RevisionEntity
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Add revisionEntityIdentifierValue
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
-     *
-     * @return RevisionEntity
-     */
-    public function addRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
-    {
-        $this->revisionEntityIdentifierValue[] = $revisionEntityIdentifierValue;
-
-        return $this;
-    }
-
-    /**
-     * Remove revisionEntityIdentifierValue
-     *
-     * @param \ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue
-     */
-    public function removeRevisionEntityIdentifierValue(\ZF\Doctrine\Audit\Entity\RevisionEntityIdentifierValue $revisionEntityIdentifierValue)
-    {
-        $this->revisionEntityIdentifierValue->removeElement($revisionEntityIdentifierValue);
-    }
-
-    /**
-     * Get revisionEntityIdentifierValue
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRevisionEntityIdentifierValue()
-    {
-        return $this->revisionEntityIdentifierValue;
     }
 
     /**
@@ -185,3 +116,4 @@ class RevisionEntity
         return $this->revisionType;
     }
 }
+

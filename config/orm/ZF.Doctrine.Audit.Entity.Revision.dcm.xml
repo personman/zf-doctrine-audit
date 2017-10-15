@@ -4,12 +4,12 @@
     <id name="id" type="bigint">
       <generator strategy="AUTO"/>
     </id>
-    <field name="createdAt" type="datetime" length="6" nullable="false"/>
+    <field name="createdAt" type="datetime" length="6" nullable="false" column-definition="datetime(6)"/>
     <field name="comment" type="text" nullable="true"/>
     <field name="userId" type="bigint" nullable="true"/>
     <field name="userName" type="string" nullable="true"/>
     <field name="userEmail" type="string" nullable="true"/>
-    <one-to-many field="fieldRevision" target-entity="ZF\Doctrine\Audit\Entity\FieldRevision" mapped-by="revision"/>
+    <field name="connectionId" type="bigint" nullable="true"/>
     <one-to-many field="revisionEntity" target-entity="ZF\Doctrine\Audit\Entity\RevisionEntity" mapped-by="revision"/>
   </entity>
 </doctrine-mapping>
