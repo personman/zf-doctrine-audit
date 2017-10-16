@@ -81,3 +81,9 @@ Epoch Tool
 ----------
 
 This tool creates temporary stored procedures, runs them, then deletes them.  This method is the fastest way to copy data from the target database into the audit database.  The stored procedures output status information while they work.
+
+
+RevisionAudit Tool
+------------------
+
+This tool is responsible for closing the Revision_Audit table after changes have been made.  This tool can be called on its own.  This tool is called in `postFlush()`.
