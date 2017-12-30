@@ -1,5 +1,3 @@
-
-
 SELECT 'Begin <?= $this->targetEntity->getTableName(); ?> offset <?= $this->offset; ?> rows <?= $this->limit; ?>' as '', now() as '';
 
 DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_<?= $this->targetEntity->getTableName(); ?>;
@@ -42,7 +40,20 @@ BEGIN
             `<?= implode("`,\n            `", array_keys($this->columns)); ?>`,
             `revisionEntity_id`
         ) SELECT
-            var_<?= implode(",\n            var_", array_keys($this->columns)); ?>,
+            <?php
+            foreach ($this->columns as $columnName => $columnType) {
+                switch ($columnType) {
+                    case 'longtext':
+                    case 'varchar(255)':
+                        echo 'convert(var_' . $columnName . " using utf8),\n";
+                        break;
+                    default:
+                        echo 'var_' . $columnName . ",\n";
+                        break;
+
+                }
+            }
+            ?>
             var_revision_entity_id;
 
     END LOOP read_loop;
