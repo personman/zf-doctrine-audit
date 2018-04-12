@@ -243,4 +243,3 @@ class Revision
         return $this->revisionEntity;
     }
 }
-

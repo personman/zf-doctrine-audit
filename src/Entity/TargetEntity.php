@@ -254,4 +254,3 @@ class TargetEntity
         return $this->parent;
     }
 }
-

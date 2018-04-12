@@ -1,5 +1,3 @@
-
-
 SELECT 'Begin Artist offset 0 rows 200' as '', now() as '';
 
 DROP PROCEDURE IF EXISTS zf_doctrine_audit_epoch_Artist;
@@ -40,7 +38,7 @@ BEGIN
             `revisionEntity_id`
         ) SELECT
             var_id,
-            var_name,
+convert(var_name using utf8),
             var_revision_entity_id;
 
     END LOOP read_loop;

@@ -32,7 +32,7 @@ class EntityDriver implements
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
 
-        $identifiers = array();
+        $identifiers = [];
 
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
@@ -57,11 +57,11 @@ class EntityDriver implements
             $builder->addField(
                 $fieldName,
                 $auditedClassMetadata->getTypeOfField($fieldName),
-                array(
+                [
                     'columnName' => $auditedClassMetadata->getColumnName($fieldName),
                     'nullable' => true,
                     'quoted' => true
-                )
+                ]
             );
 
             if ($auditedClassMetadata->isIdentifier($fieldName)) {
@@ -80,7 +80,7 @@ class EntityDriver implements
                     $builder->addField(
                         $mapping['fieldName'],
                         'bigint',
-                        array('nullable' => true, 'columnName' => $field)
+                        ['nullable' => true, 'columnName' => $field]
                     );
                 }
             } elseif (isset($mapping['joinColumnFieldNames'])) {
@@ -89,7 +89,7 @@ class EntityDriver implements
                     $builder->addField(
                         $mapping['fieldName'],
                         'bigint',
-                        array('nullable' => true, 'columnName' => $field)
+                        ['nullable' => true, 'columnName' => $field]
                     );
                 }
             } else {

@@ -1,23 +1,23 @@
 <?php
 
-return array(
-    'doctrine' => array(
-        'connection' => array(
-            'orm_default' => array(
-                'params' => array(
+return [
+    'doctrine' => [
+        'connection' => [
+            'orm_default' => [
+                'params' => [
                     'charset' => 'utf8',
-                ),
-            ),
-            'orm_zf_doctrine_audit' => array(
+                ],
+            ],
+            'orm_zf_doctrine_audit' => [
                 'eventmanager' => 'orm_zf_doctrine_audit',
-                'params' => array(
+                'params' => [
                     'charset' => 'utf8',
-                ),
-            ),
-        ),
+                ],
+            ],
+        ],
 
-        'configuration' => array(
-            'orm_zf_doctrine_audit' => array(
+        'configuration' => [
+            'orm_zf_doctrine_audit' => [
                 'metadata_cache'    => 'array',
                 'query_cache'       => 'array',
                 'result_cache'      => 'array',
@@ -25,25 +25,25 @@ return array(
                 'generate_proxies'  => true,
                 'proxy_dir'         => 'data/DoctrineORMModule/Proxy',
                 'proxy_namespace'   => 'DoctrineORMModule\Proxy',
-                'filters'           => array()
-            ),
-        ),
+                'filters'           => []
+            ],
+        ],
 
-        'driver' => array(
-            'orm_zf_doctrine_audit' => array(
+        'driver' => [
+            'orm_zf_doctrine_audit' => [
                 'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
-            ),
-        ),
+            ],
+        ],
 
-        'entitymanager' => array(
-            'orm_zf_doctrine_audit' => array(
+        'entitymanager' => [
+            'orm_zf_doctrine_audit' => [
                 'connection'    => 'orm_zf_doctrine_audit',
                 'configuration' => 'orm_zf_doctrine_audit',
-            ),
-        ),
+            ],
+        ],
 
-        'eventmanager' => array(
-            'orm_zf_doctrine_audit' => array(),
-        ),
-    ),
-);
+        'eventmanager' => [
+            'orm_zf_doctrine_audit' => [],
+        ],
+    ],
+];

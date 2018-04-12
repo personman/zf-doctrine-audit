@@ -9,15 +9,15 @@ if ($host !== false) {
     $host = 'mysql';
 }
 
-return array(
-    'service_manager' => array(
-        'invokables' => array(
+return [
+    'service_manager' => [
+        'invokables' => [
             'Zend\Authentication\AuthenticationService' =>
                 'Zend\Authentication\AuthenticationService',
-        ),
-    ),
+        ],
+    ],
 
-    'zf-doctrine-audit' => array(
+    'zf-doctrine-audit' => [
         'target_object_manager' => 'doctrine.entitymanager.orm_default',
         'audit_object_manager' => 'doctrine.entitymanager.orm_zf_doctrine_audit',
 
@@ -28,58 +28,57 @@ return array(
         'table_name_prefix' => '',
         'table_name_suffix' => '_audit',
 
-        'entities' => array(
+        'entities' => [
             'ZFTest\Doctrine\Audit\Entity\Artist' => [],
             'ZFTest\Doctrine\Audit\Entity\Album' => [],
-        ),
+        ],
         'joinEntities' => [
             'ZFTest\Doctrine\Audit\Entity\UserToAlbum' => [
                 'ownerEntity' => 'ZFTest\Doctrine\Audit\Entity\Album',
                 'tableName' => 'UserToAlbum',
             ],
         ],
-    ),
+    ],
 
-    'doctrine' => array(
-        'connection' => array(
-            'orm_default' => array(
+    'doctrine' => [
+        'connection' => [
+            'orm_default' => [
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'params' => array(
+                'params' => [
                     'user'  => 'root',
                     'password'  => '',
                     'host'  => $host,
                     'dbname'  => 'test',
                     'charset' => 'utf8',
                     'collate' => "utf8_unicode_ci",
-                ),
-            ),
-            'orm_zf_doctrine_audit' => array(
+                ],
+            ],
+            'orm_zf_doctrine_audit' => [
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'params' => array(
+                'params' => [
                     'user'  => 'root',
                     'password'  => '',
                     'host'  => $host,
                     'dbname'  => 'audit',
                     'charset' => 'utf8',
                     'collate' => "utf8_unicode_ci",
-                ),
-            ),
-        ),
+                ],
+            ],
+        ],
 
-        'driver' => array(
-            'zftest_driver' => array(
+        'driver' => [
+            'zftest_driver' => [
                 'class' => 'Doctrine\\ORM\\Mapping\\Driver\\XmlDriver',
-                'paths' => array(
+                'paths' => [
                     0 => __DIR__ . '/../ZFTest/config/orm',
-                ),
-            ),
-            'orm_default' => array(
+                ],
+            ],
+            'orm_default' => [
                 'class' => 'Doctrine\\ORM\\Mapping\\Driver\\DriverChain',
-                'drivers' => array(
+                'drivers' => [
                     'ZFTest\\Doctrine\\Audit\\Entity' => 'zftest_driver',
-                ),
-            ),
-        ),
-    ),
-);
-
+                ],
+            ],
+        ],
+    ],
+];

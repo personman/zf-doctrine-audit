@@ -15,13 +15,13 @@ class Module implements
 {
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     public function getConfig()
@@ -31,17 +31,17 @@ class Module implements
 
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
-                'doctrine.entitymanager.orm_zf_doctrine_audit' 
+        return [
+            'factories' => [
+                'doctrine.entitymanager.orm_zf_doctrine_audit'
                     => new EntityManagerFactory('orm_zf_doctrine_audit'),
-                'doctrine.connection.orm_zf_doctrine_audit' 
+                'doctrine.connection.orm_zf_doctrine_audit'
                     => new DBALConnectionFactory('orm_zf_doctrine_audit'),
-                'doctrine.configuration.orm_zf_doctrine_audit' 
+                'doctrine.configuration.orm_zf_doctrine_audit'
                     => new ConfigurationFactory('orm_zf_doctrine_audit'),
-                'doctrine.eventmanager.orm_zf_doctrine_audit' 
+                'doctrine.eventmanager.orm_zf_doctrine_audit'
                     => new EventManagerFactory('orm_zf_doctrine_audit'),
-            ),
-        );
+            ],
+        ];
     }
 }

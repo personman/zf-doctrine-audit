@@ -98,4 +98,3 @@ class RevisionType
         return $this->revisionEntity;
     }
 }
-

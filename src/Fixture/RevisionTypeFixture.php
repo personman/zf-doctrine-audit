@@ -12,12 +12,12 @@ class RevisionTypeFixture implements
     public function load(ObjectManager $auditObjectManager)
     {
         // Add RevisionType
-        foreach (array('insert', 'update', 'delete', 'epoch') as $name) {
+        foreach (['insert', 'update', 'delete', 'epoch'] as $name) {
             $revisionType = $auditObjectManager
                 ->getRepository('ZF\Doctrine\Audit\Entity\RevisionType')
                 ->findOneBy(
                     [
-                    'name' => $name,
+                        'name' => $name,
                     ]
                 );
 

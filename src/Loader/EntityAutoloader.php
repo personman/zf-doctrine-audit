@@ -55,14 +55,14 @@ class EntityAutoloader extends StandardAutoloader implements
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
         $auditClass->addMethod(
             'getRevisionEntity',
-            array(),
+            [],
             MethodGenerator::FLAG_PUBLIC,
             " return \$this->revisionEntity;"
         );
 
         $auditClass->addMethod(
             'setRevisionEntity',
-            array('value'),
+            ['value'],
             MethodGenerator::FLAG_PUBLIC,
             " \$this->revisionEntity = \$value;\n\nreturn \$this;
             "
@@ -80,13 +80,13 @@ class EntityAutoloader extends StandardAutoloader implements
 
         $auditClass->addMethod(
             'getAssociationMappings',
-            array(),
+            [],
             MethodGenerator::FLAG_PUBLIC,
             "return unserialize('" . serialize($auditedClassMetadata->getAssociationMappings()) . "');"
         );
 
         // Add exchange array method
-        $setters = array();
+        $setters = [];
         foreach ($fields as $fieldName) {
             $setters[] = '$this->' . $fieldName
                 . ' = (isset($data["' . $fieldName . '"])) ? $data["' . $fieldName . '"]: null;';
@@ -95,14 +95,14 @@ class EntityAutoloader extends StandardAutoloader implements
 
         $auditClass->addMethod(
             'getArrayCopy',
-            array(),
+            [],
             MethodGenerator::FLAG_PUBLIC,
             "return array(\n" . implode(",\n", $arrayCopy) . "\n);"
         );
 
         $auditClass->addMethod(
             'exchangeArray',
-            array('data'),
+            ['data'],
             MethodGenerator::FLAG_PUBLIC,
             implode("\n", $setters)
         );
@@ -110,9 +110,9 @@ class EntityAutoloader extends StandardAutoloader implements
         // Add function to return the entity class this entity audits
         $auditClass->addMethod(
             'getAuditedEntityClass',
-            array(),
+            [],
             MethodGenerator::FLAG_PUBLIC,
-            " return '" .  addslashes($className) . "';"
+            " return '" . addslashes($className) . "';"
         );
 
         eval($auditClass->generate());
