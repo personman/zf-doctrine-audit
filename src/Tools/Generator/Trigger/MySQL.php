@@ -182,7 +182,7 @@ EOF;
 
             $fields = [];
 
-            foreach ($classMetadata->getFieldNames() as $fieldName) {
+            foreach ($classMetadata->getColumnNames() as $fieldName) {
                 $fields[] = $fieldName;
             }
 
