@@ -32,6 +32,7 @@ final class MySQL implements
 
     public function generate()
     {
+        $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
         /**
          * These two functions are used to group changes into revisions.
          */
@@ -48,7 +49,7 @@ CREATE FUNCTION close_revision_audit(
 ) RETURNS boolean
 BEGIN
 
-    UPDATE audit.Revision_Audit SET
+    UPDATE {$auditDatabase}.Revision_Audit SET
         connectionId = null,
         userId = p_userId,
         userName = p_userName,
@@ -73,17 +74,17 @@ BEGIN
     DECLARE targetEntityId BIGINT DEFAULT 0;
 
     SELECT id INTO revisionTypeId
-    FROM audit.RevisionType_Audit
+    FROM {$auditDatabase}.RevisionType_Audit
     WHERE name = p_revisionType
     LIMIT 1;
 
     SELECT id INTO revisionId
-    FROM audit.Revision_Audit
+    FROM {$auditDatabase}.Revision_Audit
     WHERE connectionId = CONNECTION_ID()
     LIMIT 1;
 
     IF revisionId = 0 THEN
-        INSERT INTO audit.Revision_Audit (
+        INSERT INTO {$auditDatabase}.Revision_Audit (
             createdAt,
             connectionId
         ) VALUES (
@@ -94,10 +95,10 @@ BEGIN
     END IF;
 
     SELECT id INTO targetEntityId
-    FROM audit.TargetEntity_Audit
+    FROM {$auditDatabase}.TargetEntity_Audit
     WHERE name = p_targetEntity;
 
-    INSERT INTO audit.RevisionEntity_Audit (
+    INSERT INTO {$auditDatabase}.RevisionEntity_Audit (
         revision_id,
         target_entity_id,
         revision_type_id
@@ -163,7 +164,6 @@ EOF;
 
             $tableName = $config['tableName'];
             $auditTableName = $auditClassMetadata->getTableName();
-            $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
 
             $sql .= $this->buildSql($tableName, $auditTableName, $fields, $className);
         }
