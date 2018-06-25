@@ -51,6 +51,9 @@ class EntityAutoloader extends StandardAutoloader implements
         $auditClass->setName(str_replace('\\', '_', $className));
         $auditClass->setExtendedClass("ZF\\Doctrine\\Audit\\AuditEntity\\AbstractAudit");
 
+        // Add primary key
+        $auditClass->addProperty('_id', null, PropertyGenerator::FLAG_PROTECTED);
+
         // Add revision reference getter and setter
         $auditClass->addProperty('revisionEntity', null, PropertyGenerator::FLAG_PROTECTED);
         $auditClass->addMethod(

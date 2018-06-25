@@ -32,8 +32,6 @@ class EntityDriver implements
         $metadataFactory = $this->getObjectManager()->getMetadataFactory();
         $builder = new ClassMetadataBuilder($metadata);
 
-        $identifiers = [];
-
         // Get the entity this entity audits
         $metadataClassName = $metadata->getName();
         $metadataClass = new $metadataClassName();
@@ -47,10 +45,17 @@ class EntityDriver implements
             return false;
         }
 
+        // Add primary key
+        $primaryKey = $builder->createField('_id', 'bigint')
+            ->makePrimaryKey()
+            ->generatedValue()
+            ->unique()
+            ->columnName('_id')
+            ->build()
+            ;
+
         $association = $builder->createManyToOne('revisionEntity', Entity\RevisionEntity::class);
-        $association->makePrimaryKey();
         $association->build();
-        $identifiers[] = 'revisionEntity';
 
         // Add fields from target to audit entity
         foreach ($auditedClassMetadata->getFieldNames() as $fieldName) {
@@ -63,10 +68,6 @@ class EntityDriver implements
                     'quoted' => true
                 ]
             );
-
-            if ($auditedClassMetadata->isIdentifier($fieldName)) {
-                $identifiers[] = $fieldName;
-            }
         }
 
         foreach ($auditedClassMetadata->getAssociationMappings() as $mapping) {
@@ -102,7 +103,6 @@ class EntityDriver implements
                 . $auditedClassMetadata->getTableName()
                 . $this->getAuditOptions()->getAuditTableNameSuffix()
         );
-        $metadata->setIdentifier($identifiers);
 
         return;
     }
