@@ -19,6 +19,7 @@ class Module implements
     {
         return array(
             'audit:trigger-tool:create' => 'Create trigger SQL for target database',
+            'audit:trigger-tool:drop' => 'Drop trigger SQL for target database',
             'audit:epoch:import' => 'Create epoch stored procedures SQL for target database',
         );
     }

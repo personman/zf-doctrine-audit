@@ -44,4 +44,27 @@ final class TriggerTool implements
 
         return $generator->generate();
     }
+
+    public function drop()
+    {
+        switch ($this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()) {
+            case 'mysql':
+                $generator = new Generator\Trigger\MySQL(
+                    $this->getObjectManager(),
+                    $this->getAuditObjectManager(),
+                    $this->config
+                );
+                break;
+            // @codeCoverageIgnoreStart
+            default:
+                throw new Exception(
+                    'Unsupported database platform: '
+                    . $this->getObjectManager()->getConnection()->getDatabasePlatform()->getName()
+                );
+                break;
+             // @codeCoverageIgnoreEnd
+        }
+
+        return $generator->drop();
+    }
 }
