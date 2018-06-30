@@ -6,15 +6,15 @@ This walkthrough creates a new audit database.  For changes to a target database
 Create Database
 ---------------
 
-With your application configured with a new entity manager for the audit 
+With your application configured with a new entity manager for the audit
 database and your configuration containing the entities you want to audit, it's time to create your audit database::
 
   php public/index.php orm:schema-tool:create --object-manager=doctrine.entitymanager.orm_zf_doctrine_audit
 
-This command will create the database for the given object manager.  Be sure you specify the same object manager as 
+This command will create the database for the given object manager.  Be sure you specify the same object manager as
 the configuration ``audit_object_manager``.
 
-*A note about migrations:  Currently Doctrine doesn't have a way to run migrations for two databases.  
+*A note about migrations:  Currently Doctrine doesn't have a way to run migrations for two databases.
 It makes sense to have another set of migrations for the audit database.  This repository does not try to solve this problem
 and leaves the use of migrations up to you.*
 
@@ -42,6 +42,16 @@ Then pipe this output to the target database such as::
   php public/index.php audit:trigger-tool:create | mysql -u user -p123 -h mysql target_database
 
 Any triggers with the same names will be removed.  This allows you to re-run the trigger sql.
+
+
+Drop Triggers
+-------------
+
+There is a tool for removing the triggers and functions created by the trigger-tool::
+
+    php public/index.php audit:trigger-tool:drop
+
+Use this only if you need to adjust your audited entities then re-run the `:create` tool.
 
 
 Auditing is Working

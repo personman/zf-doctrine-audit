@@ -30,4 +30,15 @@ final class TriggerToolController extends AbstractConsoleController
 
         $this->getConsole()->write($this->triggerTool->generate());
     }
+
+    public function dropAction()
+    {
+        // Make sure that we are running in a console and the user has not tricked our
+        // application into running this action from a public web server.
+        if (! $this->getRequest() instanceof ConsoleRequest) {
+            throw new RuntimeException('You can only use this action from a console.');
+        }
+
+        $this->getConsole()->write($this->triggerTool->drop());
+    }
 }

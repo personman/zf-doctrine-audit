@@ -87,6 +87,15 @@ return [
                         ],
                     ],
                 ],
+                'zf-doctrine-audit-trigger-tool-drop' => [
+                    'options' => [
+                        'route' => 'audit:trigger-tool:drop',
+                        'defaults' => [
+                            'controller' => Controller\TriggerToolController::class,
+                            'action' => 'drop',
+                        ],
+                    ],
+                ],
                 'zf-doctrine-audit-epoch-mysql' => [
                     'options' => [
                         'route' => 'audit:epoch:import',

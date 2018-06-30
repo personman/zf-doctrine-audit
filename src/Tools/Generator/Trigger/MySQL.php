@@ -30,6 +30,117 @@ final class MySQL implements
         // @codeCoverageIgnoreEnd
     }
 
+    public function drop()
+    {
+        $sql = <<<EOF
+
+DELIMITER //
+
+DROP FUNCTION IF EXISTS close_revision_audit;//
+DROP FUNCTION IF EXISTS get_revision_entity_audit;//
+
+EOF;
+
+
+        // Now iterate through join entities and build trigger code for each.
+        foreach ($this->config['joinEntities'] as $className => $config) {
+            $auditClassName = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->generateClassName($className);
+
+            $metadataFactory = $this->getObjectManager()->getMetadataFactory();
+            $metadata = $metadataFactory->getMetadataFor($config['ownerEntity']);
+
+            foreach ($metadata->getAssociationMappings() as $mapping) {
+                if (isset($mapping['joinTable'])) {
+                    if ($mapping['joinTable']['name'] == $config['tableName']) {
+                        $foundJoinEntity = true;
+                        break;
+                    }
+                }
+            }
+
+            // @codeCoverageIgnoreStart
+            if (! $foundJoinEntity) {
+                throw new Exception(
+                    'joinTable '
+                    . $targetClassName
+                    . ' not found by tableName '
+                    . $config['tableName']
+                    . ' on ownerEntity: '
+                    . $config['ownerEntity']
+                );
+            }
+            // @codeCoverageIgnoreEnd
+
+            $fields = [];
+            foreach ($mapping['joinTable']['joinColumns'] as $column) {
+                $column['dataType'] = $this->getObjectManager()
+                    ->getClassMetadata($mapping['sourceEntity'])
+                    ->getTypeOfField($column['referencedColumnName']);
+                $fields[] = $column['name'];
+            }
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as $column) {
+                $column['dataType'] = $this->getObjectManager()
+                    ->getClassMetadata($mapping['targetEntity'])
+                    ->getTypeOfField($column['referencedColumnName']);
+                $fields[] = $column['name'];
+            }
+
+            // Get fields and identifiers from target entity
+            $auditMetadataFactory = $this->getAuditObjectManager()->getMetadataFactory();
+            $auditClassMetadata = $auditMetadataFactory->getMetadataFor($auditClassName);
+
+            $sql .= $this->dropSql($config['tableName']);
+        }
+
+        // Now iterate through the entities and build trigger code for each.
+        foreach ($this->config['entities'] as $className => $options) {
+            $auditClassName = $this->getAuditObjectManager()
+                ->getRepository('ZF\Doctrine\Audit\Entity\AuditEntity')
+                ->generateClassName($className);
+
+            // Get fields and identifiers from target entity
+            $metadataFactory = $this->getObjectManager()->getMetadataFactory();
+            $auditMetadataFactory = $this->getAuditObjectManager()->getMetadataFactory();
+            $classMetadata = $metadataFactory->getMetadataFor($className);
+            $auditClassMetadata = $auditMetadataFactory->getMetadataFor($auditClassName);
+
+            $fields = [];
+
+            foreach ($classMetadata->getColumnNames() as $fieldName) {
+                $fields[] = $fieldName;
+            }
+
+            foreach ($classMetadata->getAssociationMappings() as $mapping) {
+                if (! $mapping['isOwningSide'] || isset($mapping['joinTable'])) {
+                    continue;
+                }
+
+                if (isset($mapping['joinTableColumns'])) {
+                    foreach ($mapping['joinTableColumns'] as $field) {
+                        $fields[] = $field;
+                    }
+                } elseif (isset($mapping['joinColumnFieldNames'])) {
+                    foreach ($mapping['joinColumnFieldNames'] as $field) {
+                        $fields[] = $field;
+                    }
+                } else {
+                    throw new Exception('Unhandled association mapping');
+                }
+            }
+
+            $tableName = $classMetadata->getTableName();
+            $auditTableName = $auditClassMetadata->getTableName();
+
+            $sql .= $this->dropSql($tableName, $auditTableName, $fields, $className);
+        }
+
+        $sql .= "\nDELIMITER ;\n";
+
+        return $sql;
+    }
+
     public function generate()
     {
         $auditDatabase = $this->getAuditObjectManager()->getConnection()->getDatabase();
@@ -305,6 +416,19 @@ IF isPHP IS NULL THEN
 END IF;
 
 END;//
+
+EOF;
+
+        return $sql;
+    }
+
+    public function dropSql($tableName)
+    {
+        $sql = <<<EOF
+
+DROP TRIGGER IF EXISTS {$tableName}_insert_audit;//
+DROP TRIGGER IF EXISTS {$tableName}_update_audit;//
+DROP TRIGGER IF EXISTS {$tableName}_delete_audit;//
 
 EOF;
 
