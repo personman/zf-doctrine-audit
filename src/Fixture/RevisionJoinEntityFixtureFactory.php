@@ -11,12 +11,12 @@ class RevisionJoinEntityFixtureFactory implements
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $container->getServiceLocator()->get('config')['zf-doctrine-audit'];
+        $config = $container->get('config')['zf-doctrine-audit'];
 
         $instance = new $requestedName();
 
         $instance->setJoinEntityConfigCollection(new ArrayCollection($config['joinEntities']));
-        $instance->setObjectManager($container->getServiceLocator()->get($config['target_object_manager']));
+        $instance->setObjectManager($container->get($config['target_object_manager']));
 
         return $instance;
     }
